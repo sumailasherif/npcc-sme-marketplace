@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bazar (working name)
 
-## Getting Started
+An AI sales assistant for Mauritian small businesses. It turns Facebook and
+WhatsApp chaos into a real shop with a shareable link, and later puts sellers
+on a local marketplace where people can actually find them.
 
-First, run the development server:
+Built for the **NPCC National AI Startups Lab**. Full product plan and build
+spec: [docs/spec.md](docs/spec.md). Progress: [docs/STATUS.md](docs/STATUS.md).
+
+## Tech stack
+
+- Next.js 16 (App Router) + TypeScript + React 19
+- Tailwind CSS v4 + shadcn/ui, themed with the Bazar design tokens
+- Supabase: Postgres + PostGIS, Auth, Storage, Realtime
+- next-intl: English, French, Kreol Morisien (`en`, `fr`, `mfe`)
+- Zod for validation; Claude API (server routes only) for AI features
+- Vitest (unit) + Playwright (end-to-end, 360px phone)
+- Hosting: Vercel (web) + Supabase (backend)
+
+## Getting started
+
+You need Node.js 24 and npm.
 
 ```bash
+# 1. Install dependencies
+npm install
+
+# 2. Create your local settings file and fill in the values
+cp .env.example .env.local
+
+# 3. Start the dev server, then open http://localhost:3000
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The home page works before Supabase is set up. Features that need a
+database (from M1 on) need the Supabase values in `.env.local`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Supabase
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create a free project at [supabase.com](https://supabase.com).
+2. In **Project Settings > API**, copy the project URL, the publishable key
+   and the secret key into `.env.local`.
+3. Database changes live in `supabase/migrations/` as numbered SQL files.
+   With the [Supabase CLI](https://supabase.com/docs/guides/cli):
+   `npx supabase link` then `npx supabase db push`.
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command             | What it does                               |
+| ------------------- | ------------------------------------------ |
+| `npm run dev`       | Start the dev server                       |
+| `npm run build`     | Production build                           |
+| `npm run lint`      | ESLint                                     |
+| `npm run typecheck` | TypeScript check                           |
+| `npm run format`    | Format all files with Prettier             |
+| `npm test`          | Unit tests (Vitest)                        |
+| `npm run test:e2e`  | End-to-end tests (Playwright; build first) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Before the first e2e run: `npx playwright install chromium`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project structure
 
-## Deploy on Vercel
+```text
+src/
+  app/              pages and API routes (App Router)
+  components/ui/    design-system components (shadcn-based)
+  components/       feature components
+  i18n/             language setup (cookie-based, no URL prefix)
+  lib/              supabase clients, env checks, formatting, utils
+  messages/         en.json, fr.json, mfe.json
+  proxy.ts          refreshes the login session on each request
+supabase/           config and numbered SQL migrations
+design/tokens.json  design tokens (mirrors src/app/globals.css)
+tests/unit/         Vitest
+tests/e2e/          Playwright
+docs/               spec, status, decisions
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Credits and inspiration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The product shape (customer / partner / admin roles on one backend,
+hyperlocal matching by distance and availability, separate flows for service
+bookings and product delivery) is inspired by **ServiceHub** by Bheda Jenish
+and Rushi Joshi. ServiceHub is a design reference only: all code, design and
+branding in this repository are written from scratch.
+
+Fonts: Plus Jakarta Sans and Inter (Google Fonts, OFL). Icons: Phosphor
+(MIT).
