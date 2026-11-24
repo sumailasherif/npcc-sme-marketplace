@@ -1,4 +1,8 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+// Finds the language setup in src/i18n/request.ts.
+const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   // Cache Components is off for the MVP: almost every page reads the
@@ -13,4 +17,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

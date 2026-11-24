@@ -1,0 +1,20 @@
+{
+  "Metadata": {
+    "title": "Bazar",
+    "description": "Vann lor internet depi ou portab. Transform ou bann komand Facebook ek WhatsApp an enn vre laboutik."
+  },
+  "Home": {
+    "tagline": "Ou laboutik lor internet, depi ou portab.",
+    "intro": "Bazar transform ou bann mesaz Facebook ek WhatsApp an enn vre laboutik kot bann klian kapav trouv ou ek komande.",
+    "startSelling": "Koumans vande",
+    "learnMore": "Kouma li marse",
+    "examplePrice": "Egzanp pri: {price}",
+    "comingSoon": "Pe vini byento. Nou pe konstrir li aster."
+  },
+  "LanguageSwitcher": {
+    "label": "Langaz",
+    "en": "English",
+    "fr": "Français",
+    "mfe": "Kreol"
+  }
+}

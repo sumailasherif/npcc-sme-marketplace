@@ -1,0 +1,20 @@
+{
+  "Metadata": {
+    "title": "Bazar",
+    "description": "Vendez en ligne depuis votre téléphone. Transformez vos commandes Facebook et WhatsApp en une vraie boutique."
+  },
+  "Home": {
+    "tagline": "Votre boutique en ligne, depuis votre téléphone.",
+    "intro": "Bazar transforme vos messages Facebook et WhatsApp en une vraie boutique où les clients peuvent vous trouver et commander.",
+    "startSelling": "Commencer à vendre",
+    "learnMore": "Comment ça marche",
+    "examplePrice": "Exemple de prix : {price}",
+    "comingSoon": "Bientôt disponible. Nous le construisons en ce moment."
+  },
+  "LanguageSwitcher": {
+    "label": "Langue",
+    "en": "English",
+    "fr": "Français",
+    "mfe": "Kreol"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "Metadata": {
+    "title": "Bazar",
+    "description": "Sell online from your phone. Turn your Facebook and WhatsApp orders into a real shop."
+  },
+  "Home": {
+    "tagline": "Your shop, online, from your phone.",
+    "intro": "Bazar turns your Facebook and WhatsApp messages into a real shop that customers can find and order from.",
+    "startSelling": "Start selling",
+    "learnMore": "How it works",
+    "examplePrice": "Example price: {price}",
+    "comingSoon": "Coming soon. We are building it now."
+  },
+  "LanguageSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "fr": "Français",
+    "mfe": "Kreol"
+  }
+}
