@@ -29,7 +29,10 @@ export default async function Home() {
         </div>
 
         <div className="rounded-card bg-surface p-4 shadow-e1">
-          <p className="tabular-price text-price text-ink-900" data-testid="example-price">
+          <p
+            className="tabular-price text-price text-ink-900"
+            data-testid="example-price"
+          >
             {t("examplePrice", { price: formatPrice(1250) })}
           </p>
           <p className="text-caption text-ink-500">{t("comingSoon")}</p>

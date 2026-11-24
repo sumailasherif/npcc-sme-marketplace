@@ -14,15 +14,15 @@ If judges ask about prior work, naming ServiceHub as an inspiration is good prac
 
 The SME report found the problem; ServiceHub shows a proven shape for the solution.
 
-| Your SME report | ServiceHub |
-|---|---|
-| Two-sided marketplace for Mauritian SMEs | Customer app + partner app + admin app on one backend |
-| Searchable local directory (products and services) | Hyperlocal discovery (H3 + PostGIS, 5 km geofence) |
-| Merchant dashboard: inventory, orders | Shopkeeper role: products, inventory, orders |
-| Trust: verified profiles, reviews | Partner verification (KYC) + ratings |
-| Delivery for cash-on-delivery sellers | Delivery agent role + order workflow |
-| AI layer: listings, Kreol/French search, reply drafts, invoices, forecasting | Mostly missing. This is your contribution |
-| Mauritius, WhatsApp-first, cash | Built for India (sample data, flows). Needs localising |
+| Your SME report                                                              | ServiceHub                                             |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Two-sided marketplace for Mauritian SMEs                                     | Customer app + partner app + admin app on one backend  |
+| Searchable local directory (products and services)                           | Hyperlocal discovery (H3 + PostGIS, 5 km geofence)     |
+| Merchant dashboard: inventory, orders                                        | Shopkeeper role: products, inventory, orders           |
+| Trust: verified profiles, reviews                                            | Partner verification (KYC) + ratings                   |
+| Delivery for cash-on-delivery sellers                                        | Delivery agent role + order workflow                   |
+| AI layer: listings, Kreol/French search, reply drafts, invoices, forecasting | Mostly missing. This is your contribution              |
+| Mauritius, WhatsApp-first, cash                                              | Built for India (sample data, flows). Needs localising |
 
 ServiceHub is a useful reference, but it solves "find a plumber". The research shows a sharper pain: SMEs are online but can't sell, and they lose orders in comments and DMs. The edge is the combined product with your AI layer and Mauritian focus; service categories are an extra, not the core.
 
@@ -42,26 +42,26 @@ This follows the report's "meet them where they are" principle and its Airbnb/Op
 
 ## Users and roles
 
-| Role | Phase | Main job |
-|---|---|---|
-| Merchant (home seller, small shop) | 1 | List products, capture orders, get paid, see what sells |
-| Buyer | 1 (via shop link), 2 (via app) | Find, trust, order |
-| Admin | 1 (light) | Verify merchants, moderate, handle support |
-| Service provider | 3 | Accept bookings |
-| Delivery rider | 3 | Pick up and drop off (Grabbit) |
+| Role                               | Phase                          | Main job                                                |
+| ---------------------------------- | ------------------------------ | ------------------------------------------------------- |
+| Merchant (home seller, small shop) | 1                              | List products, capture orders, get paid, see what sells |
+| Buyer                              | 1 (via shop link), 2 (via app) | Find, trust, order                                      |
+| Admin                              | 1 (light)                      | Verify merchants, moderate, handle support              |
+| Service provider                   | 3                              | Accept bookings                                         |
+| Delivery rider                     | 3                              | Pick up and drop off (Grabbit)                          |
 
 ## Where AI earns its place
 
 This is the NPCC "AI fit check": each feature maps to a pain from the research.
 
-| AI feature | Pain it fixes (from the report) | Priority |
-|---|---|---|
-| Photo or message to listing: snap a product or paste a WhatsApp/FB post; AI writes title, description, category, price | Missing and inconsistent descriptions | MVP |
-| Reply assistant: drafts answers to "price?" and "available?" in English, French or Kreol | Unanswered comments = lost sales | MVP |
-| Auto invoices and receipts | No transaction record | MVP (simple) |
-| Smart search ("gâteau patate" = "sweet potato cake") | No discoverability | Phase 2 |
-| Sales insights ("your samosas sell out on Fridays") | Inventory managed from memory | Phase 2 |
-| Demand forecasting | Stock planning | Later |
+| AI feature                                                                                                             | Pain it fixes (from the report)       | Priority     |
+| ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | ------------ |
+| Photo or message to listing: snap a product or paste a WhatsApp/FB post; AI writes title, description, category, price | Missing and inconsistent descriptions | MVP          |
+| Reply assistant: drafts answers to "price?" and "available?" in English, French or Kreol                               | Unanswered comments = lost sales      | MVP          |
+| Auto invoices and receipts                                                                                             | No transaction record                 | MVP (simple) |
+| Smart search ("gâteau patate" = "sweet potato cake")                                                                   | No discoverability                    | Phase 2      |
+| Sales insights ("your samosas sell out on Fridays")                                                                    | Inventory managed from memory         | Phase 2      |
+| Demand forecasting                                                                                                     | Stock planning                        | Later        |
 
 The privacy concern in the report (80% worried, per Bindah et al.) becomes a design rule: every AI feature is opt-in, explained in plain language, and never trains on or shares business data.
 
@@ -79,6 +79,7 @@ The privacy concern in the report (80% worried, per Bindah et al.) becomes a des
 The prototype needs about 14 screens.
 
 **Merchant app**
+
 1. Onboarding (3 steps)
 2. Home dashboard: today's orders, unanswered messages
 3. Add product via photo/AI
@@ -89,6 +90,7 @@ The prototype needs about 14 screens.
 8. Simple sales insights
 
 **Buyer side**
+
 1. Shop page (from shared link)
 2. Product detail
 3. Checkout (cash on delivery)
@@ -100,20 +102,21 @@ The prototype needs about 14 screens.
 A proposal to react to, not a decision.
 
 Name ideas with Kreol roots, which stand out and signal "local" (domains and trademarks still to check):
+
 - **Bazar**: Port Louis's market, which everyone knows
 - **LaBoutik**: Kreol for "the shop"
 - **Lakaz Biznes**
 
 Colours. The repo uses generic slate/indigo; this palette gives it an island identity.
 
-| Role | Colour | Hex |
-|---|---|---|
-| Primary | Lagoon teal | #0E7C86 |
-| Ink (text) | Deep sea | #0F2A33 |
-| Accent | Flamboyant red-coral | #F05A3C |
-| Highlight | Pineapple yellow | #F6B93B |
-| Background | Sand | #FAF6EF |
-| Success | Palm green | #2E9E6B |
+| Role       | Colour               | Hex     |
+| ---------- | -------------------- | ------- |
+| Primary    | Lagoon teal          | #0E7C86 |
+| Ink (text) | Deep sea             | #0F2A33 |
+| Accent     | Flamboyant red-coral | #F05A3C |
+| Highlight  | Pineapple yellow     | #F6B93B |
+| Background | Sand                 | #FAF6EF |
+| Success    | Palm green           | #2E9E6B |
 
 Bright coral is for badges and large display; the main "Order now" buttons use the darker coral-700 with white text so contrast passes accessibility checks (full token table below).
 
@@ -125,14 +128,14 @@ Logo direction: a map pin shaped like a woven tant basket. It reads "local marke
 
 Each deliverable lines up with a stage of the NPCC Startup Journal: the prompt prototype and Wizard-of-Oz test fill page 4, and the questionnaire feeds page 5.
 
-| # | Deliverable | Format | NPCC stage |
-|---|---|---|---|
-| 1 | Brand and design system (colours, type, components, logo concepts) | Design system | Prototype |
-| 2 | App screens (merchant + buyer) | Design canvas | Prototype |
-| 3 | Interactive walkthrough of how it works | Clickable web page | Prototype / pitch |
-| 4 | One real AI feature working (photo/message to listing, in Kreol/French/English) | Prompt prototype | Prototype (4D) |
-| 5 | Questionnaire for testing with merchants and buyers | Google Doc | Test |
-| 6 | 3-minute pitch outline | Doc or slides | Test (5F) |
+| #   | Deliverable                                                                     | Format             | NPCC stage        |
+| --- | ------------------------------------------------------------------------------- | ------------------ | ----------------- |
+| 1   | Brand and design system (colours, type, components, logo concepts)              | Design system      | Prototype         |
+| 2   | App screens (merchant + buyer)                                                  | Design canvas      | Prototype         |
+| 3   | Interactive walkthrough of how it works                                         | Clickable web page | Prototype / pitch |
+| 4   | One real AI feature working (photo/message to listing, in Kreol/French/English) | Prompt prototype   | Prototype (4D)    |
+| 5   | Questionnaire for testing with merchants and buyers                             | Google Doc         | Test              |
+| 6   | 3-minute pitch outline                                                          | Doc or slides      | Test (5F)         |
 
 ## Open questions before building
 
@@ -152,21 +155,21 @@ This and the next five sections are the brief for Claude Code. We build a full-s
 
 **Out of MVP:** native mobile app (later, same backend), marketplace discovery (Phase 2), service bookings, rider dispatch and live tracking (Phase 3), online payments, demand forecasting.
 
-| Layer | Choice | Why |
-|---|---|---|
-| Framework | Next.js (App Router) + TypeScript + React | Server-rendered shop pages load fast on mobile data and show link previews on WhatsApp and Facebook |
-| Styling | Tailwind CSS + shadcn/ui, themed with our design tokens | Consistent UI, fast to build |
-| Server logic | Next.js Route Handlers and Server Actions | Frontend and backend in one codebase |
-| Database, auth, files | Supabase: Postgres + PostGIS, Auth (phone OTP + email), Storage, Realtime | One managed backend the app will reuse later |
-| Validation | Zod | Same rules on forms and API |
-| AI | Claude API, called only from server routes | API key never reaches the browser |
-| Maps | Leaflet + OpenStreetMap (react-leaflet) | No Google Maps fees |
-| Languages | next-intl with en, fr, mfe message files | English, French, Kreol |
-| Invoices | @react-pdf/renderer on the server | Generated, no AI needed |
-| Notifications | Email (Resend) + WhatsApp click-to-chat links; web push later | Works with how sellers already operate |
-| Install on phone | PWA manifest | Feels like an app without the stores |
-| Tests | Vitest (unit) + Playwright (end-to-end) | Catch regressions before demos |
-| Hosting | Vercel (web) + Supabase (backend), free tiers | Live URL for judges |
+| Layer                 | Choice                                                                    | Why                                                                                                 |
+| --------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Framework             | Next.js (App Router) + TypeScript + React                                 | Server-rendered shop pages load fast on mobile data and show link previews on WhatsApp and Facebook |
+| Styling               | Tailwind CSS + shadcn/ui, themed with our design tokens                   | Consistent UI, fast to build                                                                        |
+| Server logic          | Next.js Route Handlers and Server Actions                                 | Frontend and backend in one codebase                                                                |
+| Database, auth, files | Supabase: Postgres + PostGIS, Auth (phone OTP + email), Storage, Realtime | One managed backend the app will reuse later                                                        |
+| Validation            | Zod                                                                       | Same rules on forms and API                                                                         |
+| AI                    | Claude API, called only from server routes                                | API key never reaches the browser                                                                   |
+| Maps                  | Leaflet + OpenStreetMap (react-leaflet)                                   | No Google Maps fees                                                                                 |
+| Languages             | next-intl with en, fr, mfe message files                                  | English, French, Kreol                                                                              |
+| Invoices              | @react-pdf/renderer on the server                                         | Generated, no AI needed                                                                             |
+| Notifications         | Email (Resend) + WhatsApp click-to-chat links; web push later             | Works with how sellers already operate                                                              |
+| Install on phone      | PWA manifest                                                              | Feels like an app without the stores                                                                |
+| Tests                 | Vitest (unit) + Playwright (end-to-end)                                   | Catch regressions before demos                                                                      |
+| Hosting               | Vercel (web) + Supabase (backend), free tiers                             | Live URL for judges                                                                                 |
 
 ## Repo structure
 
@@ -196,20 +199,20 @@ npcc-sme-marketplace/
 
 All tables live in Supabase Postgres with `id uuid`, `created_at` and `updated_at`. Money is stored as `numeric(10,2)` in Mauritian rupees (MUR) and shown as "Rs 1,250".
 
-| Table | Key fields | Notes |
-|---|---|---|
-| profiles | id (= auth user), role [buyer, merchant, admin; later provider, rider], full_name, phone, preferred_language [en, fr, mfe], avatar_url | One row per account |
-| shops | owner_id, name, slug (unique), description, category_id, whatsapp_phone, district, address, location (PostGIS point), h3_index, logo_url, cover_url, verification_status [pending, verified, rejected], rating_avg, rating_count, delivery_options (json) | Slug makes the public link: /s/{slug} |
-| categories | name_en, name_fr, name_mfe, parent_id, type [product, service] | Seeded with Mauritian SME categories |
-| products | shop_id, title, description, category_id, price_mur, stock_qty, low_stock_threshold, status [draft, active, archived], images (text[]), ai_generated (bool) | One price everywhere, fixing inconsistent listings |
-| orders | order_no, shop_id, buyer_id (nullable for guests), buyer_name, buyer_phone, channel [shop_link, whatsapp, facebook, instagram, manual], status, subtotal_mur, delivery_fee_mur, total_mur, payment_method [cash_on_delivery; later juice, card], payment_status, delivery_method [pickup, merchant_delivery; later rider], address, notes | Guests can order without an account |
-| order_items | order_id, product_id, title_snapshot, unit_price_mur, qty | Snapshot keeps old orders correct after price changes |
-| order_events | order_id, status, actor_id | Audit trail of every status change |
-| inquiries | shop_id, source [whatsapp, facebook, instagram, web], customer_handle, message_text, ai_draft, status [new, drafted, replied, converted], order_id | The unified inbox; merchants paste or forward messages |
-| invoices | order_id, invoice_no, pdf_url, issued_at | Numbered per shop |
-| reviews | shop_id, order_id, buyer_id, rating (1-5), comment | Only after a completed order |
-| ai_consents | user_id, listing_enabled, replies_enabled | All AI is opt-in |
-| ai_usage | shop_id, feature, model, tokens_in, tokens_out, accepted (bool) | Usage and acceptance metrics, no message content |
+| Table        | Key fields                                                                                                                                                                                                                                                                                                                                | Notes                                                  |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| profiles     | id (= auth user), role [buyer, merchant, admin; later provider, rider], full_name, phone, preferred_language [en, fr, mfe], avatar_url                                                                                                                                                                                                    | One row per account                                    |
+| shops        | owner_id, name, slug (unique), description, category_id, whatsapp_phone, district, address, location (PostGIS point), h3_index, logo_url, cover_url, verification_status [pending, verified, rejected], rating_avg, rating_count, delivery_options (json)                                                                                 | Slug makes the public link: /s/{slug}                  |
+| categories   | name_en, name_fr, name_mfe, parent_id, type [product, service]                                                                                                                                                                                                                                                                            | Seeded with Mauritian SME categories                   |
+| products     | shop_id, title, description, category_id, price_mur, stock_qty, low_stock_threshold, status [draft, active, archived], images (text[]), ai_generated (bool)                                                                                                                                                                               | One price everywhere, fixing inconsistent listings     |
+| orders       | order_no, shop_id, buyer_id (nullable for guests), buyer_name, buyer_phone, channel [shop_link, whatsapp, facebook, instagram, manual], status, subtotal_mur, delivery_fee_mur, total_mur, payment_method [cash_on_delivery; later juice, card], payment_status, delivery_method [pickup, merchant_delivery; later rider], address, notes | Guests can order without an account                    |
+| order_items  | order_id, product_id, title_snapshot, unit_price_mur, qty                                                                                                                                                                                                                                                                                 | Snapshot keeps old orders correct after price changes  |
+| order_events | order_id, status, actor_id                                                                                                                                                                                                                                                                                                                | Audit trail of every status change                     |
+| inquiries    | shop_id, source [whatsapp, facebook, instagram, web], customer_handle, message_text, ai_draft, status [new, drafted, replied, converted], order_id                                                                                                                                                                                        | The unified inbox; merchants paste or forward messages |
+| invoices     | order_id, invoice_no, pdf_url, issued_at                                                                                                                                                                                                                                                                                                  | Numbered per shop                                      |
+| reviews      | shop_id, order_id, buyer_id, rating (1-5), comment                                                                                                                                                                                                                                                                                        | Only after a completed order                           |
+| ai_consents  | user_id, listing_enabled, replies_enabled                                                                                                                                                                                                                                                                                                 | All AI is opt-in                                       |
+| ai_usage     | shop_id, feature, model, tokens_in, tokens_out, accepted (bool)                                                                                                                                                                                                                                                                           | Usage and acceptance metrics, no message content       |
 
 Order statuses: new, confirmed, preparing, ready, out_for_delivery, delivered, completed. An order can be cancelled from new or confirmed.
 
@@ -218,12 +221,14 @@ Later tables (Phase 3, ServiceHub-style): services, bookings, booking_offers (fi
 ## Core flows and AI contracts
 
 ### Merchant onboarding
+
 1. Sign up with phone OTP or email; pick language.
 2. Create shop: name, category, district, WhatsApp number, logo. The slug is generated and editable.
 3. Add a first product (AI or manual). The shop goes live as "unverified" with a shareable link.
 4. Admin reviews and marks it verified; the badge appears.
 
 ### Buyer order (cash on delivery)
+
 1. Buyer opens /s/{slug} from WhatsApp or Facebook.
 2. Browses products, adds to cart, enters name, phone, address and pickup or delivery.
 3. Places the order with no account needed; gets an order page and a WhatsApp confirmation link.
@@ -231,18 +236,20 @@ Later tables (Phase 3, ServiceHub-style): services, bookings, booking_offers (fi
 5. On completion an invoice PDF is generated and the buyer is invited to review.
 
 ### Inbox to order
+
 1. Merchant pastes a customer message from WhatsApp, Facebook or Instagram.
 2. AI drafts a reply and suggests matching products.
 3. Merchant edits, copies the reply into WhatsApp with one tap, and can convert the inquiry into an order.
 
 ### AI feature contracts
+
 Server routes only; every output is reviewed by the merchant before it is published or sent.
 
-| Endpoint | Input | Output (JSON) | Guardrails |
-|---|---|---|---|
-| POST /api/ai/listing | 1-3 photos and/or pasted post text, shop category, language | title, description, category_id, suggested_tags, price_mur if found in text, detected_language | Never invents a price; flags low-confidence fields; saved as draft |
-| POST /api/ai/reply | inquiry text, shop name, up to 30 active products (title, price, stock), language | intent [price, availability, order, delivery, other], reply_text, matched_product_ids | Only quotes prices and stock from the catalogue; replies in the customer's language; never promises delivery times the shop has not set |
-| Phase 2: smart search | query text | ranked products | Synonyms across en, fr, mfe ("gâteau patate" = "sweet potato cake") via pgvector embeddings |
+| Endpoint              | Input                                                                             | Output (JSON)                                                                                  | Guardrails                                                                                                                              |
+| --------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| POST /api/ai/listing  | 1-3 photos and/or pasted post text, shop category, language                       | title, description, category_id, suggested_tags, price_mur if found in text, detected_language | Never invents a price; flags low-confidence fields; saved as draft                                                                      |
+| POST /api/ai/reply    | inquiry text, shop name, up to 30 active products (title, price, stock), language | intent [price, availability, order, delivery, other], reply_text, matched_product_ids          | Only quotes prices and stock from the catalogue; replies in the customer's language; never promises delivery times the shop has not set |
+| Phase 2: smart search | query text                                                                        | ranked products                                                                                | Synonyms across en, fr, mfe ("gâteau patate" = "sweet potato cake") via pgvector embeddings                                             |
 
 Use a current Claude Sonnet model with structured JSON output, validate every response with Zod, and fall back to the manual form when the AI fails.
 
@@ -260,15 +267,15 @@ Use a current Claude Sonnet model with structured JSON output, validate every re
 
 Build in this order; each milestone ends with a deploy to Vercel and a short demo. Dates follow once the NPCC deadline is confirmed.
 
-| # | Milestone | Done when |
-|---|---|---|
-| M0 | Setup | Next.js + Tailwind + shadcn running; Supabase project linked; design tokens in Tailwind config; CI runs lint and tests; live URL on Vercel |
-| M1 | Auth and shop | Merchant signs up (OTP or email), creates a shop, and /s/{slug} shows it publicly |
-| M2 | Products + AI listing | Merchant adds a product from a photo; AI fills title, description and category in under 10 seconds; merchant edits and publishes |
-| M3 | Ordering | Guest places a cash-on-delivery order from a shop link; merchant sees it in real time and moves it through every status |
-| M4 | Inbox + AI replies | Merchant pastes a Kreol or French message and gets a correct draft reply quoting real catalogue prices |
-| M5 | Invoices, insights, admin | PDF invoice on completion; dashboard shows revenue, top products and low stock; admin can verify or reject shops |
-| M6 | Polish and test | All three languages complete; Lighthouse mobile score 90+; RLS tests pass; 5 real merchants complete the onboarding test |
+| #   | Milestone                 | Done when                                                                                                                                  |
+| --- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| M0  | Setup                     | Next.js + Tailwind + shadcn running; Supabase project linked; design tokens in Tailwind config; CI runs lint and tests; live URL on Vercel |
+| M1  | Auth and shop             | Merchant signs up (OTP or email), creates a shop, and /s/{slug} shows it publicly                                                          |
+| M2  | Products + AI listing     | Merchant adds a product from a photo; AI fills title, description and category in under 10 seconds; merchant edits and publishes           |
+| M3  | Ordering                  | Guest places a cash-on-delivery order from a shop link; merchant sees it in real time and moves it through every status                    |
+| M4  | Inbox + AI replies        | Merchant pastes a Kreol or French message and gets a correct draft reply quoting real catalogue prices                                     |
+| M5  | Invoices, insights, admin | PDF invoice on completion; dashboard shows revenue, top products and low stock; admin can verify or reject shops                           |
+| M6  | Polish and test           | All three languages complete; Lighthouse mobile score 90+; RLS tests pass; 5 real merchants complete the onboarding test                   |
 
 ## Claude Code working rules
 
@@ -291,43 +298,43 @@ Every token below has a contrast ratio checked against WCAG AA (4.5:1 for normal
 
 ## Colour
 
-| Token | Hex | Use | Contrast |
-|---|---|---|---|
-| teal-50 | #E6F4F5 | Selected rows, info backgrounds | - |
-| teal-100 | #C2E5E7 | Hover fills, tags | - |
-| teal-500 (primary) | #0E7C86 | Primary buttons, links, active nav | 4.95 on white |
-| teal-700 | #0A5C63 | Pressed state, headings on light | 7.71 on white |
-| coral-100 | #FDE3DD | Promo and "new order" highlights | - |
-| coral-500 | #F05A3C | Illustrations, badges, large display only | 3.37 with white text: not for body text |
-| coral-700 (CTA) | #C0402A | "Order now" and other main calls to action, white text | 5.24 on white |
-| yellow-500 | #F6B93B | Ratings, warnings, "low stock" | 8.52 with ink text |
-| yellow-100 | #FDF1D6 | Warning backgrounds | - |
-| ink-900 | #0F2A33 | Body text, headings | 13.9 on sand |
-| ink-700 | #35505A | Secondary text | - |
-| ink-500 | #5E747D | Muted text, placeholders | 4.92 on white |
-| ink-300 | #B8C6CB | Borders, dividers | - |
-| ink-100 | #E7EDEF | Disabled fills, skeletons | - |
-| sand-50 | #FAF6EF | Page background | - |
-| white | #FFFFFF | Cards, inputs | - |
-| success-500 | #2E9E6B | Success icons and fills | - |
-| success-700 | #237A53 | Success text | 5.28 on white |
-| error-600 | #B83232 | Errors, destructive actions | - |
+| Token              | Hex     | Use                                                    | Contrast                                |
+| ------------------ | ------- | ------------------------------------------------------ | --------------------------------------- |
+| teal-50            | #E6F4F5 | Selected rows, info backgrounds                        | -                                       |
+| teal-100           | #C2E5E7 | Hover fills, tags                                      | -                                       |
+| teal-500 (primary) | #0E7C86 | Primary buttons, links, active nav                     | 4.95 on white                           |
+| teal-700           | #0A5C63 | Pressed state, headings on light                       | 7.71 on white                           |
+| coral-100          | #FDE3DD | Promo and "new order" highlights                       | -                                       |
+| coral-500          | #F05A3C | Illustrations, badges, large display only              | 3.37 with white text: not for body text |
+| coral-700 (CTA)    | #C0402A | "Order now" and other main calls to action, white text | 5.24 on white                           |
+| yellow-500         | #F6B93B | Ratings, warnings, "low stock"                         | 8.52 with ink text                      |
+| yellow-100         | #FDF1D6 | Warning backgrounds                                    | -                                       |
+| ink-900            | #0F2A33 | Body text, headings                                    | 13.9 on sand                            |
+| ink-700            | #35505A | Secondary text                                         | -                                       |
+| ink-500            | #5E747D | Muted text, placeholders                               | 4.92 on white                           |
+| ink-300            | #B8C6CB | Borders, dividers                                      | -                                       |
+| ink-100            | #E7EDEF | Disabled fills, skeletons                              | -                                       |
+| sand-50            | #FAF6EF | Page background                                        | -                                       |
+| white              | #FFFFFF | Cards, inputs                                          | -                                       |
+| success-500        | #2E9E6B | Success icons and fills                                | -                                       |
+| success-700        | #237A53 | Success text                                           | 5.28 on white                           |
+| error-600          | #B83232 | Errors, destructive actions                            | -                                       |
 
 ## Typography
 
 Plus Jakarta Sans for headings, Inter for body; tabular figures for prices.
 
-| Style | Font | Size / line height | Weight |
-|---|---|---|---|
-| Display | Plus Jakarta Sans | 32 / 40 | 800 |
-| H1 | Plus Jakarta Sans | 24 / 32 | 700 |
-| H2 | Plus Jakarta Sans | 20 / 28 | 700 |
-| H3 | Plus Jakarta Sans | 17 / 24 | 600 |
-| Body L | Inter | 16 / 24 | 400 |
-| Body | Inter | 14 / 20 | 400 |
-| Label | Inter | 13 / 16 | 600 |
-| Caption | Inter | 12 / 16 | 500 |
-| Price | Inter | 18 / 24 | 700 |
+| Style   | Font              | Size / line height | Weight |
+| ------- | ----------------- | ------------------ | ------ |
+| Display | Plus Jakarta Sans | 32 / 40            | 800    |
+| H1      | Plus Jakarta Sans | 24 / 32            | 700    |
+| H2      | Plus Jakarta Sans | 20 / 28            | 700    |
+| H3      | Plus Jakarta Sans | 17 / 24            | 600    |
+| Body L  | Inter             | 16 / 24            | 400    |
+| Body    | Inter             | 14 / 20            | 400    |
+| Label   | Inter             | 13 / 16            | 600    |
+| Caption | Inter             | 12 / 16            | 500    |
+| Price   | Inter             | 18 / 24            | 700    |
 
 ## Spacing, radius, elevation, layout
 
@@ -350,23 +357,23 @@ Plus Jakarta Sans for headings, Inter for body; tabular figures for prices.
 
 Build each component once in Figma with variants, then once in code under components/ui.
 
-| Component | Variants and states |
-|---|---|
-| Button | primary (teal), CTA (coral-700), secondary (outline), ghost, destructive; sizes S/M/L; default, hover, pressed, loading, disabled |
-| Input and textarea | default, focus, error, disabled; with label, helper text, prefix "Rs" for prices |
-| Search bar | empty, typing, with suggestions |
-| Chip / filter | default, selected, removable |
-| Product card | grid and list; in stock, low stock, sold out; with AI-draft tag |
-| Shop header | cover, logo, name, verified badge, rating, WhatsApp button |
-| Order card | compact and full; status pill |
-| Status pill | new (coral), confirmed (teal), preparing and ready (yellow), out for delivery (teal), delivered and completed (green), cancelled (grey) |
-| AI suggestion card | sparkle icon, "AI draft, check before sending" label, accept / edit / regenerate buttons |
-| Inbox item | source icon (WhatsApp, Facebook, Instagram, web), unread dot, status |
-| Navigation | mobile bottom nav (merchant: Home, Orders, Products, Inbox, Shop); desktop sidebar; top bar with language switcher |
-| Overlays | bottom sheet, modal, toast, confirmation dialog |
-| Feedback | empty state with illustration, skeleton loader, error banner |
-| Commerce bits | quantity stepper, cart summary, price display, rating stars, verified badge, image uploader with crop |
-| Charts (insights) | revenue line, top-products bar, KPI tile |
+| Component          | Variants and states                                                                                                                     |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Button             | primary (teal), CTA (coral-700), secondary (outline), ghost, destructive; sizes S/M/L; default, hover, pressed, loading, disabled       |
+| Input and textarea | default, focus, error, disabled; with label, helper text, prefix "Rs" for prices                                                        |
+| Search bar         | empty, typing, with suggestions                                                                                                         |
+| Chip / filter      | default, selected, removable                                                                                                            |
+| Product card       | grid and list; in stock, low stock, sold out; with AI-draft tag                                                                         |
+| Shop header        | cover, logo, name, verified badge, rating, WhatsApp button                                                                              |
+| Order card         | compact and full; status pill                                                                                                           |
+| Status pill        | new (coral), confirmed (teal), preparing and ready (yellow), out for delivery (teal), delivered and completed (green), cancelled (grey) |
+| AI suggestion card | sparkle icon, "AI draft, check before sending" label, accept / edit / regenerate buttons                                                |
+| Inbox item         | source icon (WhatsApp, Facebook, Instagram, web), unread dot, status                                                                    |
+| Navigation         | mobile bottom nav (merchant: Home, Orders, Products, Inbox, Shop); desktop sidebar; top bar with language switcher                      |
+| Overlays           | bottom sheet, modal, toast, confirmation dialog                                                                                         |
+| Feedback           | empty state with illustration, skeleton loader, error banner                                                                            |
+| Commerce bits      | quantity stepper, cart summary, price display, rating stars, verified badge, image uploader with crop                                   |
+| Charts (insights)  | revenue line, top-products bar, KPI tile                                                                                                |
 
 - **Icons:** Phosphor icons, Regular weight, 24 px (20 px in dense lists); open licence and a React package. Use the brand marks for WhatsApp, Facebook and Instagram only inside source labels.
 - **Imagery:** real photos of Mauritian sellers and products, taken with consent, are the first choice. Empty states use flat illustrations recoloured to the palette (unDraw or a local illustrator). Avoid stock photos that look foreign.
@@ -379,10 +386,12 @@ Build each component once in Figma with variants, then once in code under compon
 Figma Education plan (free) via figma.com/education/apply with a school email.
 
 Two Figma files:
+
 1. **Bazar: Design System** — pages Cover, Foundations, Components, Patterns, Changelog.
 2. **Bazar: Website** — pages Cover, User journeys (FigJam embeds), Merchant flows, Buyer flows, Admin, Prototype, Handoff, Archive.
 
 Setup:
+
 1. Create variable collections: Colour primitives (the hex table), Colour semantic (bg, surface, text, primary, cta, border, success, warning, error; light mode now, dark later), Spacing, Radius.
 2. Create text styles for every row of the type table, and effect styles e1-e3.
 3. Build components with auto layout and variants, named with slashes (Button/Primary/M). Use variables, never raw hex.
