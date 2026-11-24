@@ -1,26 +1,138 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Bazar design tokens (see docs/spec.md "Design system" and design/tokens.json).
+ * Token names match Figma variables so design and code use the same words.
+ * Default Tailwind colours are cleared so only the brand palette is available.
+ */
+@theme {
+  --color-*: initial;
+
+  /* Primitives */
+  --color-teal-50: #e6f4f5;
+  --color-teal-100: #c2e5e7;
+  --color-teal-500: #0e7c86;
+  --color-teal-700: #0a5c63;
+  --color-coral-100: #fde3dd;
+  --color-coral-500: #f05a3c;
+  --color-coral-700: #c0402a;
+  --color-yellow-100: #fdf1d6;
+  --color-yellow-500: #f6b93b;
+  --color-ink-100: #e7edef;
+  --color-ink-300: #b8c6cb;
+  --color-ink-500: #5e747d;
+  --color-ink-700: #35505a;
+  --color-ink-900: #0f2a33;
+  --color-sand-50: #faf6ef;
+  --color-white: #ffffff;
+  --color-success-500: #2e9e6b;
+  --color-success-700: #237a53;
+  --color-error-600: #b83232;
+
+  /* Semantic (light mode; dark mode later) */
+  --color-bg: var(--color-sand-50);
+  --color-surface: var(--color-white);
+  --color-text: var(--color-ink-900);
+  --color-text-muted: var(--color-ink-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-pressed: var(--color-teal-700);
+  --color-cta: var(--color-coral-700);
+  --color-border: var(--color-ink-300);
+  --color-success: var(--color-success-700);
+  --color-warning: var(--color-yellow-500);
+  --color-error: var(--color-error-600);
+
+  /* Fonts (variables set by next/font in layout.tsx) */
+  --font-heading: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Type scale: text-display, text-h1 ... text-price */
+  --text-display: 2rem;
+  --text-display--line-height: 2.5rem;
+  --text-display--font-weight: 800;
+  --text-h1: 1.5rem;
+  --text-h1--line-height: 2rem;
+  --text-h1--font-weight: 700;
+  --text-h2: 1.25rem;
+  --text-h2--line-height: 1.75rem;
+  --text-h2--font-weight: 700;
+  --text-h3: 1.0625rem;
+  --text-h3--line-height: 1.5rem;
+  --text-h3--font-weight: 600;
+  --text-body-l: 1rem;
+  --text-body-l--line-height: 1.5rem;
+  --text-body-l--font-weight: 400;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.25rem;
+  --text-body--font-weight: 400;
+  --text-label: 0.8125rem;
+  --text-label--line-height: 1rem;
+  --text-label--font-weight: 600;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+  --text-caption--font-weight: 500;
+  --text-price: 1.125rem;
+  --text-price--line-height: 1.5rem;
+  --text-price--font-weight: 700;
+
+  /* Radius: rounded-chip, rounded-button, rounded-card, rounded-sheet (+ rounded-full) */
+  --radius-chip: 6px;
+  --radius-button: 10px;
+  --radius-card: 16px;
+  --radius-sheet: 24px;
+
+  /* Elevation: shadow-e1, shadow-e2, shadow-e3 */
+  --shadow-e1: 0 1px 2px rgb(15 42 51 / 0.08);
+  --shadow-e2: 0 4px 12px rgb(15 42 51 / 0.10);
+  --shadow-e3: 0 12px 24px rgb(15 42 51 / 0.14);
+
+  /* Breakpoints: design at 360 first, then tablet: (768) and desktop: (1280) */
+  --breakpoint-tablet: 48rem;
+  --breakpoint-desktop: 80rem;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --default-transition-duration: 200ms;
+
+  /* Spacing stays on Tailwind's 4 px base: p-1 = 4px, p-4 = 16px ... */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Tabular figures for prices (spec: Typography) */
+@utility tabular-price {
+  font-variant-numeric: tabular-nums;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+  }
+
+  /* Visible focus ring: teal-500, 2px (WCAG 2.2 AA) */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
