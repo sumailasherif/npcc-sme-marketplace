@@ -13,7 +13,7 @@ spec: [docs/spec.md](docs/spec.md). Progress: [docs/STATUS.md](docs/STATUS.md).
 - Tailwind CSS v4 + shadcn/ui, themed with the Bazar design tokens
 - Supabase: Postgres + PostGIS, Auth, Storage, Realtime
 - next-intl: English, French, Kreol Morisien (`en`, `fr`, `mfe`)
-- Zod for validation; Claude API (server routes only) for AI features
+- Zod for validation; OpenCode AI API (OpenAI-compatible, server routes only) for AI features
 - Vitest (unit) + Playwright (end-to-end, 360px phone)
 - Hosting: Vercel (web) + Supabase (backend)
 

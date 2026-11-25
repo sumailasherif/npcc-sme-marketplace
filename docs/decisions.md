@@ -3,6 +3,27 @@
 Short records of technical choices that are not spelled out in
 [spec.md](spec.md), or that adjust it. Newest first.
 
+## 2026-11-25 — AI provider: OpenCode instead of Claude API
+
+Sherif chose OpenCode as the AI provider, replacing the spec's "Claude API".
+The app talks to it through the OpenAI-compatible chat format, set by three
+server-only variables: `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL`. Because the
+format is standard, the provider can be changed later by editing these values
+only, with no code changes.
+
+**Which OpenCode plan.** OpenCode's docs say the **Go subscription** is meant
+for coding agents, and "apps that don't send a session ID can't use Go
+models"; such apps should use the **pay-as-you-go Console API** (paid from the
+account balance). Bazar is a normal web app, not a coding agent, so the
+default `AI_BASE_URL` is the pay-as-you-go endpoint
+`https://opencode.ai/inference/openai/v1`. We do not disguise app traffic as
+coding-agent traffic.
+
+**Still to confirm before M2:** the exact model ID, that the chosen model
+accepts images (photo-to-listing) and returns JSON, and that the account has
+a balance or allowance. Guardrails from the spec are unchanged: server-only,
+opt-in, Zod-validated, merchant reviews every output.
+
 ## 2026-11-25 — M0 setup choices
 
 **Tailwind v4: tokens live in CSS, not `tailwind.config`.**

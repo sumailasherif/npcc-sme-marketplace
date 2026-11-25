@@ -162,7 +162,7 @@ This and the next five sections are the brief for Claude Code. We build a full-s
 | Server logic          | Next.js Route Handlers and Server Actions                                 | Frontend and backend in one codebase                                                                |
 | Database, auth, files | Supabase: Postgres + PostGIS, Auth (phone OTP + email), Storage, Realtime | One managed backend the app will reuse later                                                        |
 | Validation            | Zod                                                                       | Same rules on forms and API                                                                         |
-| AI                    | Claude API, called only from server routes                                | API key never reaches the browser                                                                   |
+| AI                    | OpenCode API (OpenAI-compatible), called only from server routes          | API key never reaches the browser; provider can be swapped via env settings                         |
 | Maps                  | Leaflet + OpenStreetMap (react-leaflet)                                   | No Google Maps fees                                                                                 |
 | Languages             | next-intl with en, fr, mfe message files                                  | English, French, Kreol                                                                              |
 | Invoices              | @react-pdf/renderer on the server                                         | Generated, no AI needed                                                                             |
@@ -251,12 +251,12 @@ Server routes only; every output is reviewed by the merchant before it is publis
 | POST /api/ai/reply    | inquiry text, shop name, up to 30 active products (title, price, stock), language | intent [price, availability, order, delivery, other], reply_text, matched_product_ids          | Only quotes prices and stock from the catalogue; replies in the customer's language; never promises delivery times the shop has not set |
 | Phase 2: smart search | query text                                                                        | ranked products                                                                                | Synonyms across en, fr, mfe ("gâteau patate" = "sweet potato cake") via pgvector embeddings                                             |
 
-Use a current Claude Sonnet model with structured JSON output, validate every response with Zod, and fall back to the manual form when the AI fails.
+Use a vision-capable model from the OpenCode API (set by `AI_MODEL`) with JSON output, validate every response with Zod, and fall back to the manual form when the AI fails.
 
 ## Security, privacy and localisation
 
 - **Row Level Security on every table.** Merchants read and write only their own shop's rows. Buyers see only their own orders; guests see an order only through its unguessable order link. Admins act through server routes using the service role key, never from the browser.
-- **Secrets server-side only.** Supabase service key, Claude API key and email key live in Vercel environment variables.
+- **Secrets server-side only.** Supabase secret key, AI API key and email key live in Vercel environment variables.
 - **AI privacy.** AI is off until the merchant opts in. Message text is sent to the AI only for the request at hand and is not stored in ai_usage. The privacy page says this in plain English, French and Kreol.
 - **Data protection.** Collect only what an order needs; let merchants export and delete their data; align with the Mauritius Data Protection Act 2017.
 - **Abuse limits.** Rate-limit AI routes and guest checkout per IP and phone; validate every input with Zod; compress and size-limit image uploads.
@@ -280,7 +280,7 @@ Build in this order; each milestone ends with a deploy to Vercel and a short dem
 ## Claude Code working rules
 
 - Write all code from scratch. Do not copy code from ServiceHub or any other repo; ServiceHub is only a design reference.
-- Stack: Next.js (App Router) + TypeScript, Tailwind CSS + shadcn/ui, Supabase (Postgres + PostGIS, Auth, Storage, Realtime), Zod, next-intl (en, fr, mfe), Claude API called only from server routes. Deploy on Vercel.
+- Stack: Next.js (App Router) + TypeScript, Tailwind CSS + shadcn/ui, Supabase (Postgres + PostGIS, Auth, Storage, Realtime), Zod, next-intl (en, fr, mfe), OpenCode AI API (OpenAI-compatible) called only from server routes. Deploy on Vercel.
 - Follow the repo structure, data model, flows, AI contracts, security rules and design tokens in this spec exactly. Ask before changing any of them.
 - Work one milestone at a time (M0 to M6). Before each milestone, show a short plan and wait for OK.
 - Make small commits with clear messages. After each commit, explain in simple, beginner-friendly steps what was done and why.

@@ -8,7 +8,10 @@ import { z } from "zod";
  */
 const serverSchema = z.object({
   SUPABASE_SECRET_KEY: z.string().min(1),
-  ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  // AI provider (OpenAI-compatible). Optional until M2.
+  AI_BASE_URL: z.url().default("https://opencode.ai/inference/openai/v1"),
+  AI_API_KEY: z.string().min(1).optional(),
+  AI_MODEL: z.string().min(1).optional(),
   RESEND_API_KEY: z.string().min(1).optional(),
 });
 
@@ -17,7 +20,9 @@ export type ServerEnv = z.infer<typeof serverSchema>;
 export function getServerEnv(): ServerEnv {
   const result = serverSchema.safeParse({
     SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
-    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
+    AI_BASE_URL: process.env.AI_BASE_URL || undefined,
+    AI_API_KEY: process.env.AI_API_KEY || undefined,
+    AI_MODEL: process.env.AI_MODEL || undefined,
     RESEND_API_KEY: process.env.RESEND_API_KEY || undefined,
   });
   if (!result.success) {
