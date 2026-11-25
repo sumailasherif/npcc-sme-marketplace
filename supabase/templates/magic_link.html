@@ -1,0 +1,44 @@
+<!-- Mirror of the template saved in the Supabase dashboard (production). Keep both in sync. -->
+<div
+  style="
+    font-family: Arial, sans-serif;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px;
+    color: #0f2a33;
+    background: #faf6ef;
+  "
+>
+  <h2 style="color: #0e7c86; margin: 0 0 16px">Bazar</h2>
+
+  <p style="margin: 0 0 8px">Your sign-in code:</p>
+  <p
+    style="
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 6px;
+      margin: 0 0 16px;
+      color: #0f2a33;
+    "
+  >
+    {{ .Token }}
+  </p>
+  <p style="margin: 0 0 24px">
+    Enter this code in the app. It expires in 1 hour.
+  </p>
+
+  <hr style="border: none; border-top: 1px solid #b8c6cb; margin: 16px 0" />
+  <p style="margin: 0 0 8px">
+    <b>FR</b> — Votre code de connexion : <b>{{ .Token }}</b>. Il expire dans 1
+    heure.
+  </p>
+  <p style="margin: 0 0 24px">
+    <b>KR</b> — Ou kod pou konekte: <b>{{ .Token }}</b>. Li expire dan 1 erdtan.
+  </p>
+
+  <p style="font-size: 12px; color: #5e747d; margin: 0">
+    If you didn't ask for this code, you can ignore this email.<br />
+    Si vous n'avez pas demandé ce code, ignorez cet e-mail.<br />
+    Si ou pa finn demann sa kod-la, ou kapav ignor sa imel-la.
+  </p>
+</div>

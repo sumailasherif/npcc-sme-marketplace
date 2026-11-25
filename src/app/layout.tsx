@@ -20,7 +20,14 @@ const inter = Inter({
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
-  return { title: t("title"), description: t("description") };
+  return {
+    // Makes relative image/link URLs in metadata absolute (link previews).
+    metadataBase: new URL(
+      process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    ),
+    title: t("title"),
+    description: t("description"),
+  };
 }
 
 export const viewport: Viewport = {

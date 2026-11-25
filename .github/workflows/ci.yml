@@ -40,6 +40,22 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      # A throwaway local Supabase in Docker: runs every migration from
+      # scratch, then the RLS and end-to-end tests use it. Never touches
+      # the real project.
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.4.0
+
+      - name: Start local Supabase (applies migrations + seed)
+        run: supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor
+
+      - name: Export local Supabase settings for tests
+        run: bash scripts/supabase-test-env.sh >> "$GITHUB_ENV"
+
+      - name: Database security (RLS) tests
+        run: npm run test:db
+
       - name: Build
         run: npm run build
 
