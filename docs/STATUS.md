@@ -34,6 +34,7 @@ create the Supabase project, connect Vercel (Sherif's accounts).
 - [x] README with ServiceHub credit; `docs/decisions.md`
 - [x] Pushed to GitHub; CI green (25 Nov 2026)
 - [x] Supabase project created; keys in `.env.local` and checked (publishable + secret both OK)
+- [x] Supabase Auth: custom SMTP via Resend; redirect URL `http://localhost:3000/**`; Magic link and Confirm sign up emails show a 6-digit code (en/fr/mfe); Email OTP length 6, expiry 1 hour; Confirm email on
 - [ ] Link the CLI to the project (`npx supabase login`, then `npx supabase link`)
 - [ ] Vercel project connected; live URL added here
 
