@@ -45,7 +45,7 @@ create the Supabase project, connect Vercel (Sherif's accounts).
 ## Next steps
 
 1. Sherif: push `main` to GitHub (`git push -u origin main`) and check the CI run.
-2. Sherif: get an OpenCode Console API key and pick a model (needed by M2, not M1).
+2. Sherif: add pay-as-you-go credits at OpenCode Console (key works, model `deepseek-v4.1-flash` set; calls return 402 until topped up). Needed by M2, not M1.
 3. Sherif: import the repo on Vercel and add the same env variables.
 4. Claude: plan M1 (auth and shop) and wait for OK.
 

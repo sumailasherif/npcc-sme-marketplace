@@ -19,9 +19,14 @@ default `AI_BASE_URL` is the pay-as-you-go endpoint
 `https://opencode.ai/inference/openai/v1`. We do not disguise app traffic as
 coding-agent traffic.
 
-**Still to confirm before M2:** the exact model ID, that the chosen model
-accepts images (photo-to-listing) and returns JSON, and that the account has
-a balance or allowance. Guardrails from the spec are unchanged: server-only,
+**Model:** `deepseek-v4.1-flash` (Sherif's choice; ID confirmed from the
+provider's model list on 25 Nov 2026).
+
+**Still to confirm before M2:** a test call returned HTTP 402 "Insufficient
+balance": the account has Go but no pay-as-you-go credits, which the app
+needs. After a top-up, check the model accepts images (photo-to-listing) and
+returns JSON. If it is text-only, photo-to-listing needs a vision model
+(paste-a-post-to-listing and reply drafts still work with text). Guardrails from the spec are unchanged: server-only,
 opt-in, Zod-validated, merchant reviews every output.
 
 ## 2026-11-25 — M0 setup choices
