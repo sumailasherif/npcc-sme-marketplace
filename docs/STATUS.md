@@ -12,7 +12,7 @@ create the Supabase project, connect Vercel (Sherif's accounts).
 | #   | Milestone                                                                                         | Status                                 |
 | --- | ------------------------------------------------------------------------------------------------- | -------------------------------------- |
 | M0  | Setup (Next.js, Tailwind, shadcn, Supabase clients, tokens, lint, Vitest, Playwright, CI, Vercel) | 🟡 Code done; accounts and deploy left |
-| M1  | Auth and shop                                                                                     | ⏳ Not started                         |
+| M1  | Auth and shop                                                                                     | 📝 Plan proposed                       |
 | M2  | Products + AI listing                                                                             | ⏳ Not started                         |
 | M3  | Ordering (cash on delivery)                                                                       | ⏳ Not started                         |
 | M4  | Inbox + AI replies                                                                                | ⏳ Not started                         |
@@ -32,7 +32,7 @@ create the Supabase project, connect Vercel (Sherif's accounts).
 - [x] Vitest (47 unit tests) + Playwright (3 e2e tests at 360px), all passing
 - [x] GitHub Actions CI: lint, format, type-check, unit, build, e2e
 - [x] README with ServiceHub credit; `docs/decisions.md`
-- [ ] Push to GitHub and see CI go green
+- [x] Pushed to GitHub; CI green (25 Nov 2026)
 - [x] Supabase project created; keys in `.env.local` and checked (publishable + secret both OK)
 - [ ] Link the CLI to the project (`npx supabase login`, then `npx supabase link`)
 - [ ] Vercel project connected; live URL added here
