@@ -17,7 +17,7 @@ upload, and Row Level Security with tests. What is missing is **the other half o
 the marketplace** (buyers) and **the second rail** (services). The plan is:
 
 > **One Next.js app, three route groups, one Supabase backend, one role table.**
-> Buyer storefront, partner console and admin console are different *surfaces*
+> Buyer storefront, partner console and admin console are different _surfaces_
 > over the same data. Authorisation lives in the database (RLS), never in the
 > navigation. Products and services share one commerce spine (status machines,
 > events, reviews, notifications) but keep separate workflow tables, because
@@ -32,21 +32,21 @@ working buyer → partner loop, or a working customer → provider loop.
 
 I audited the code statically (no `npm run build` was run, per instruction).
 
-| Area | State | Notes |
-| --- | --- | --- |
-| Framework | ✅ | Next.js 16.4.6, React 19.3, TypeScript, Tailwind v4 |
-| Design system | ✅ | Tokens in `globals.css` + `design/tokens.json`, token-parity test |
-| i18n | ✅ | next-intl, cookie-based, `en` / `fr` / `mfe`, switcher |
-| Supabase clients | ✅ | browser / server / admin, `server-only` guards, session proxy |
-| DB | 🟡 | `profiles`, `categories`, `shops` + RLS + storage bucket only |
-| Auth | 🟡 | Email 6-digit code works; phone OTP blocked (no SMS provider) |
-| Merchant app | 🟡 | Dashboard home + onboarding only; nav has 2 items |
-| Buyer app | 🔴 | Landing placeholder + login. **No shop, product, cart, order pages** |
-| Partner roles | 🔴 | `user_role` enum has no `provider` / `rider` |
-| Admin | 🔴 | No route group, no verification queue, no moderation |
-| AI | 🔴 | Provider configured, no routes, no credits (HTTP 402) |
-| Tests | 🟡 | 47 unit, 3 e2e, RLS tests; **no tests for orders/bookings** |
-| CI | ✅ | lint, format, typecheck, unit, local Supabase + RLS, build, e2e |
+| Area             | State | Notes                                                                |
+| ---------------- | ----- | -------------------------------------------------------------------- |
+| Framework        | ✅    | Next.js 16.4.6, React 19.3, TypeScript, Tailwind v4                  |
+| Design system    | ✅    | Tokens in `globals.css` + `design/tokens.json`, token-parity test    |
+| i18n             | ✅    | next-intl, cookie-based, `en` / `fr` / `mfe`, switcher               |
+| Supabase clients | ✅    | browser / server / admin, `server-only` guards, session proxy        |
+| DB               | 🟡    | `profiles`, `categories`, `shops` + RLS + storage bucket only        |
+| Auth             | 🟡    | Email 6-digit code works; phone OTP blocked (no SMS provider)        |
+| Merchant app     | 🟡    | Dashboard home + onboarding only; nav has 2 items                    |
+| Buyer app        | 🔴    | Landing placeholder + login. **No shop, product, cart, order pages** |
+| Partner roles    | 🔴    | `user_role` enum has no `provider` / `rider`                         |
+| Admin            | 🔴    | No route group, no verification queue, no moderation                 |
+| AI               | 🔴    | Provider configured, no routes, no credits (HTTP 402)                |
+| Tests            | 🟡    | 47 unit, 3 e2e, RLS tests; **no tests for orders/bookings**          |
+| CI               | ✅    | lint, format, typecheck, unit, local Supabase + RLS, build, e2e      |
 
 ### Findings that block "done"
 
@@ -63,7 +63,7 @@ I audited the code statically (no `npm run build` was run, per instruction).
    use raw `<img>`, which is a performance and CLS risk.
 4. **No route-level `loading.tsx` / `error.tsx` / `not-found.tsx`.** A failed
    Supabase call currently surfaces as an unstyled crash.
-5. **No manifest / OG image.** The product is *shared links on WhatsApp*. Without
+5. **No manifest / OG image.** The product is _shared links on WhatsApp_. Without
    `opengraph-image` and metadata, every shared shop link previews badly.
 6. **`shops` has no lifecycle column.** Public read is `true`, so once products
    exist we cannot distinguish draft/suspended shops from live ones without a
@@ -84,11 +84,11 @@ I audited the code statically (no `npm run build` was run, per instruction).
 
 ### 3.1 Surfaces (three, not four)
 
-| Surface | Route group | Audience | Primary job |
-| --- | --- | --- | --- |
-| **Marketplace** | `src/app/(market)/` | Logged-out and buyer | Find, trust, buy, book |
-| **Partner console** | `src/app/(partner)/dashboard/` | Merchant, service provider, rider | Sell, accept, fulfil, earn |
-| **Admin console** | `src/app/(admin)/admin/` | Platform staff | Verify, moderate, resolve, report |
+| Surface             | Route group                    | Audience                          | Primary job                       |
+| ------------------- | ------------------------------ | --------------------------------- | --------------------------------- |
+| **Marketplace**     | `src/app/(market)/`            | Logged-out and buyer              | Find, trust, buy, book            |
+| **Partner console** | `src/app/(partner)/dashboard/` | Merchant, service provider, rider | Sell, accept, fulfil, earn        |
+| **Admin console**   | `src/app/(admin)/admin/`       | Platform staff                    | Verify, moderate, resolve, report |
 
 Public shop pages (`/s/{slug}`) belong to the marketplace surface but render a
 single partner's catalogue.
@@ -165,6 +165,7 @@ drift.
 cart, account; no bottom bar.
 
 Rules:
+
 - Catalogue is browsable **logged out**. Identity is required only at checkout
   optional capture, and for order history.
 - Guests order with name + phone; the order is reachable only through its
@@ -244,12 +245,12 @@ columns.
 
 ### 5.1 Identity and partners
 
-| Table | Key columns | Notes |
-| --- | --- | --- |
-| `profiles` | id, full_name, phone, preferred_language, avatar_url | drop `role` |
-| `user_roles` | user_id, role, granted_by, granted_at | replaces enum column |
-| `partners` | owner_id, kind, name, slug, description, category_id, whatsapp_phone, district, address, location, h3_index, logo_url, cover_url, status, verification_status, verified_at, verified_by, rating_avg, rating_count | was `shops` |
-| `partner_members` | partner_id, user_id, role_in_partner | staff accounts; optional MVP |
+| Table             | Key columns                                                                                                                                                                                                       | Notes                        |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `profiles`        | id, full_name, phone, preferred_language, avatar_url                                                                                                                                                              | drop `role`                  |
+| `user_roles`      | user_id, role, granted_by, granted_at                                                                                                                                                                             | replaces enum column         |
+| `partners`        | owner_id, kind, name, slug, description, category_id, whatsapp_phone, district, address, location, h3_index, logo_url, cover_url, status, verification_status, verified_at, verified_by, rating_avg, rating_count | was `shops`                  |
+| `partner_members` | partner_id, user_id, role_in_partner                                                                                                                                                                              | staff accounts; optional MVP |
 
 `partners.status`: `draft | active | suspended | closed`.
 Only `active` partners appear in discovery. A `draft` still has a shareable link
@@ -257,12 +258,12 @@ so onboarding works, but shows "not yet open".
 
 ### 5.2 Catalogue
 
-| Table | Key columns |
-| --- | --- |
-| `products` | partner_id, title, description, category_id, price_mur, compare_at_mur, stock_qty, low_stock_threshold, status, images[], ai_generated, search_vector |
-| `services` | partner_id, category_id, title, description, price_type (`fixed`/`from`/`hourly`), price_mur, duration_minutes, status, images[], search_vector |
-| `availability_rules` | partner_id, weekday, start_time, end_time, slot_minutes |
-| `availability_exceptions` | partner_id, date, closed, note |
+| Table                     | Key columns                                                                                                                                           |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `products`                | partner_id, title, description, category_id, price_mur, compare_at_mur, stock_qty, low_stock_threshold, status, images[], ai_generated, search_vector |
+| `services`                | partner_id, category_id, title, description, price_type (`fixed`/`from`/`hourly`), price_mur, duration_minutes, status, images[], search_vector       |
+| `availability_rules`      | partner_id, weekday, start_time, end_time, slot_minutes                                                                                               |
+| `availability_exceptions` | partner_id, date, closed, note                                                                                                                        |
 
 Stock is decremented inside the order-transition function, not by the client.
 
@@ -271,15 +272,15 @@ Stock is decremented inside the order-transition function, not by the client.
 Products and services share **events, reviews, notifications, audit**; they keep
 separate order/booking tables.
 
-| Table | Purpose |
-| --- | --- |
-| `orders` | order_no, public_token, partner_id, buyer_id?, buyer_name, buyer_phone, channel, status, subtotal, delivery_fee, total, payment_method, payment_status, delivery_method, address, district, notes |
-| `order_items` | order_id, product_id, title_snapshot, unit_price_mur, qty |
-| `order_events` | order_id, from_status, to_status, actor_id, note |
-| `bookings` | booking_no, public_token, partner_id, buyer_id?, service_id, status, scheduled_date, start_time, duration_minutes, price_mur, address, notes |
-| `booking_events` | booking_id, from_status, to_status, actor_id, note |
-| `invoices` | order_id / booking_id, invoice_no, pdf_url, issued_at |
-| `payments` (later) | polymorphic to order/booking, method, amount, status, provider_ref |
+| Table              | Purpose                                                                                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `orders`           | order_no, public_token, partner_id, buyer_id?, buyer_name, buyer_phone, channel, status, subtotal, delivery_fee, total, payment_method, payment_status, delivery_method, address, district, notes |
+| `order_items`      | order_id, product_id, title_snapshot, unit_price_mur, qty                                                                                                                                         |
+| `order_events`     | order_id, from_status, to_status, actor_id, note                                                                                                                                                  |
+| `bookings`         | booking_no, public_token, partner_id, buyer_id?, service_id, status, scheduled_date, start_time, duration_minutes, price_mur, address, notes                                                      |
+| `booking_events`   | booking_id, from_status, to_status, actor_id, note                                                                                                                                                |
+| `invoices`         | order_id / booking_id, invoice_no, pdf_url, issued_at                                                                                                                                             |
+| `payments` (later) | polymorphic to order/booking, method, amount, status, provider_ref                                                                                                                                |
 
 `public_token`: `gen_random_bytes(16)` base32, unique index. Never sequential.
 `order_no` is human-friendly (`GM-261125-0007`), not a secret.
@@ -318,16 +319,16 @@ confirmed, double-accept, stock going negative). One function kills the class.
 
 ### 5.6 RLS matrix (default deny)
 
-| Table | anon | buyer | merchant/provider | rider | admin |
-| --- | --- | --- | --- | --- | --- |
-| partners | read active | read active | read/write own | read active | all |
-| products / services | read active of active partners | same | CRUD own partner | – | all |
-| orders / bookings | – | read own | read/write own partner | read assigned | all |
-| order_items | – | own order | own partner | assigned | all |
-| reviews | read visible | insert after completed order | read own | – | all |
-| notifications | – | own | own | own | all |
-| audit_log | – | – | – | – | read |
-| ai_* | – | own consent | own shop usage | – | all |
+| Table               | anon                           | buyer                        | merchant/provider      | rider         | admin |
+| ------------------- | ------------------------------ | ---------------------------- | ---------------------- | ------------- | ----- |
+| partners            | read active                    | read active                  | read/write own         | read active   | all   |
+| products / services | read active of active partners | same                         | CRUD own partner       | –             | all   |
+| orders / bookings   | –                              | read own                     | read/write own partner | read assigned | all   |
+| order_items         | –                              | own order                    | own partner            | assigned      | all   |
+| reviews             | read visible                   | insert after completed order | read own               | –             | all   |
+| notifications       | –                              | own                          | own                    | own           | all   |
+| audit_log           | –                              | –                            | –                      | –             | read  |
+| ai_*                | –                              | own consent                  | own shop usage         | –             | all   |
 
 Guest checkout runs in a Server Action with the **secret-key client** after Zod
 validation and rate limiting — anon never gets `insert` on `orders`. Guest order
@@ -460,21 +461,21 @@ next to their route only when they are page-specific.
 
 ### 7.3 Component inventory to build
 
-| Needed | Exists | Notes |
-| --- | --- | --- |
-| Button, Input, Textarea, Select, Field | ✅ | extend with `Card`, `Sheet` |
-| StatusPill | 🟡 | verification only → generic status machine map |
-| ProductCard (grid/list, stock states) | ❌ | buyer + partner reuse |
-| ShopHeader (cover, logo, badge, rating, WhatsApp) | ❌ | |
-| CategoryRail / FilterChips | ❌ | horizontal scroll on 360px |
-| SearchInput with suggestions | ❌ | |
-| CartLine / QuantityStepper / OrderSummary | ❌ | |
-| RatingStars, ReviewCard | ❌ | |
-| EmptyState, Skeleton, ErrorBanner | ❌ | standardise per surface |
-| DataTable + filters + pagination | ❌ | admin + partner lists |
-| ImageUploader with crop | 🟡 | logo only today |
-| Map (Leaflet, client-only, dynamic import) | ❌ | Phase 2 |
-| BottomNav / Sidebar | 🟡 | merchant only |
+| Needed                                            | Exists | Notes                                          |
+| ------------------------------------------------- | ------ | ---------------------------------------------- |
+| Button, Input, Textarea, Select, Field            | ✅     | extend with `Card`, `Sheet`                    |
+| StatusPill                                        | 🟡     | verification only → generic status machine map |
+| ProductCard (grid/list, stock states)             | ❌     | buyer + partner reuse                          |
+| ShopHeader (cover, logo, badge, rating, WhatsApp) | ❌     |                                                |
+| CategoryRail / FilterChips                        | ❌     | horizontal scroll on 360px                     |
+| SearchInput with suggestions                      | ❌     |                                                |
+| CartLine / QuantityStepper / OrderSummary         | ❌     |                                                |
+| RatingStars, ReviewCard                           | ❌     |                                                |
+| EmptyState, Skeleton, ErrorBanner                 | ❌     | standardise per surface                        |
+| DataTable + filters + pagination                  | ❌     | admin + partner lists                          |
+| ImageUploader with crop                           | 🟡     | logo only today                                |
+| Map (Leaflet, client-only, dynamic import)        | ❌     | Phase 2                                        |
+| BottomNav / Sidebar                               | 🟡     | merchant only                                  |
 
 ### 7.4 UI/UX system
 
@@ -552,14 +553,14 @@ open complaints, GMV today. Desktop tables, mobile cards.
 
 ## 9. Testing and quality gates
 
-| Layer | What must exist |
-| --- | --- |
-| Unit | Zod schemas, status transitions, cart repricing, search ranking, format, slug, **i18n key parity** |
-| DB | RLS per table (cannot read/write across partners), illegal status jumps rejected, stock cannot go negative, token lookup only |
-| E2E | 4 journeys at 360 px: guest buys; merchant fulfils; customer books; admin verifies. Plus link crawler, no horizontal scroll, 44 px targets |
-| A11y | axe on the 6 key screens; keyboard-only checkout; status never colour-only |
-| Perf | LCP < 2.5 s on throttled 4G mid-range Android; route JS budget; no CLS from images |
-| CI | existing pipeline + `test:db` + seeded e2e; Lighthouse check later |
+| Layer | What must exist                                                                                                                            |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Unit  | Zod schemas, status transitions, cart repricing, search ranking, format, slug, **i18n key parity**                                         |
+| DB    | RLS per table (cannot read/write across partners), illegal status jumps rejected, stock cannot go negative, token lookup only              |
+| E2E   | 4 journeys at 360 px: guest buys; merchant fulfils; customer books; admin verifies. Plus link crawler, no horizontal scroll, 44 px targets |
+| A11y  | axe on the 6 key screens; keyboard-only checkout; status never colour-only                                                                 |
+| Perf  | LCP < 2.5 s on throttled 4G mid-range Android; route JS budget; no CLS from images                                                         |
+| CI    | existing pipeline + `test:db` + seeded e2e; Lighthouse check later                                                                         |
 
 Definition of done for any milestone: RLS test for every new table, one e2e happy
 path, all three languages, no dead links, `npm run lint && npm run typecheck &&
@@ -571,15 +572,15 @@ npm test && npm run build` locally.
 
 Order matters: each milestone completes a **loop**, not a layer.
 
-| # | Milestone | Both sides? | Done when |
-| --- | --- | --- | --- |
-| **M1.5** | Close M1 | buyer sees seller | `/s/{slug}` renders a shop with products/empty state, OG preview, `notFound`, WIP committed |
-| **M2** | Catalogue | merchant lists ↔ buyer browses | Partner CRUD products, images, stock; buyer home/search/category/product pages; seed data |
-| **M3** | Product orders | buyer buys ↔ merchant fulfils | Cart, COD checkout (guest), order token page, partner order inbox + status machine, email |
-| **M4** | Services rail | customer books ↔ provider accepts | Provider onboarding, services, availability, booking wizard, accept/decline, booking status |
-| **M5** | Trust & admin | platform governs both | Verification queue, roles, reviews, complaints, categories, audit, admin overview |
-| **M6** | AI layer | merchant is faster | Photo/text → listing, reply drafts, smart search; invoices; insights |
-| **M7** | Delivery & polish | rider closes the loop | Rider assignment + live status (optional), PWA, perf/a11y, demo script |
+| #        | Milestone         | Both sides?                       | Done when                                                                                   |
+| -------- | ----------------- | --------------------------------- | ------------------------------------------------------------------------------------------- |
+| **M1.5** | Close M1          | buyer sees seller                 | `/s/{slug}` renders a shop with products/empty state, OG preview, `notFound`, WIP committed |
+| **M2**   | Catalogue         | merchant lists ↔ buyer browses    | Partner CRUD products, images, stock; buyer home/search/category/product pages; seed data   |
+| **M3**   | Product orders    | buyer buys ↔ merchant fulfils     | Cart, COD checkout (guest), order token page, partner order inbox + status machine, email   |
+| **M4**   | Services rail     | customer books ↔ provider accepts | Provider onboarding, services, availability, booking wizard, accept/decline, booking status |
+| **M5**   | Trust & admin     | platform governs both             | Verification queue, roles, reviews, complaints, categories, audit, admin overview           |
+| **M6**   | AI layer          | merchant is faster                | Photo/text → listing, reply drafts, smart search; invoices; insights                        |
+| **M7**   | Delivery & polish | rider closes the loop             | Rider assignment + live status (optional), PWA, perf/a11y, demo script                      |
 
 Why products before services: the codebase already has shops, categories and
 product-oriented copy. Reusing that path proves the commerce spine cheaply; the
@@ -606,17 +607,17 @@ them twice.
 
 ## 11. Risks and mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| Scope: full ServiceHub = 3 surfaces × 2 rails | Never ships | Vertical slices; services deferred to M4; riders to M7 |
-| Cold start (no buyers) | Marketplace feels empty | Merchant-first wedge: shop links work with zero buyers; marketplace opens at M3 |
-| AI blocked (402, vision unknown) | M6 slips | AI never gates a milestone; manual paths complete |
-| Phone OTP unavailable | Friction for WhatsApp-first users | Email code now; WhatsApp click-to-chat; add SMS provider when funded |
-| Solo build, deadline unknown | Overrun | Milestones are independently demoable; stop at any boundary |
-| Location data quality | Bad "near me" | District fallback; PostGIS only; no routing dependency |
-| Locale/SEO trade-off | Weak search presence | Decide before M2; cookie now, optional locale routes later |
-| Payments | No online money | COD first; `payments` table designed but unused |
-| Uncommitted work / drift | Lost changes, broken main | Commit at every milestone boundary; CI is the gate |
+| Risk                                          | Impact                            | Mitigation                                                                      |
+| --------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------- |
+| Scope: full ServiceHub = 3 surfaces × 2 rails | Never ships                       | Vertical slices; services deferred to M4; riders to M7                          |
+| Cold start (no buyers)                        | Marketplace feels empty           | Merchant-first wedge: shop links work with zero buyers; marketplace opens at M3 |
+| AI blocked (402, vision unknown)              | M6 slips                          | AI never gates a milestone; manual paths complete                               |
+| Phone OTP unavailable                         | Friction for WhatsApp-first users | Email code now; WhatsApp click-to-chat; add SMS provider when funded            |
+| Solo build, deadline unknown                  | Overrun                           | Milestones are independently demoable; stop at any boundary                     |
+| Location data quality                         | Bad "near me"                     | District fallback; PostGIS only; no routing dependency                          |
+| Locale/SEO trade-off                          | Weak search presence              | Decide before M2; cookie now, optional locale routes later                      |
+| Payments                                      | No online money                   | COD first; `payments` table designed but unused                                 |
+| Uncommitted work / drift                      | Lost changes, broken main         | Commit at every milestone boundary; CI is the gate                              |
 
 ---
 
@@ -624,20 +625,20 @@ them twice.
 
 1. **Wedge:** finish the merchant-first MVP (M1.5 → M3) and open services at M4,
    or build the full two-sided marketplace breadth-first now?
-   *Recommendation: merchant-first slices; it is the only path that demos at
-   every step.*
+   _Recommendation: merchant-first slices; it is the only path that demos at
+   every step._
 2. **Partner model:** migrate `shops` → `partners` with `kind` now (cheap, one
    migration, no production data) or add `service_providers` later?
-   *Recommendation: migrate now, while there is no data.*
+   _Recommendation: migrate now, while there is no data._
 3. **Booking model:** direct booking (customer picks a provider) vs broadcast
    offers (first accept wins)?
-   *Recommendation: direct booking in M4; offers only if supply is dense.*
+   _Recommendation: direct booking in M4; offers only if supply is dense._
 4. **Delivery:** own-shop delivery + pickup in the MVP, riders in M7?
-   *Recommendation: yes; rider dispatch needs supply that does not exist yet.*
+   _Recommendation: yes; rider dispatch needs supply that does not exist yet._
 5. **SEO/i18n:** keep cookie-only locale, or locale-prefixed public URLs?
-   *Recommendation: cookies for now; revisit after launch.*
+   _Recommendation: cookies for now; revisit after launch._
 6. **Brand:** keep "Bazar" or use "ServiceHub"-style naming?
-   *This affects domain, copy, OG images and the pitch. Decide before M2.*
+   _This affects domain, copy, OG images and the pitch. Decide before M2._
 
 ---
 

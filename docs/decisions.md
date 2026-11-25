@@ -3,6 +3,34 @@
 Short records of technical choices that are not spelled out in
 [spec.md](spec.md), or that adjust it. Newest first.
 
+## 2026-11-25 — M1 choices
+
+Approved with the M1 plan: **A** email codes only (phone OTP later, needs an
+SMS provider), **B** login emails through Resend SMTP, **C** one shop per
+account (`shops.owner_id` is unique), **D** no map pin yet (district only;
+`location` and `h3_index` columns exist, empty), **E** database tests run in
+CI against a throwaway local Supabase.
+
+Small additions to the spec's data model:
+
+- `categories.slug` and `categories.sort_order`: stable names for code and a
+  display order. Seeded with 13 product and 5 service categories in en/fr/mfe.
+- `shops.district` is an enum of the 9 districts plus Rodrigues.
+- Helper functions: `set_updated_at()`, `handle_new_user()` (creates the
+  profile on sign-up, saving the chosen language), `promote_shop_owner()`
+  (buyer becomes merchant when they create a shop), `is_admin()` (for later
+  policies), `is_reserved_slug()`.
+
+Security choices beyond row policies: **column grants** stop users from
+changing `profiles.role`, `shops.verification_status`, ratings, location or
+`owner_id`, even on their own rows. Shop images live in a public
+`shop-media` bucket under `<user id>/...`; only that user can write there,
+and the server only accepts logo URLs from that folder.
+
+Login flow: `signInWithOtp` creates the account on first use; the code is
+checked with `verifyOtp(type: "email")`, falling back to `"signup"` for
+first-time confirmations. Redirects after login only go to our own pages.
+
 ## 2026-11-25 — AI provider: OpenCode instead of Claude API
 
 Sherif chose OpenCode as the AI provider, replacing the spec's "Claude API".
