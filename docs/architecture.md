@@ -1,7 +1,7 @@
 # Architecture & delivery plan — two-sided hyperlocal marketplace
 
-Status: **proposal for review** · 25 Nov 2026 · supersedes nothing, extends
-[spec.md](spec.md)
+Status: **accepted; §12 decisions locked 25 Nov 2026** · supersedes nothing,
+extends [spec.md](spec.md)
 
 > ServiceHub (Bheda Jenish & Rushi Joshi) is a **design reference only**. No code,
 > copy, brand or assets are reused. This plan keeps the existing Bazar/Mauritius
@@ -30,41 +30,41 @@ working buyer → partner loop, or a working customer → provider loop.
 
 ## 2. Where the project actually is today
 
-I audited the code statically (no `npm run build` was run, per instruction).
+Re-audited statically at `m1-auth-shop` / `d55ebaf` (no `npm run build`, per
+instruction). The branch moved during planning: M1 shipped in between, so the
+notes below describe the current branch, not `main`.
 
-| Area             | State | Notes                                                                |
-| ---------------- | ----- | -------------------------------------------------------------------- |
-| Framework        | ✅    | Next.js 16.4.6, React 19.3, TypeScript, Tailwind v4                  |
-| Design system    | ✅    | Tokens in `globals.css` + `design/tokens.json`, token-parity test    |
-| i18n             | ✅    | next-intl, cookie-based, `en` / `fr` / `mfe`, switcher               |
-| Supabase clients | ✅    | browser / server / admin, `server-only` guards, session proxy        |
-| DB               | 🟡    | `profiles`, `categories`, `shops` + RLS + storage bucket only        |
-| Auth             | 🟡    | Email 6-digit code works; phone OTP blocked (no SMS provider)        |
-| Merchant app     | 🟡    | Dashboard home + onboarding only; nav has 2 items                    |
-| Buyer app        | 🔴    | Landing placeholder + login. **No shop, product, cart, order pages** |
-| Partner roles    | 🔴    | `user_role` enum has no `provider` / `rider`                         |
-| Admin            | 🔴    | No route group, no verification queue, no moderation                 |
-| AI               | 🔴    | Provider configured, no routes, no credits (HTTP 402)                |
-| Tests            | 🟡    | 47 unit, 3 e2e, RLS tests; **no tests for orders/bookings**          |
-| CI               | ✅    | lint, format, typecheck, unit, local Supabase + RLS, build, e2e      |
+| Area             | State | Notes                                                               |
+| ---------------- | ----- | ------------------------------------------------------------------- |
+| Framework        | ✅    | Next.js 16.4.6, React 19.3, TypeScript, Tailwind v4                 |
+| Design system    | ✅    | Tokens in `globals.css` + `design/tokens.json`, token-parity test   |
+| i18n             | ✅    | next-intl, cookie-based, `en` / `fr` / `mfe`, switcher              |
+| Supabase clients | ✅    | browser / server / admin, `server-only` guards, session proxy       |
+| DB               | 🟡    | `profiles`, `categories`, `shops` + RLS + storage bucket only       |
+| Auth             | 🟡    | Email 6-digit code works; phone OTP blocked (no SMS provider)       |
+| Merchant app     | 🟡    | Dashboard home + onboarding only; nav has 2 items                   |
+| Buyer app        | 🟡    | Shop storefront `/s/{slug}` + 404 + link previews; no catalogue yet |
+| Partner roles    | 🔴    | `user_role` enum has no `provider` / `rider`                        |
+| Admin            | 🔴    | No route group, no verification queue, no moderation                |
+| AI               | 🔴    | Provider configured, no routes, no credits (HTTP 402)               |
+| Tests            | 🟡    | 47 unit, 4 e2e, 25 RLS; **no tests for orders/bookings**            |
+| CI               | ✅    | lint, format, typecheck, unit, local Supabase + RLS, build, e2e     |
 
 ### Findings that block "done"
 
-1. **`/s/[slug]` does not exist.** `lib/shops.ts` exports `getShopBySlug()` but
-   nothing imports it, and the dashboard links to `/s/{slug}`. Every merchant's
-   "View my shop" and "Share on WhatsApp" currently lands on a 404. This is the
-   single biggest gap and the cheapest high-value fix.
-2. **Uncommitted work.** `src/app/(merchant)/`, `lib/shops.ts`,
-   `merchant-nav.tsx`, `copy-button.tsx` are untracked; `language-switcher.tsx`
-   shows as modified with an empty text diff (likely line endings). Decide:
-   commit as the M1 base commit, or stash.
-3. **No `images.remotePatterns`.** The moment we render Supabase Storage images
-   through `next/image`, the config must allow the project host. Today images
-   use raw `<img>`, which is a performance and CLS risk.
-4. **No route-level `loading.tsx` / `error.tsx` / `not-found.tsx`.** A failed
-   Supabase call currently surfaces as an unstyled crash.
-5. **No manifest / OG image.** The product is _shared links on WhatsApp_. Without
-   `opengraph-image` and metadata, every shared shop link previews badly.
+1. **M1 lives on `m1-auth-shop`, not `main`.** The branch is ahead of `main` and
+   the migrations have not been pushed to the real Supabase project yet. Until
+   it merges, the deployed site does not have the storefront.
+2. **The storefront is a shell.** `/s/{slug}` renders the shop header and a
+   deliberate "no products yet" state, because `products` does not exist. The
+   buyer side has a shop page but no catalogue, cart or order.
+3. **No `images.remotePatterns`.** Supabase Storage images use raw `<img>` today.
+   The moment we switch to `next/image` for product photos, the config must
+   allow the project host.
+4. **No route-level `loading.tsx` / `error.tsx`.** Shop has a `not-found.tsx`,
+   but a failed Supabase call still surfaces as an unstyled crash.
+5. **OG has no generated fallback.** Metadata uses `shop.logo_url` when present;
+   shops without a logo share a bare link. Add `opengraph-image.tsx`.
 6. **`shops` has no lifecycle column.** Public read is `true`, so once products
    exist we cannot distinguish draft/suspended shops from live ones without a
    new `status` column.
@@ -75,8 +75,8 @@ I audited the code statically (no `npm run build` was run, per instruction).
 9. **No rate limiting.** Guest checkout and AI routes are the abuse targets; both
    arrive in the next milestones.
 10. **Platform scope drift.** `spec.md` is merchant-first; the posted ServiceHub
-    brief is a full marketplace. This document reconciles them — but the team
-    must pick the wedge (see §12).
+    brief is a full marketplace. This document reconciles them. The wedge is now
+    decided (see §12): merchant-first slices, full marketplace by M4.
 
 ---
 
@@ -86,7 +86,7 @@ I audited the code statically (no `npm run build` was run, per instruction).
 
 | Surface             | Route group                    | Audience                          | Primary job                       |
 | ------------------- | ------------------------------ | --------------------------------- | --------------------------------- |
-| **Marketplace**     | `src/app/(market)/`            | Logged-out and buyer              | Find, trust, buy, book            |
+| **Marketplace**     | `src/app/(public)/`            | Logged-out and buyer              | Find, trust, buy, book            |
 | **Partner console** | `src/app/(partner)/dashboard/` | Merchant, service provider, rider | Sell, accept, fulfil, earn        |
 | **Admin console**   | `src/app/(admin)/admin/`       | Platform staff                    | Verify, moderate, resolve, report |
 
@@ -574,7 +574,7 @@ Order matters: each milestone completes a **loop**, not a layer.
 
 | #        | Milestone         | Both sides?                       | Done when                                                                                   |
 | -------- | ----------------- | --------------------------------- | ------------------------------------------------------------------------------------------- |
-| **M1.5** | Close M1          | buyer sees seller                 | `/s/{slug}` renders a shop with products/empty state, OG preview, `notFound`, WIP committed |
+| **M1.5** | Close-out + model | buyer sees seller                 | Branch merged, CI green, migrations pushed, `partners`/`user_roles` migration applied       |
 | **M2**   | Catalogue         | merchant lists ↔ buyer browses    | Partner CRUD products, images, stock; buyer home/search/category/product pages; seed data   |
 | **M3**   | Product orders    | buyer buys ↔ merchant fulfils     | Cart, COD checkout (guest), order token page, partner order inbox + status machine, email   |
 | **M4**   | Services rail     | customer books ↔ provider accepts | Provider onboarding, services, availability, booking wizard, accept/decline, booking status |
@@ -587,21 +587,29 @@ product-oriented copy. Reusing that path proves the commerce spine cheaply; the
 services rail then reuses the same guards and UI patterns instead of inventing
 them twice.
 
-### M1.5 task list (the immediate next commit)
+### M1.5 / M2 start list (the immediate next commit)
 
-1. Commit or stash the WIP tree; confirm `language-switcher.tsx` diff.
-2. Add `src/app/(public)/s/[slug]/page.tsx` using `getShopBySlug` +
-   `categoryName`, `generateMetadata`, `notFound()`.
-3. Add `opengraph-image.tsx` for shop pages.
-4. Add `loading.tsx`, `error.tsx`, `not-found.tsx` for `(public)` and
-   `(merchant)`.
-5. Add `manifest.ts` + icons + theme colour.
-6. Add `images.remotePatterns` in `next.config.ts`.
-7. Add i18n key-parity unit test.
-8. Seed 6 shops / 24 products in `supabase/seed.sql`.
-9. Add e2e: open a seeded shop at 360 px, assert name, badge, product, no
-   overflow.
-10. Update `STATUS.md` and commit.
+**Close-out (ops, no new features)**
+
+1. Push `m1-auth-shop`, get CI green, apply migrations with `supabase db push`,
+   merge to `main`.
+2. Add `loading.tsx` / `error.tsx` for `(public)` and `(merchant)`.
+3. Add `manifest.ts` + icons + theme colour.
+4. Add `opengraph-image.tsx` as the fallback when a shop has no logo.
+5. Add `images.remotePatterns` in `next.config.ts` (needed for product photos).
+6. Add the i18n key-parity unit test.
+
+**Then M2 opens with the locked model change**
+
+7. **Migrate `shops` → `partners`**: add `kind`, `status`, `verified_at`,
+   `verified_by`; move `profiles.role` to `user_roles`; update
+   `handle_new_user`, `promote_shop_owner`, RLS tests, `lib/shops.ts`,
+   `database.types.ts` and the `/s/[slug]` page.
+8. Add `products` + `product_images` (or `images[]`) with RLS and an RLS test.
+9. Partner product CRUD (list, new, edit, stock, image upload).
+10. Buyer home, category listing and product detail.
+11. Seed 6 partners / 24 products in `supabase/seed.sql`.
+12. e2e: open a seeded shop at 360 px, assert product grid, price, no overflow.
 
 ---
 
@@ -621,24 +629,37 @@ them twice.
 
 ---
 
-## 12. Decisions needed before M2
+## 12. Decisions
 
-1. **Wedge:** finish the merchant-first MVP (M1.5 → M3) and open services at M4,
-   or build the full two-sided marketplace breadth-first now?
-   _Recommendation: merchant-first slices; it is the only path that demos at
-   every step._
-2. **Partner model:** migrate `shops` → `partners` with `kind` now (cheap, one
-   migration, no production data) or add `service_providers` later?
-   _Recommendation: migrate now, while there is no data._
-3. **Booking model:** direct booking (customer picks a provider) vs broadcast
-   offers (first accept wins)?
-   _Recommendation: direct booking in M4; offers only if supply is dense._
-4. **Delivery:** own-shop delivery + pickup in the MVP, riders in M7?
-   _Recommendation: yes; rider dispatch needs supply that does not exist yet._
-5. **SEO/i18n:** keep cookie-only locale, or locale-prefixed public URLs?
-   _Recommendation: cookies for now; revisit after launch._
-6. **Brand:** keep "Bazar" or use "ServiceHub"-style naming?
-   _This affects domain, copy, OG images and the pitch. Decide before M2._
+### Locked (25 Nov 2026, with Sherif)
+
+1. **Wedge — merchant-first slices, full marketplace by M4.** Keep the Mauritius
+   SME positioning. Ship the merchant loop (list → buy → fulfil) first, then open
+   the services rail. No breadth-first build.
+2. **Partner model — migrate `shops` → `partners` now**, with
+   `kind ∈ {shop, service, delivery}`. No production data exists, so the rename
+   is cheap.
+3. **Commerce behaviour — own-shop delivery + pickup, and direct booking.**
+   No rider role before M7. No broadcast booking offers in the MVP.
+
+### Still open
+
+4. **SEO/i18n:** cookie-only locale (shareable, simpler) vs locale-prefixed
+   public URLs (indexable). _Recommendation: cookies for now; revisit after
+   launch._
+5. **Brand:** keep "Bazar" or move to a ServiceHub-style name. Affects domain,
+   OG images, copy and the pitch — decide before M2.
+
+### Consequences of the locked decisions
+
+- The `partners` migration is part of **M1.5**, before any catalogue work.
+  `products` and `services` both reference `partner_id` from day one.
+- `orders.delivery_method ∈ {pickup, partner_delivery}`. A `rider` method and a
+  `deliveries` table are reserved but not created until M7.
+- `bookings` references a chosen `partner_id` directly. No `booking_offers`
+  table.
+- `user_roles` still includes `rider` in the enum so the schema does not need a
+  later migration; nothing grants it until M7.
 
 ---
 

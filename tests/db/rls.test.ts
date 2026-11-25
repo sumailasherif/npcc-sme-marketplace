@@ -103,6 +103,21 @@ describe.skipIf(!hasTestDb)("Row Level Security", () => {
     });
   });
 
+  describe("server secret key (service_role)", () => {
+    it("can read and update every table (admin server code needs this)", async () => {
+      const admin = adminClient();
+      for (const table of ["profiles", "categories", "shops"]) {
+        const { error } = await admin.from(table).select("id").limit(1);
+        expect(error, `service_role select on ${table}`).toBeNull();
+      }
+      const { error } = await admin
+        .from("shops")
+        .update({ verification_status: "pending" })
+        .eq("id", aliceShop.id);
+      expect(error).toBeNull();
+    });
+  });
+
   describe("categories", () => {
     it("anyone can read categories", async () => {
       const { data, error } = await anonClient()

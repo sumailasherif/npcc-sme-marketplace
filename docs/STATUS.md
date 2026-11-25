@@ -48,8 +48,8 @@ to the real Supabase project.
 - [x] `/dashboard`: shop link, Copy, Share on WhatsApp, verification badge; nav; sign out
 - [x] `/s/{slug}`: public shop page, link previews, 404 page
 - [x] Unit tests (validation), e2e (public pages + full sign-up → shop flow in CI)
-- [ ] CI green on the branch (first run of DB + full-flow tests)
-- [ ] Apply migrations to the real project (`supabase login`, `link`, `db push`)
+- [x] CI green on the branch: 71 unit, 25 RLS, 7 e2e (incl. full sign-up → shop flow)
+- [x] Migrations applied to the real project via SQL Editor (history recorded); service_role grant fix added
 - [ ] Try it on a real phone with your own email
 
 ## Done
@@ -57,6 +57,7 @@ to the real Supabase project.
 - 25 Nov 2026: Full product plan and build spec saved to [docs/spec.md](spec.md).
 - 25 Nov 2026: M0 code done in 9 commits (see `git log`). Choices recorded in [decisions.md](decisions.md).
 - 25 Nov 2026: M1 code done on branch `m1-auth-shop`. How to run the tests: [testing.md](testing.md).
+- 25 Nov 2026: Two-sided marketplace architecture agreed in [architecture.md](architecture.md). Decisions: merchant-first slices, one `partners` table, own-shop delivery + direct booking (§12).
 
 ## Next steps
 
@@ -64,7 +65,8 @@ to the real Supabase project.
 2. Sherif: add pay-as-you-go credits at OpenCode Console (key works, model `deepseek-v4.1-flash` set; calls return 402 until topped up). Needed by M2, not M1.
 3. Sherif: import the repo on Vercel and add the same env variables.
 4. Push `m1-auth-shop`, check CI, apply migrations, then merge to `main`.
-5. Claude: plan M2 (products + AI listing) and wait for OK.
+5. Claude: write the M2 plan from [architecture.md](architecture.md). M2 opens with the `shops` → `partners` + `user_roles` migration, then products, then buyer browse. Wait for OK.
+6. Before M2: decide SEO/i18n routing and the final brand name (open in §12).
 
 ## Open questions and blockers
 

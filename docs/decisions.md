@@ -3,6 +3,46 @@
 Short records of technical choices that are not spelled out in
 [spec.md](spec.md), or that adjust it. Newest first.
 
+## 2026-11-25 — Marketplace architecture: three surfaces, two rails
+
+Sherif approved [architecture.md](architecture.md), which widens the product from
+a merchant tool into a full two-sided marketplace without discarding the M0/M1
+work. Three choices were locked:
+
+**Merchant-first slices, full marketplace by M4.** We keep the Mauritian SME
+positioning and finish the merchant loop (list → buy → fulfil) before opening
+the services rail. Every milestone must demo on its own; no breadth-first build.
+
+**One `partners` table.** `shops` is renamed to `partners` with
+`kind ∈ {shop, service, delivery}`, so verification, ratings, district and
+geo-matching are defined once. `profiles.role` is replaced by a `user_roles`
+table, so one person can be a shopkeeper and a rider and every grant is
+auditable. This happens in M1.5, before catalogue work, while there is no
+production data.
+
+**Own-shop delivery + pickup, and direct booking.** No rider role before M7 and
+no broadcast booking offers in the MVP. `orders.delivery_method` is
+`pickup | partner_delivery`; `bookings` references the chosen `partner_id`
+directly. The `rider` enum value exists so the schema does not need a later
+migration.
+
+Still open: SEO/i18n (cookie-only locale vs locale-prefixed public URLs) and the
+final brand name. Both are recorded in §12 of architecture.md.
+
+## 2026-11-25 — Applying migrations to the real project
+
+M1 migrations were applied to the real Supabase project through the
+dashboard **SQL Editor** (one transaction), not `supabase db push`, because
+`db push` needs the database password. The script also wrote each version
+into `supabase_migrations.schema_migrations`, the CLI's history table, so a
+later `supabase db push` skips them. RLS was switched on for that history
+table when the dashboard suggested it.
+
+**Found in production, not in CI:** the real project did not grant table
+access to `service_role` (the secret key), while the local CI database did.
+Migration `20261125000300_service_role_grants.sql` grants it (now and for
+future tables), and an RLS test checks it.
+
 ## 2026-11-25 — M1 choices
 
 Approved with the M1 plan: **A** email codes only (phone OTP later, needs an
