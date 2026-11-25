@@ -1,0 +1,2 @@
+-- Local demo data (runs on `supabase db reset`, never in production).
+-- Demo shops and products arrive with M2.
