@@ -4,7 +4,8 @@
 # Usage: bash scripts/supabase-test-env.sh >> "$GITHUB_ENV"   (CI)
 #        bash scripts/supabase-test-env.sh > .env.test.local   (your PC, with Docker)
 set -euo pipefail
-eval "$(npx supabase status -o env 2>/dev/null)"
+if command -v supabase >/dev/null 2>&1; then SB=supabase; else SB="npx supabase"; fi
+eval "$($SB status -o env 2>/dev/null)"
 URL="${API_URL:?supabase is not running}"
 PUB="${PUBLISHABLE_KEY:-${ANON_KEY:?no publishable/anon key}}"
 SEC="${SECRET_KEY:-${SERVICE_ROLE_KEY:?no secret/service_role key}}"
