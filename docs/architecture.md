@@ -1,7 +1,13 @@
-# Architecture & delivery plan — two-sided hyperlocal marketplace
+﻿# Architecture & delivery plan — two-sided hyperlocal marketplace
 
 Status: **accepted; §12 decisions locked 25 Nov 2026** · supersedes nothing,
 extends [spec.md](spec.md)
+
+> **Scope update, 25 Nov 2026.** Services, bookings and the `provider` role are
+> **removed**. The product is now six sections: Buy, Business, Resale, Delivery,
+> Trust, AI. See [product-blueprint.md](product-blueprint.md) and §14 below.
+> Sections 3–6 still describe the earlier two-rail model; treat service/booking
+> parts as parked, not active.
 
 > ServiceHub (Bheda Jenish & Rushi Joshi) is a **design reference only**. No code,
 > copy, brand or assets are reused. This plan keeps the existing Bazar/Mauritius
@@ -572,15 +578,15 @@ npm test && npm run build` locally.
 
 Order matters: each milestone completes a **loop**, not a layer.
 
-| #        | Milestone         | Both sides?                       | Done when                                                                                   |
-| -------- | ----------------- | --------------------------------- | ------------------------------------------------------------------------------------------- |
-| **M1.5** | Close-out + model | buyer sees seller                 | Branch merged, CI green, migrations pushed, `partners`/`user_roles` migration applied       |
-| **M2**   | Catalogue         | merchant lists ↔ buyer browses    | Partner CRUD products, images, stock; buyer home/search/category/product pages; seed data   |
-| **M3**   | Product orders    | buyer buys ↔ merchant fulfils     | Cart, COD checkout (guest), order token page, partner order inbox + status machine, email   |
-| **M4**   | Services rail     | customer books ↔ provider accepts | Provider onboarding, services, availability, booking wizard, accept/decline, booking status |
-| **M5**   | Trust & admin     | platform governs both             | Verification queue, roles, reviews, complaints, categories, audit, admin overview           |
-| **M6**   | AI layer          | merchant is faster                | Photo/text → listing, reply drafts, smart search; invoices; insights                        |
-| **M7**   | Delivery & polish | rider closes the loop             | Rider assignment + live status (optional), PWA, perf/a11y, demo script                      |
+| #        | Milestone         | Both sides?                       | Done when                                                                                            |
+| -------- | ----------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **M1.5** | Close-out + model | buyer sees seller                 | Branch merged, CI green, migrations pushed, `partners`/`user_roles` migration applied                |
+| **M2**   | Catalogue         | merchant lists ↔ buyer browses    | Partner CRUD products, images, stock; buyer home/search/category/product pages; seed data            |
+| **M3**   | Product orders    | buyer buys ↔ merchant fulfils     | Cart, SafePay escrow + Juice checkout, order token page, partner order inbox + status machine, email |
+| **M4**   | Services rail     | customer books ↔ provider accepts | Provider onboarding, services, availability, booking wizard, accept/decline, booking status          |
+| **M5**   | Trust & admin     | platform governs both             | Verification queue, roles, reviews, complaints, categories, audit, admin overview                    |
+| **M6**   | AI layer          | merchant is faster                | Photo/text → listing, reply drafts, smart search; invoices; insights                                 |
+| **M7**   | Delivery & polish | rider closes the loop             | Rider assignment + live status (optional), PWA, perf/a11y, demo script                               |
 
 Why products before services: the codebase already has shops, categories and
 product-oriented copy. Reusing that path proves the commerce spine cheaply; the
@@ -633,14 +639,14 @@ them twice.
 
 ### Locked (25 Nov 2026, with Sherif)
 
-1. **Wedge — merchant-first slices, full marketplace by M4.** Keep the Mauritius
-   SME positioning. Ship the merchant loop (list → buy → fulfil) first, then open
-   the services rail. No breadth-first build.
+1. **Wedge — business hub first, then resale, then delivery.** Ship the business
+   loop (list → buy → fulfil) first. Resale follows at M2.5, delivery at M3.5.
+   Services are removed. No breadth-first build.
 2. **Partner model — migrate `shops` → `partners` now**, with
-   `kind ∈ {shop, service, delivery}`. No production data exists, so the rename
-   is cheap.
-3. **Commerce behaviour — own-shop delivery + pickup, and direct booking.**
-   No rider role before M7. No broadcast booking offers in the MVP.
+   `kind ∈ {shop, delivery}`. No production data exists, so the rename is cheap.
+   Individuals are not partners: they get `seller_profiles` and `listings`.
+3. **Commerce behaviour — own-shop delivery + pickup, then verified delivery
+   partners (Grabbit).** COD first. No rider role before M7. No bookings.
 
 ### Still open
 
@@ -649,17 +655,18 @@ them twice.
    launch._
 5. **Brand:** keep "Bazar" or move to a ServiceHub-style name. Affects domain,
    OG images, copy and the pitch — decide before M2.
+6. **Grabbit terms:** per-parcel fee, COD remittance schedule and insurance cap.
 
 ### Consequences of the locked decisions
 
 - The `partners` migration is part of **M1.5**, before any catalogue work.
-  `products` and `services` both reference `partner_id` from day one.
-- `orders.delivery_method ∈ {pickup, partner_delivery}`. A `rider` method and a
-  `deliveries` table are reserved but not created until M7.
-- `bookings` references a chosen `partner_id` directly. No `booking_offers`
-  table.
-- `user_roles` still includes `rider` in the enum so the schema does not need a
-  later migration; nothing grants it until M7.
+  `products` reference `partner_id` from day one.
+- `orders.delivery_method ∈ {pickup, partner_delivery, verified_partner}`. The
+  third value is wired in M3.5 with `shipments`.
+- `listings` and `seller_profiles` are separate from `products` and `partners`.
+  A person can be a buyer and an individual seller without becoming a shop.
+- `user_roles` is `buyer | merchant | individual | delivery | admin`. `rider`
+  remains a future value; nothing grants it until M7.
 
 ---
 
@@ -671,3 +678,128 @@ them twice.
 
 Everything above is a proposal; `spec.md` remains the source of truth until this
 document is approved and the affected sections are merged into it.
+
+---
+
+## 14. Scope update — six sections (25 Nov 2026)
+
+Services and bookings are removed. The active model is six sections:
+
+| #   | Section  | Primary tables                                  | Verification bar                                         |
+| --- | -------- | ----------------------------------------------- | -------------------------------------------------------- |
+| 01  | Buy      | `partners`, `products`, `orders`                | n/a (buyer)                                              |
+| 02  | Business | `partners`, `products`, `orders`, `invoices`    | ID + address + phone + shop review                       |
+| 03  | Resale   | `seller_profiles`, `listings`, `offers`         | ID + selfie + phone + first-listing review               |
+| 04  | Delivery | `delivery_partners`, `shipments`                | registration + insurance + fleet + driver IDs + API test |
+| 05  | Trust    | `verification_cases`, `audit_log`, `complaints` | admin only                                               |
+| 06  | Cashflow | `ai_consents`, `ai_usage`, `invoices`           | opt-in, server-only, draft-only                          |
+
+### 14.1 Resale is not `products`
+
+```sql
+seller_profiles   (user_id pk, verification_status, id_document_url,
+                   selfie_url, phone_verified_at, reviewed_by, reviewed_at)
+listings          (seller_id, category_id, title, description, condition,
+                   price_mur, images[], status, review_note, search_vector)
+offers            (listing_id, buyer_id, amount_mur, status)
+```
+
+Why separate: a listing has one unit, a condition, a per-listing review and a
+meetup/courier choice. A business product has stock and a recurring catalogue.
+Forcing both into `products` makes every query and policy conditional.
+
+Listing status: `draft → pending_review → active → reserved → sold | rejected |
+removed`. Only `active` listings from a verified seller are public.
+
+RLS: sellers read/write only their own rows; `anon` reads only `active` listings
+joined to a verified seller; first-listing review runs with the secret-key client
+and writes `audit_log`.
+
+### 14.2 Delivery network
+
+```sql
+delivery_partners (id, name, registration_no, insurance_url, fleet_size,
+                   coverage public.mu_district[], status, api_status,
+                   verified_at, verified_by)
+shipments         (id, order_id, partner_id, driver_ref, status, fee_mur,
+                   tracking_url, cod_amount, remitted_at)
+```
+
+Shipment status: `quoted → booked → assigned → picked_up → in_transit →
+delivered → failed | returned`. COD is a separate `payment_status`; delivery
+completion never implies cash remitted.
+
+Flow: checkout asks for a quote → order creates a shipment → partner accepts →
+driver assigned → pickup → delivery with OTP → COD remitted → shop statement.
+
+Only `status = 'verified'` partners are bookable. Pending partners are visible in
+the directory but cannot be selected.
+
+**Grabbit Express** is the reference partner: Mauritius's first 100% electric
+on-demand delivery company. Fleet, riders and battery telemetry sit in **Kilo**
+(`business.kiloapp.org`); Bazar consumes the partner API and links to the public
+tracking page. The link pattern is
+`https://delivery.grabbit-express.com/track/{DEL_yyyy_nnn}/{code}` and the page is
+rendered in Grabbit's lime/black brand with "Powered by Kilo". Logo assets are
+used with permission for the pitch; confirm trademark terms before launch.
+
+### 14.2.1 Payments, SafePay escrow and disputes
+
+```sql
+payments            (id, order_id, method juice|card|cod, amount_mur,
+                     status pending|held|released|refunded, provider_ref)
+escrow_transactions (id, payment_id, state, held_at, released_at,
+                     refunded_at, reason, actor_id)
+disputes            (id, order_id, buyer_id, shop_id, reason, evidence[],
+                     status, resolution, resolved_by, resolved_at)
+payouts             (id, partner_id, amount_mur, status, period_start,
+                     period_end, statement_url)
+```
+
+**Why a separate escrow ledger:** the order status and the money status move at
+different speeds. An order can be `delivered` while the money is still `held`,
+or `refunded` after delivery. Keeping `payments` / `escrow_transactions` separate
+prevents "delivered = paid" bugs and gives the seller a clean available balance.
+
+State machine: `pending → held → released | refunded | partially_refunded`.
+Rules: buyer confirms → release; refund request → shop 48 h → escalate; no
+response → auto-refund; no buyer action → auto-release after 7 days. Every action
+writes `escrow_transactions` and `audit_log` in the same transaction.
+
+Juice is an instant payment method that still lands in escrow. COD bypasses the
+escrow balance but keeps the dispute window and delivery OTP.
+
+### 14.3 Trust console
+
+One case table for three subject types:
+
+```sql
+verification_cases (id, subject_type business|individual|delivery,
+                    subject_id, status, assigned_to, reason, decided_at)
+audit_log          (actor_id, action, entity_type, entity_id, before, after)
+```
+
+Every approve/reject writes an audit row in the same transaction, including the
+reason. Rejections are visible to the applicant with the missing item named.
+
+### 14.4 Revised milestones
+
+| #    | Slice                               | Adds                                        |
+| ---- | ----------------------------------- | ------------------------------------------- |
+| M1.5 | merge M1, `partners` + `user_roles` | model cleanup                               |
+| M2   | catalogue + real category pages     | products, browse                            |
+| M2.5 | resale                              | `seller_profiles`, `listings`, review queue |
+| M3   | orders + automatic invoices         | cart, SafePay escrow + Juice, PDF           |
+| M3.5 | delivery                            | `delivery_partners`, `shipments`, Grabbit   |
+| M4   | money                               | revenue, profit, balance sheet              |
+| M5   | trust + intelligence                | admin queues, analytics, suggestions        |
+| M6   | payouts, disputes, polish           | statements, reviews                         |
+| M7   | rider dispatch                      | only if volume justifies it                 |
+
+### 14.5 What is explicitly out
+
+- Service providers, bookings, availability, quotes.
+- In-app chat (WhatsApp click-to-chat remains).
+- Wallet and stored value.
+- Automated WhatsApp Business sending (click-to-chat only).
+- Live GPS for the customer beyond the partner's tracking link.

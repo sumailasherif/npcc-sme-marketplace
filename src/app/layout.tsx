@@ -11,11 +11,13 @@ const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
   subsets: ["latin", "latin-ext"],
   weight: ["600", "700", "800"],
+  display: "swap",
 });
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin", "latin-ext"],
+  display: "swap",
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -31,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0E7C86",
+  themeColor: "#F6F5F1",
   width: "device-width",
   initialScale: 1,
 };

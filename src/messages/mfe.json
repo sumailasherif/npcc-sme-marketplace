@@ -95,7 +95,11 @@
     "nextBody": "Azout prodwi depi enn foto pe vini dan prosenn mizazour.",
     "viewShop": "Get mo laboutik",
     "navHome": "Lakaz",
-    "navShop": "Mo laboutik"
+    "navShop": "Mo laboutik",
+    "navOrders": "Komann",
+    "navProducts": "Prodwi",
+    "navMoney": "Kas",
+    "navCustomers": "Kliyan"
   },
   "Shop": {
     "verified": "Verifie",

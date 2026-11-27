@@ -3,6 +3,122 @@
 Short records of technical choices that are not spelled out in
 [spec.md](spec.md), or that adjust it. Newest first.
 
+## 2026-11-26 — Blueprint refinement: photo categories, SafePay, Juice
+
+**Real photography.** 19 product and shop photos plus 12 category tiles, all
+Wikimedia Commons (CC0 / CC BY / CC BY-SA), stored locally with
+`CREDITS.md` and `CREDITS-categories.md`. Replace with commissioned Mauritian
+photography before launch.
+
+**SafePay escrow is the default for Pre-loved only.** Money is held until the buyer confirms
+the item matches the listing and photos. Refund request → shop has 48 h → no
+response auto-refunds; no buyer action auto-releases after 7 days. Juice is an
+instant method that still lands in escrow. COD remains an option with delivery
+OTP and the same dispute window. Escrow is a separate ledger from order status.
+
+**Category density rule.** Each category page shows 4–6 verified shops and 6 real
+listings, with a photo tile. A category stays hidden until it can meet the bar.
+
+**Pre-loved visual direction: Gumtree browse + dark deal room.** Swappa was
+dropped as a reference: it is tech-only and blocked automated review. The browse
+screens now follow Gumtree — dark plum header, green CTAs, large search, location
+radius, category tiles, local listing grid, watchlist. The negotiation itself
+uses a charcoal/orange deal room (the Dribbble reference): chat, offers, voice
+notes, meetup and SafePay status. Discovery stays light; the deal room is focused.
+
+**Design system codified in `design/DESIGN.md`.** It synthesizes Impeccable
+(paper/ink, colour as jewellery, mono for machine data, 11 px floor, flat
+surfaces), Anthropic frontend-design (distinct point of view, no template
+chrome), UI UX Pro Max (44 px targets, focus, reflow, reduced motion), Gumtree
+(browse pattern) and the Dribbble deal room. Audit fixes: dark-screen specificity,
+AA green, functional text floor, touch targets, orange focus in the deal room,
+and removal of non-sequential numbering from the principles.
+
+**Escrow is Pre-loved only.** Shop checkout uses Juice or cash on delivery; no
+escrow on business orders. The seller payout screen shows a direct net balance,
+and the dispute queue is scoped to Pre-loved.
+
+**Current frame count.** 12 customer, 12 business, 12 resale, 5 delivery, 4 trust,
+plus Cashflow = 46 frames and two live demos.
+
+## 2026-11-25 — Six sections; services removed; resale and delivery added
+
+The product is now six sections: **Buy, Business, Resale, Delivery, Trust, AI**.
+Services, bookings and the `provider` role are **removed** from the plan and the
+artefact. Full definition: [product-blueprint.md](product-blueprint.md).
+
+**Business and resale are separate products, not one catalogue.** A business
+shop has recurring stock and a catalogue. An individual seller has one item, a
+condition, and a per-listing human review. They share identity, location, money
+and admin, but not onboarding or the trust bar. `listings` is therefore a
+separate table from `products`.
+
+**Resale verification is strict.** Phone + national ID (front/back) + selfie
+liveness match, then a human review of the first listing (photos, serial number,
+category, price). Documents live in a private bucket. Prohibited items are
+enumerated in the UI: food, medicine, counterfeits, stolen goods, weapons.
+
+**Delivery is a verified third-party network, Grabbit first.** Partners must
+provide company registration, insurance, fleet size, driver IDs, coverage and a
+passing API sandbox. Only verified partners are bookable; pending partners are
+visible but disabled. COD is reconciled separately from delivery completion.
+
+**Trust is one console with three proof bars.** Business, individual and delivery
+each have their own checklist, but one queue, one case record and one audit log.
+
+**Naming: section 06 is "Cashflow".** It covers automatic invoices, revenue,
+cost of goods, profit, balance sheet and AI analytics. The old "AI & money" label
+is retired everywhere.
+
+**Grabbit Express branding is used in the delivery section.** The official
+wordmark (lime on black, "Powered by Kilo") is stored in
+`design/prototype/assets/` and used on the partner card, checkout, tracking page
+and fleet console. Grabbit is described as Mauritius's first 100% electric
+on-demand delivery company; fleet, riders and battery telemetry are managed in
+Kilo (`business.kiloapp.org`). Public tracking follows
+`https://delivery.grabbit-express.com/track/{DEL_yyyy_nnn}/{code}`. The asset is
+used for the pitch; trademark permission is still to confirm.
+
+**Payments: SafePay escrow, Juice, COD.** SafePay holds the buyer's money until
+they confirm the item matches the listing and photos. A refund request gives the
+shop 48 hours to respond; no response auto-refunds; no buyer action auto-releases
+after 7 days. Juice is an instant payment method that still lands in escrow. COD
+keeps the dispute window and delivery OTP but bypasses the escrow balance. The
+escrow ledger is separate from order status, so `delivered` never implies `paid`.
+
+**Category system: photo tiles and a density rule.** Every category tile uses a
+real photo, and every category page must show 4–6 verified shops plus 6 real
+listings. A category with fewer than five listings stays hidden until it can meet
+the bar. This prevents the marketplace from looking empty and prevents "related"
+filler from diluting the filter.
+
+**Consequence for the artefact.** `design/prototype/index.html` now has 13
+customer screens, 12 business screens, 12 resale screens, 5 delivery screens, 4
+trust screens, the Cashflow section and two live demos. Category pages filter for
+real and show photo listings.
+
+## 2026-11-26 — Two separate spaces: Bazar Business vs Bazar Pre-loved
+
+- **Why:** Sherif asked for a clear distinction between SMEs on Bazar and the
+  second-hand reselling/buying side, each with its own dashboard.
+- **Decision:** Pre-loved gets its own shell, colours (plum + leaf, now real
+  tokens in `globals.css` and `design/tokens.json`) and a personal dashboard at
+  `/preloved/me`. Businesses keep teal and `/dashboard`. `/sell` is a fork
+  page. Details in `design/DESIGN.md` §12.
+- **Still demo data** for `/preloved/me` (`src/lib/demo/preloved.ts`).
+
+## 2026-11-26 — Home page and categories reframed as e-commerce + SME storefronts
+
+- **Why:** Sherif: Bazar is not a local market. It is a unified front for SMEs
+  (e-commerce for buyers, Jiji-style for individual sellers, storefront +
+  business support + AI for SMEs).
+- **Demo categories** (`src/lib/catalog/data.ts`): reordered so non-food comes
+  first; added `electronics` (Phones & electronics) with a demo shop
+  (Phone Lakaz); renamed Fashion and Gifts & flowers. The **database seed is
+  unchanged**; update the categories migration in M2 to match.
+- **Partner fields:** optional `tagline` and `socials` (instagram, facebook,
+  whatsapp) to show the channels a business already uses.
+
 ## 2026-11-25 — Marketplace architecture: three surfaces, two rails
 
 Sherif approved [architecture.md](architecture.md), which widens the product from

@@ -1,6 +1,6 @@
 # Project Status — Bazar (working name)
 
-Last updated: 25 Nov 2026
+Last updated: 26 Nov 2026
 
 ## Current milestone
 
@@ -57,7 +57,10 @@ to the real Supabase project.
 - 25 Nov 2026: Full product plan and build spec saved to [docs/spec.md](spec.md).
 - 25 Nov 2026: M0 code done in 9 commits (see `git log`). Choices recorded in [decisions.md](decisions.md).
 - 25 Nov 2026: M1 code done on branch `m1-auth-shop`. How to run the tests: [testing.md](testing.md).
-- 25 Nov 2026: Two-sided marketplace architecture agreed in [architecture.md](architecture.md). Decisions: merchant-first slices, one `partners` table, own-shop delivery + direct booking (§12).
+- 25 Nov 2026: Marketplace architecture agreed in [architecture.md](architecture.md). Services were later removed; the active scope is the six shop-focused sections in [product-blueprint.md](product-blueprint.md).
+- 26 Nov 2026: Blueprint refined: 19 real product photos + 12 category photo tiles, 4-6 shops and 6 listings per category, SafePay escrow for Pre-loved, Juice or cash for shops, Grabbit branding and tracking, 12 customer / 12 business / 12 resale / 5 delivery / 4 trust screens.
+- 26 Nov 2026: Next.js demo of all 46 designed screens is in place. Customer storefront, business console, Pre-loved with SafePay, sell flow, delivery console, Grabbit tracking link, trust consoles and cashflow pages run on demo data. Shop checkout is Juice or cash on delivery only; escrow is Pre-loved only. `npm run build`, `lint`, `typecheck` and 71 unit tests pass.
+- 26 Nov 2026: UI redesign steps 1–2 (not committed yet). Fonts and colours now follow `design/DESIGN.md`; grain, ticker and squiggle removed. Home page rebuilt as e-commerce + SME storefronts (featured business, categories, trending, shops on Bazar, Pre-loved, business tools). Then split Bazar Business (teal, `/dashboard`) from Bazar Pre-loved (plum + green, new `/preloved/me` dashboard for selling, buying, messages and SafePay); `/sell` is now a fork between the two. Build, lint, typecheck and 71 unit tests pass.
 
 ## Next steps
 
@@ -65,8 +68,10 @@ to the real Supabase project.
 2. Sherif: add pay-as-you-go credits at OpenCode Console (key works, model `deepseek-v4.1-flash` set; calls return 402 until topped up). Needed by M2, not M1.
 3. Sherif: import the repo on Vercel and add the same env variables.
 4. Push `m1-auth-shop`, check CI, apply migrations, then merge to `main`.
-5. Claude: write the M2 plan from [architecture.md](architecture.md). M2 opens with the `shops` → `partners` + `user_roles` migration, then products, then buyer browse. Wait for OK.
-6. Before M2: decide SEO/i18n routing and the final brand name (open in §12).
+5. Review the six-section blueprint: open `design/prototype/index.html` in a browser, check the Customer / Business / Resale / Delivery / Trust / AI tabs and the live demos. Then run `npm run dev` and click through the same routes in the Next.js build. Record changes in [product-blueprint.md](product-blueprint.md).
+6. Claude: write the M2 plan from [architecture.md](architecture.md) §14. M2 opens with the `shops` → `partners` + `user_roles` migration, then products and real category pages. Resale is M2.5; delivery is M3.5.
+7. Before M2: validate the 12 category labels with 5 merchants and 5 customers, and confirm each category can reach 5 real listings. Before M3: open a Juice merchant account and decide who legally holds the SafePay escrow balance. Before M3.5: agree Grabbit terms (fee, COD remittance, insurance).
+8. Before M2: decide SEO/i18n routing and the final brand name (open in §13).
 
 ## Open questions and blockers
 

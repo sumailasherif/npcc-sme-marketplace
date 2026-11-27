@@ -95,7 +95,11 @@
     "nextBody": "Adding products from a photo arrives in the next update.",
     "viewShop": "View my shop",
     "navHome": "Home",
-    "navShop": "My shop"
+    "navShop": "My shop",
+    "navOrders": "Orders",
+    "navProducts": "Products",
+    "navMoney": "Money",
+    "navCustomers": "Customers"
   },
   "Shop": {
     "verified": "Verified",

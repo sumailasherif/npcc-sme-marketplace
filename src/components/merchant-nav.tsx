@@ -2,18 +2,32 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, Storefront } from "@phosphor-icons/react";
+import {
+  ChatCircle,
+  House,
+  Package,
+  Receipt,
+  Storefront,
+  Users,
+  Wallet,
+} from "@phosphor-icons/react";
 
 import { cn } from "@/lib/utils";
 
-type Item = { href: string; label: string; icon: "home" | "shop" };
+type IconKey =
+  "home" | "shop" | "orders" | "products" | "money" | "customers" | "inbox";
+type Item = { href: string; label: string; icon: IconKey };
 
-const icons = { home: House, shop: Storefront };
+const icons = {
+  home: House,
+  shop: Storefront,
+  orders: Receipt,
+  products: Package,
+  money: Wallet,
+  customers: Users,
+  inbox: ChatCircle,
+};
 
-/**
- * Merchant navigation: bottom bar on phones, side list on desktop.
- * More items (Orders, Products, Inbox) arrive with M2-M4.
- */
 export function MerchantNav({
   items,
   label,
@@ -34,7 +48,10 @@ export function MerchantNav({
       <ul className="flex desktop:flex-col desktop:gap-1 desktop:p-4">
         {items.map((item) => {
           const Icon = icons[item.icon];
-          const active = pathname === item.href;
+          const active =
+            item.href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname.startsWith(item.href);
           return (
             <li key={item.href} className="flex-1 desktop:flex-none">
               <Link

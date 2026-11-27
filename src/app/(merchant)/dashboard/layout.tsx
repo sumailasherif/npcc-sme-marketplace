@@ -24,11 +24,15 @@ export default async function DashboardLayout({
   return (
     <div className="flex flex-1 flex-col">
       <header className="flex items-center justify-between gap-2 border-b bg-surface px-4 py-2 tablet:px-6">
+        {/* Bazar Business: teal lockup, never the Pre-loved plum */}
         <Link
           href="/dashboard"
-          className="flex min-h-11 items-center font-heading text-h2 text-ink-900"
+          className="flex min-h-11 items-center gap-2 font-heading text-[1.375rem] font-extrabold tracking-[-0.03em] text-teal-700"
         >
-          {tc("brand")}
+          {tc("brand").toLowerCase()}
+          <span className="rounded-chip bg-teal-700 px-2 py-0.5 text-body font-bold tracking-normal text-white">
+            Business
+          </span>
         </Link>
         <div className="flex items-center gap-1">
           <LanguageSwitcher compact />
@@ -51,6 +55,22 @@ export default async function DashboardLayout({
             label={tc("brand")}
             items={[
               { href: "/dashboard", label: t("navHome"), icon: "home" },
+              {
+                href: "/dashboard/orders",
+                label: t("navOrders"),
+                icon: "orders",
+              },
+              {
+                href: "/dashboard/products",
+                label: t("navProducts"),
+                icon: "products",
+              },
+              { href: "/dashboard/money", label: t("navMoney"), icon: "money" },
+              {
+                href: "/dashboard/customers",
+                label: t("navCustomers"),
+                icon: "customers",
+              },
               { href: `/s/${shop.slug}`, label: t("navShop"), icon: "shop" },
             ]}
           />

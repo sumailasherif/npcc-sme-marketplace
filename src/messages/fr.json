@@ -95,7 +95,11 @@
     "nextBody": "L’ajout de produits à partir d’une photo arrive dans la prochaine mise à jour.",
     "viewShop": "Voir ma boutique",
     "navHome": "Accueil",
-    "navShop": "Ma boutique"
+    "navShop": "Ma boutique",
+    "navOrders": "Commandes",
+    "navProducts": "Produits",
+    "navMoney": "Argent",
+    "navCustomers": "Clients"
   },
   "Shop": {
     "verified": "Vérifiée",
