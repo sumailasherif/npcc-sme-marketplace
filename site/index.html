@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bazar — Landing page</title>
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+    @media (min-width: 768px) { .wrap { padding: 0 32px; } }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px;
+           padding: 0 20px; border-radius: 999px; border: 0; cursor: pointer;
+           font: 600 13px/16px var(--font-body); }
+    .btn-lime  { background: var(--lime); color: var(--black); }
+    .btn-black { background: var(--black); color: var(--lime); }
+    .btn-line  { background: transparent; color: var(--card); box-shadow: inset 0 0 0 1px #3f3d36; }
+
+    /* 1. Header */
+    .top { background: var(--black); padding-top: 16px; }
+    .bar { display: flex; align-items: center; gap: 16px; background: var(--black-2);
+           border-radius: 999px; padding: 8px 8px 8px 16px; }
+    .logo { background: var(--lime); color: var(--black); padding: 4px 10px; border-radius: 8px;
+            font: 800 17px/24px var(--font-head); letter-spacing: -0.02em; }
+    .nav { display: none; gap: 24px; margin-left: 16px; color: var(--card); }
+    .nav a:hover { color: var(--lime); }
+    .bar .push { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .bar .signin { display: none; color: var(--card); padding: 0 12px; }
+    @media (min-width: 768px) { .nav, .bar .signin { display: flex; align-items: center; } }
+
+    /* 2. Hero */
+    .hero { background: var(--black); color: var(--card); padding: 48px 0 64px; }
+    .eyebrow { display: inline-block; color: var(--lime); border: 1px solid #3f3d36;
+               border-radius: 999px; padding: 6px 12px; text-transform: uppercase; letter-spacing: .08em; }
+    .hero h1 { margin-top: 20px; text-transform: uppercase; max-width: 720px; }
+    .hero h1 em { font-style: normal; background: var(--lime); color: var(--black);
+                  padding: 0 8px; border-radius: 8px; }
+    .hero .sub { margin-top: 16px; max-width: 560px; color: #cfc7b4; }
+    .search { margin-top: 32px; display: flex; gap: 8px; background: var(--card); border-radius: 999px;
+              padding: 6px; max-width: 560px; }
+    .search input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 0 16px; outline: none;
+                    color: var(--black); font: 400 16px/24px var(--font-body); }
+    .chips { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { padding: 8px 12px; border-radius: 999px; background: var(--black-2); color: var(--card); }
+    .strip { margin-top: 48px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .strip figure { margin: 0; position: relative; border-radius: var(--r-card); overflow: hidden; aspect-ratio: 3/4; }
+    .strip img { width: 100%; height: 100%; object-fit: cover; }
+    .strip figcaption { position: absolute; left: 8px; bottom: 8px; background: var(--black); color: var(--lime);
+                        padding: 6px 10px; border-radius: 999px; }
+    .strip figure:nth-child(n+3) { display: none; }
+    @media (min-width: 768px) {
+      .hero { padding: 80px 0 96px; }
+      .strip { grid-template-columns: repeat(4, 1fr); }
+      .strip figure:nth-child(n+3) { display: block; }
+      .strip figure:nth-child(even) { transform: translateY(32px); }
+    }
+
+    /* Section titles */
+    .sec { padding: 64px 0; }
+    .sec-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 24px; }
+    .sec-head p { color: var(--muted); margin-top: 8px; max-width: 520px; }
+    .more { color: var(--lime-ink); white-space: nowrap; }
+
+    /* 3. Three ways to use Bazar */
+    .doors { display: grid; gap: 12px; }
+    .door { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); padding: 24px;
+            display: flex; flex-direction: column; gap: 12px; }
+    .door.dark { background: var(--black); color: var(--card); border-color: var(--black); }
+    .door .tag { align-self: start; background: var(--lime); color: var(--black); padding: 4px 8px; border-radius: var(--r-chip); }
+    .door p { color: var(--muted); }
+    .door.dark p { color: #cfc7b4; }
+    .door .go { margin-top: auto; padding-top: 8px; }
+    @media (min-width: 768px) { .doors { grid-template-columns: repeat(3, 1fr); } }
+
+    /* 4. Categories */
+    .cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .cat { position: relative; border-radius: var(--r-card); overflow: hidden; aspect-ratio: 4/3; background: var(--black); }
+    .cat img { width: 100%; height: 100%; object-fit: cover; opacity: .8; transition: transform .4s, opacity .4s; }
+    .cat:hover img { transform: scale(1.05); opacity: 1; }
+    .cat span { position: absolute; left: 8px; bottom: 8px; right: 8px; background: var(--card); color: var(--black);
+                padding: 6px 10px; border-radius: 999px; width: max-content; max-width: calc(100% - 16px); }
+    @media (min-width: 768px) { .cats { grid-template-columns: repeat(4, 1fr); } }
+
+    /* 5. For businesses */
+    .biz { background: var(--black); color: var(--card); }
+    .biz .sec-head p { color: #cfc7b4; }
+    .steps { display: grid; gap: 12px; counter-reset: s; }
+    .step { background: var(--black-2); border-radius: var(--r-card); padding: 24px; }
+    .step .num { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 999px;
+                 background: var(--lime); color: var(--black); font: 700 13px/16px var(--font-head); }
+    .step h3 { margin-top: 16px; }
+    .step p { margin-top: 8px; color: #cfc7b4; }
+    .biz .cta { margin-top: 32px; display: flex; gap: 8px; flex-wrap: wrap; }
+    @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+
+    /* 6. Lime band */
+    .band { background: var(--lime); padding: 32px 0; }
+    .band ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+    .band li { display: flex; gap: 12px; align-items: start; }
+    .band li b { display: block; }
+    .band .dot { flex: none; width: 10px; height: 10px; margin-top: 7px; border-radius: 999px; background: var(--black); }
+    @media (min-width: 768px) { .band ul { grid-template-columns: repeat(4, 1fr); } }
+
+    /* 7. Closing call + footer */
+    .close { text-align: center; }
+    .close h2 { text-transform: uppercase; max-width: 640px; margin: 0 auto; }
+    .close p { margin: 12px auto 0; max-width: 480px; color: var(--muted); }
+    .close .cta { margin-top: 24px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    footer { background: var(--black); color: #cfc7b4; padding: 40px 0; }
+    footer .cols { display: grid; gap: 24px; grid-template-columns: repeat(2, 1fr); }
+    footer h4 { margin: 0 0 12px; color: var(--card); }
+    footer a { display: block; padding: 4px 0; }
+    footer a:hover { color: var(--lime); }
+    footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid #3f3d36; }
+    @media (min-width: 768px) { footer .cols { grid-template-columns: 2fr 1fr 1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- 1. HEADER -->
+  <header class="top">
+    <div class="wrap">
+      <div class="bar">
+        <a href="index.html" class="logo" data-text="header.logo">bazar</a>
+        <nav class="nav t-label">
+          <a href="#" data-text="header.nav-shop">Shop</a>
+          <a href="#" data-text="header.nav-preloved">Pre-loved</a>
+          <a href="#" data-text="header.nav-business">For business</a>
+        </nav>
+        <div class="push">
+          <a href="#" class="signin t-label" data-text="header.signin">Sign in</a>
+          <a href="#" class="btn btn-lime" data-text="header.cta">Open your shop</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow t-caption" data-text="hero.eyebrow">Made for Mauritius</span>
+      <h1 class="t-display" data-text="hero.title">Every Mauritian business. <em>One place</em> to shop.</h1>
+      <p class="sub t-body-l" data-text="hero.subtitle">Find shops, order online and support local brands — from Port Louis to Mahébourg. No more hunting through Facebook pages and WhatsApp chats.</p>
+
+      <form class="search" onsubmit="return false">
+        <input type="search" placeholder="Search shops, products or places" aria-label="Search">
+        <button class="btn btn-black" type="submit" data-text="hero.search-button">Search</button>
+      </form>
+
+      <div class="chips t-label">
+        <a href="#" class="chip" data-text="hero.chip-1">Cakes</a>
+        <a href="#" class="chip" data-text="hero.chip-2">Phones</a>
+        <a href="#" class="chip" data-text="hero.chip-3">Car rental</a>
+        <a href="#" class="chip" data-text="hero.chip-4">Beauty</a>
+        <a href="#" class="chip" data-text="hero.chip-5">Made in Mauritius</a>
+      </div>
+
+      <div class="strip">
+        <figure><img src="photos/hero-boutique.jpg" alt="Clothing boutique"><figcaption class="t-label" data-text="hero.photo-1">Fashion</figcaption></figure>
+        <figure><img src="photos/hero-grocer.jpg" alt="Grocery shelves"><figcaption class="t-label" data-text="hero.photo-2">Groceries</figcaption></figure>
+        <figure><img src="photos/hero-restaurant.jpg" alt="Restaurant"><figcaption class="t-label" data-text="hero.photo-3">Restaurants</figcaption></figure>
+        <figure><img src="photos/hero-flowers.jpg" alt="Flowers"><figcaption class="t-label" data-text="hero.photo-4">Gifts &amp; flowers</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. THREE WAYS TO USE BAZAR -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2 class="t-h1" data-text="ways.title">One app, three ways in</h2>
+          <p class="t-body" data-text="ways.subtitle">Buy from real shops, sell what you no longer need, or run your whole business from one place.</p>
+        </div>
+      </div>
+      <div class="doors">
+        <a href="#" class="door">
+          <span class="tag t-caption" data-text="ways.shop-tag">Buyers</span>
+          <h3 class="t-h2" data-text="ways.shop-title">Shop local brands</h3>
+          <p class="t-body" data-text="ways.shop-text">Browse real Mauritian shops, compare prices and order for delivery or pick-up.</p>
+          <span class="go more t-label" data-text="ways.shop-link">Start shopping →</span>
+        </a>
+        <a href="#" class="door">
+          <span class="tag t-caption" data-text="ways.preloved-tag">Everyone</span>
+          <h3 class="t-h2" data-text="ways.preloved-title">Sell pre-loved</h3>
+          <p class="t-body" data-text="ways.preloved-text">Post your old phone, bike or sofa in a minute and chat safely with buyers.</p>
+          <span class="go more t-label" data-text="ways.preloved-link">Post an item →</span>
+        </a>
+        <a href="#" class="door dark">
+          <span class="tag t-caption" data-text="ways.business-tag">SMEs</span>
+          <h3 class="t-h2" data-text="ways.business-title">Grow your business</h3>
+          <p class="t-body" data-text="ways.business-text">A real online shop, orders, payments and an AI sales assistant — built for small businesses.</p>
+          <span class="go t-label" style="color:var(--lime)" data-text="ways.business-link">Open your shop →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CATEGORIES -->
+  <section class="sec" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2 class="t-h1" data-text="cats.title">Shop by category</h2>
+          <p class="t-body" data-text="cats.subtitle">Everything the island sells, sorted the way you look for it.</p>
+        </div>
+        <a href="#" class="more t-label" data-text="cats.link">See all</a>
+      </div>
+      <div class="cats">
+        <a href="#" class="cat"><img src="photos/cat-restaurants.jpg" alt=""><span class="t-label" data-text="cats.1">Restaurants &amp; food</span></a>
+        <a href="#" class="cat"><img src="photos/cat-supermarkets.jpg" alt=""><span class="t-label" data-text="cats.2">Groceries</span></a>
+        <a href="#" class="cat"><img src="photos/cat-hotels.jpg" alt=""><span class="t-label" data-text="cats.3">Hotels &amp; stays</span></a>
+        <a href="#" class="cat"><img src="photos/cat-car-rental.jpg" alt=""><span class="t-label" data-text="cats.4">Car rental</span></a>
+        <a href="#" class="cat"><img src="photos/cat-electronics.jpg" alt=""><span class="t-label" data-text="cats.5">Phones &amp; electronics</span></a>
+        <a href="#" class="cat"><img src="photos/cat-beauty-salons.jpg" alt=""><span class="t-label" data-text="cats.6">Beauty &amp; salons</span></a>
+        <a href="#" class="cat"><img src="photos/cat-home-furniture.jpg" alt=""><span class="t-label" data-text="cats.7">Home &amp; furniture</span></a>
+        <a href="#" class="cat"><img src="photos/cat-bakeries.jpg" alt=""><span class="t-label" data-text="cats.8">Bakeries &amp; cakes</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. FOR BUSINESSES -->
+  <section class="sec biz">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="eyebrow t-caption" data-text="biz.eyebrow">Bazar Business</span>
+          <h2 class="t-h1" style="margin-top:16px" data-text="biz.title">Your shop online in 10 minutes</h2>
+          <p class="t-body" data-text="biz.subtitle">Stop losing orders in your DMs. Bazar gives your business a proper storefront and does the busy work for you.</p>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="num">1</span>
+          <h3 class="t-h3" data-text="biz.step1-title">Create your shop</h3>
+          <p class="t-body" data-text="biz.step1-text">Add your name, logo and products. Get your own link to share anywhere.</p>
+        </div>
+        <div class="step">
+          <span class="num">2</span>
+          <h3 class="t-h3" data-text="biz.step2-title">Take orders</h3>
+          <p class="t-body" data-text="biz.step2-text">Customers order and pay online. You see every order in one list, not ten chats.</p>
+        </div>
+        <div class="step">
+          <span class="num">3</span>
+          <h3 class="t-h3" data-text="biz.step3-title">Let AI help you sell</h3>
+          <p class="t-body" data-text="biz.step3-text">Your assistant answers questions, writes product descriptions and tells you what sells.</p>
+        </div>
+      </div>
+      <div class="cta">
+        <a href="#" class="btn btn-lime" data-text="biz.cta-main">Open your shop — free</a>
+        <a href="#" class="btn btn-line" data-text="biz.cta-second">See how it works</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. LIME BAND -->
+  <section class="band">
+    <div class="wrap">
+      <ul class="t-body">
+        <li><span class="dot"></span><div><b class="t-label" data-text="band.1-title">Real local shops</b><span data-text="band.1-text">Every business is checked by our team.</span></div></li>
+        <li><span class="dot"></span><div><b class="t-label" data-text="band.2-title">Pay your way</b><span data-text="band.2-text">Card, Juice or cash on delivery.</span></div></li>
+        <li><span class="dot"></span><div><b class="t-label" data-text="band.3-title">Island-wide delivery</b><span data-text="band.3-text">Or collect from the shop.</span></div></li>
+        <li><span class="dot"></span><div><b class="t-label" data-text="band.4-title">Help in Kreol</b><span data-text="band.4-text">English, French and Kreol support.</span></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7. CLOSING CALL -->
+  <section class="sec close">
+    <div class="wrap">
+      <h2 class="t-display" data-text="close.title">Support the shop next door</h2>
+      <p class="t-body-l" data-text="close.text">Join thousands of Mauritians buying from the businesses that make the island work.</p>
+      <div class="cta">
+        <a href="#" class="btn btn-black" data-text="close.cta-main">Start shopping</a>
+        <a href="#" class="btn btn-lime" data-text="close.cta-second">I own a business</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <div class="cols t-body">
+        <div>
+          <span class="logo" data-text="footer.logo">bazar</span>
+          <p style="margin-top:12px;max-width:280px" data-text="footer.about">The home of Mauritian small businesses.</p>
+        </div>
+        <div>
+          <h4 class="t-label" data-text="footer.col1-title">Shop</h4>
+          <a href="#" data-text="footer.col1-1">Categories</a>
+          <a href="#" data-text="footer.col1-2">Pre-loved</a>
+          <a href="#" data-text="footer.col1-3">Near me</a>
+        </div>
+        <div>
+          <h4 class="t-label" data-text="footer.col2-title">Business</h4>
+          <a href="#" data-text="footer.col2-1">Open a shop</a>
+          <a href="#" data-text="footer.col2-2">Pricing</a>
+          <a href="#" data-text="footer.col2-3">AI assistant</a>
+        </div>
+        <div>
+          <h4 class="t-label" data-text="footer.col3-title">Help</h4>
+          <a href="#" data-text="footer.col3-1">Contact us</a>
+          <a href="#" data-text="footer.col3-2">Safety tips</a>
+          <a href="#" data-text="footer.col3-3">Terms</a>
+        </div>
+      </div>
+      <p class="legal t-caption" data-text="footer.legal">© 2026 Bazar · Made in Mauritius</p>
+    </div>
+  </footer>
+
+  <script src="edit-text.js"></script>
+</body>
+</html>

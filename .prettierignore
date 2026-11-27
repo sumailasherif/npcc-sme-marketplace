@@ -1,7 +1,0 @@
-node_modules
-.next
-package-lock.json
-supabase/.temp
-test-results
-playwright-report
-supabase/config.jsonc
