@@ -7,6 +7,7 @@ import {
   UserCircle,
 } from "@phosphor-icons/react/ssr";
 
+import { Logo } from "@/components/brand/logo";
 import { cn } from "@/lib/utils";
 
 type Section = "browse" | "me" | "post";
@@ -36,9 +37,9 @@ export function PrelovedShell({
           <Link
             href="/"
             aria-label="Bazar home"
-            className="flex min-h-11 items-center font-heading text-[1.375rem] font-extrabold tracking-[-0.03em] text-white/70 hover:text-white"
+            className="flex min-h-11 items-center"
           >
-            bazar
+            <Logo size="sm" />
           </Link>
           <Link
             href="/preloved"
@@ -70,7 +71,7 @@ export function PrelovedShell({
 
           <Link
             href="/sell/new"
-            className="ml-auto inline-flex min-h-11 items-center gap-1 rounded-button bg-leaf-700 px-4 text-body font-semibold text-white hover:bg-[#166b16]"
+            className="ml-auto inline-flex min-h-11 items-center gap-1 rounded-button bg-leaf-700 px-4 text-body font-semibold text-white hover:bg-plum-700"
           >
             <Plus aria-hidden="true" className="size-4" weight="bold" />
             Post an ad

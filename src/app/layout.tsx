@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Unbounded } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -7,10 +7,11 @@ import { cn } from "@/lib/utils";
 
 import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
+// Headings and big display type: wide, rounded, distinctive (DESIGN.md §14).
+const unbounded = Unbounded({
+  variable: "--font-unbounded",
   subsets: ["latin", "latin-ext"],
-  weight: ["600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -33,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#F6F5F1",
+  themeColor: "#0E0E0C",
   width: "device-width",
   initialScale: 1,
 };
@@ -46,7 +47,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={cn("h-full antialiased", plusJakarta.variable, inter.variable)}
+      className={cn("h-full antialiased", unbounded.variable, inter.variable)}
     >
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>

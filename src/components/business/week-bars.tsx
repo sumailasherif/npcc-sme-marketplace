@@ -15,7 +15,7 @@ export function WeekBars({
           className="flex h-full flex-1 flex-col items-center justify-end gap-1"
         >
           <div
-            className="w-full rounded-t bg-gradient-to-t from-teal-100 to-teal-500"
+            className="w-full rounded-t bg-gradient-to-t from-lime-300 to-lime-400"
             style={{ height: `${item.value}%` }}
             aria-hidden="true"
           />

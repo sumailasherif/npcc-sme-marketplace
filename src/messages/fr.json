@@ -44,7 +44,7 @@
   },
   "Auth": {
     "title": "Connexion à Bazar",
-    "subtitle": "Vendez depuis votre téléphone. Pas de mot de passe : nous vous envoyons un code.",
+    "subtitle": "Un seul compte pour acheter, vendre et gérer votre entreprise. Pas de mot de passe : nous vous envoyons un code.",
     "emailLabel": "Adresse e-mail",
     "emailPlaceholder": "vous@exemple.com",
     "sendCode": "Recevoir un code",
@@ -54,7 +54,12 @@
     "verify": "Se connecter",
     "resend": "Renvoyer un code",
     "changeEmail": "Utiliser une autre adresse",
-    "spamHint": "Pas d’e-mail après une minute ? Regardez dans les spams."
+    "spamHint": "Pas d’e-mail après une minute ? Regardez dans les spams.",
+    "panelTitle": "Toutes les entreprises mauriciennes, au même endroit",
+    "panelPoint1": "Achetez auprès d’entreprises locales vérifiées",
+    "panelPoint2": "Ouvrez votre boutique et recevez des commandes",
+    "panelPoint3": "Vendez vos objets d’occasion en toute sécurité",
+    "newHere": "Nouveau ? Entrez votre e-mail, nous créons votre compte."
   },
   "Onboarding": {
     "title": "Créez votre boutique",

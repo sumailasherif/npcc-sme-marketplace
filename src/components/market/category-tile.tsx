@@ -19,7 +19,7 @@ export function CategoryTile({ category }: { category: Category }) {
         <span className="absolute inset-0 bg-ink-900/0 transition-colors duration-300 group-hover:bg-ink-900/10" />
       </span>
       <span className="mt-2 flex items-baseline justify-between gap-2">
-        <span className="font-heading text-[1.02rem] font-semibold leading-tight text-ink-900 decoration-coral-700 decoration-2 underline-offset-4 group-hover:underline">
+        <span className="font-heading text-[1.02rem] font-semibold leading-tight text-ink-900 decoration-lime-400 decoration-2 underline-offset-4 group-hover:underline">
           {category.name}
         </span>
         <span className="shrink-0 text-[11px] text-ink-500">

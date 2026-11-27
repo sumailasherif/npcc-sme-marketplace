@@ -57,7 +57,7 @@ export default async function OrderDetailPage({
           <h2 className="text-h3 text-ink-900">Fulfilment</h2>
           <ul className="mt-3 flex flex-col gap-3 text-body text-ink-700">
             <li className="flex items-center gap-2">
-              <Package aria-hidden="true" className="size-4 text-teal-700" />
+              <Package aria-hidden="true" className="size-4 text-lime-700" />
               Confirm order
             </li>
             <li className="flex items-center gap-2">
@@ -70,7 +70,7 @@ export default async function OrderDetailPage({
             </li>
           </ul>
           <div className="mt-4 flex flex-col gap-2">
-            <button className="min-h-11 rounded-button bg-teal-500 text-body font-semibold text-white">
+            <button className="min-h-11 rounded-button bg-lime-400 text-body font-semibold text-ink-900">
               Confirm order
             </button>
             <button className="min-h-11 rounded-button border border-ink-300 bg-surface text-body font-semibold text-ink-700">

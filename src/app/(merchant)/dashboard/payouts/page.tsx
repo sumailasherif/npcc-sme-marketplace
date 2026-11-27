@@ -11,7 +11,7 @@ export default function PayoutsPage() {
         description="Available balance, fees and statements."
       />
 
-      <div className="mt-4 rounded-card bg-gradient-to-br from-teal-700 to-ink-900 p-5 text-white">
+      <div className="mt-4 rounded-card bg-gradient-to-br from-ink-900 to-ink-900 p-5 text-white">
         <p className="text-caption text-white/60">Available to withdraw</p>
         <p className="mt-1 font-heading text-[32px] font-bold tabular-price">
           {formatPrice(payouts.available)}
@@ -61,7 +61,7 @@ export default function PayoutsPage() {
         ))}
       </ul>
 
-      <div className="mt-4 rounded-card bg-teal-50 p-4 text-body text-teal-700">
+      <div className="mt-4 rounded-card bg-lime-50 p-4 text-body text-lime-700">
         <p className="font-semibold text-ink-900">Statement ready</p>
         <p className="mt-1 text-caption">
           Download a PDF with every order, fee and payout.

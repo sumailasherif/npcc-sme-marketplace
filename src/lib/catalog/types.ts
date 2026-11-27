@@ -1,3 +1,5 @@
+import type { Hours, LatLng } from "@/lib/geo";
+
 export type Category = {
   slug: string;
   name: string;
@@ -24,9 +26,32 @@ export type Partner = {
   tagline?: string;
   /** Channels the shop already sells on; Bazar links them together. */
   socials?: Social[];
+  /**
+   * false for real businesses listed from public facts (name, category,
+   * town) that have not joined Bazar. They show no rating, photos or
+   * products, and invite the owner to claim the listing.
+   */
+  claimed: boolean;
+  /** Branch or site, e.g. "Cathedral Square". */
+  branch?: string;
+  /** Map position. Demo: scattered around the district centre. */
+  location: LatLng;
+  /** Opening hours, Mauritius time. */
+  hours: Hours;
+  /** What the business stands for; drives "Shop by what matters". */
+  values: Value[];
 };
 
 export type Social = "instagram" | "facebook" | "whatsapp";
+
+export type Value =
+  | "made-in-mauritius"
+  | "woman-led"
+  | "handmade"
+  | "home-based"
+  | "family"
+  | "young"
+  | "less-plastic";
 
 export type Product = {
   slug: string;
@@ -36,6 +61,8 @@ export type Product = {
   note: string;
   photo: string;
   category: string;
+  /** Set for bookings (hotels, car rental): the price is per night or day. */
+  unit?: "night" | "day";
 };
 
 export type CartLine = { slug: string; qty: number };

@@ -1,103 +1,132 @@
 import type { Metadata } from "next";
-import { MagnifyingGlass } from "@phosphor-icons/react/ssr";
+import Link from "next/link";
 
+import { BusinessSearch } from "@/components/market/business-search";
 import { MarketShell } from "@/components/market/market-shell";
 import { ProductCard } from "@/components/market/product-card";
-import { ShopCard } from "@/components/market/shop-card";
-import { categories, searchCatalog } from "@/lib/catalog/queries";
+import { SectionHeader } from "@/components/market/section-header";
+import { ShopTile } from "@/components/market/shop-tile";
+import {
+  categories,
+  districts,
+  getCategory,
+  searchCatalog,
+} from "@/lib/catalog/queries";
 
 export const metadata: Metadata = { title: "Search · Bazar" };
 
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; district?: string; cat?: string }>;
 }) {
-  const query = ((await searchParams).q ?? "").trim();
-  const results = searchCatalog(query);
+  const params = await searchParams;
+  const query = (params.q ?? "").trim();
+  // Ignore values that aren't real districts or categories.
+  const district = districts().includes(params.district ?? "")
+    ? params.district
+    : undefined;
+  const category = getCategory(params.cat ?? "");
+  const results = searchCatalog(query, {
+    district,
+    category: category?.slug,
+  });
+  const searched = Boolean(query || district || category);
+
+  const summary = [
+    query ? `“${query}”` : null,
+    category ? category.name : null,
+    district ? `in ${district}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <MarketShell>
-      <h1 className="text-h1 text-ink-900">Search</h1>
+      <h1 className="text-h1 text-ink-900">Find a business or product</h1>
 
-      <form
-        action="/search"
-        className="mt-4 flex min-h-12 items-center gap-2 rounded-button border border-ink-100 bg-surface px-3"
-      >
-        <MagnifyingGlass aria-hidden="true" className="size-5 text-ink-500" />
-        <input
-          name="q"
-          type="search"
-          defaultValue={query}
-          placeholder="gato, plumber, achards, crafts…"
-          aria-label="Search"
-          className="min-h-11 flex-1 bg-transparent text-body text-ink-900 outline-none placeholder:text-ink-500"
-        />
-        <button
-          type="submit"
-          className="min-h-9 rounded-button bg-teal-500 px-3 text-body font-semibold text-white"
-        >
-          Search
-        </button>
-      </form>
+      <BusinessSearch
+        className="mt-4 shadow-none"
+        query={query}
+        district={district}
+        category={category?.slug}
+      />
 
-      {query ? (
-        <p className="mt-3 text-body text-ink-700">
-          {results.partners.length + results.products.length} results for “
-          {query}”
+      {searched ? (
+        <p className="mt-4 text-body text-ink-700" aria-live="polite">
+          <span className="font-semibold text-ink-900">
+            {results.partners.length} businesses
+          </span>{" "}
+          and {results.products.length} products for {summary}
         </p>
       ) : (
-        <div className="mt-6">
-          <h2 className="text-h3 text-ink-900">Browse categories</h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <a
-                key={category.slug}
-                href={`/c/${category.slug}`}
-                className="rounded-full border border-ink-300 bg-surface px-3 py-2 text-body text-ink-700 hover:border-teal-500"
-              >
-                {category.name}
-              </a>
+        <section aria-labelledby="browse-title" className="mt-8">
+          <h2 id="browse-title" className="text-h2 text-ink-900">
+            Browse categories
+          </h2>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {categories.map((c) => (
+              <li key={c.slug}>
+                <Link
+                  href={`/c/${c.slug}`}
+                  className="inline-flex min-h-10 items-center rounded-full bg-white px-4 text-body text-ink-900 ring-1 ring-ink-100 hover:ring-ink-300"
+                >
+                  {c.name}
+                </Link>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+          <h2 className="mt-8 text-h2 text-ink-900">Businesses by district</h2>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {districts().map((d) => (
+              <li key={d}>
+                <Link
+                  href={`/search?district=${encodeURIComponent(d)}`}
+                  className="inline-flex min-h-10 items-center rounded-full bg-white px-4 text-body text-ink-900 ring-1 ring-ink-100 hover:ring-ink-300"
+                >
+                  {d}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {results.partners.length > 0 ? (
         <section aria-labelledby="shops-title" className="mt-6">
-          <h2 id="shops-title" className="text-h3 text-ink-900">
-            Shops
-          </h2>
-          <div className="mt-3 flex flex-col gap-2">
+          <SectionHeader id="shops-title" title="Businesses" />
+          <ul className="grid grid-cols-2 gap-x-3 gap-y-6 tablet:grid-cols-3 desktop:grid-cols-4">
             {results.partners.map((partner) => (
-              <ShopCard key={partner.slug} partner={partner} />
+              <li key={partner.slug}>
+                <ShopTile partner={partner} />
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       ) : null}
 
       {results.products.length > 0 ? (
-        <section aria-labelledby="products-title" className="mt-6">
-          <h2 id="products-title" className="text-h3 text-ink-900">
-            Products
-          </h2>
-          <div className="mt-3 grid grid-cols-2 gap-2 tablet:grid-cols-4">
+        <section aria-labelledby="products-title" className="mt-10">
+          <SectionHeader id="products-title" title="Products" />
+          <ul className="grid grid-cols-2 gap-x-3 gap-y-6 tablet:grid-cols-4 desktop:grid-cols-6">
             {results.products.map((product) => (
-              <ProductCard key={product.slug} product={product} />
+              <li key={product.slug}>
+                <ProductCard product={product} />
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       ) : null}
 
-      {query &&
+      {searched &&
       results.partners.length === 0 &&
       results.products.length === 0 ? (
-        <div className="mt-6 rounded-card border border-dashed border-ink-300 bg-surface p-8 text-center">
+        <div className="mt-6 rounded-card border border-dashed border-ink-300 bg-white p-8 text-center">
           <p className="text-body-l font-semibold text-ink-900">
-            Nothing matched “{query}”
+            Nothing matched {summary}
           </p>
           <p className="mt-1 text-body text-ink-700">
-            Try a category, a shop name or a simpler word.
+            Try another district, all categories, or a simpler word.
           </p>
         </div>
       ) : null}

@@ -37,9 +37,9 @@ export default function SellPage() {
         {/* Business: teal, recurring, catalogue */}
         <section
           aria-labelledby="business-title"
-          className="flex flex-col rounded-card bg-white ring-2 ring-teal-500"
+          className="flex flex-col rounded-card bg-white ring-2 ring-ink-900"
         >
-          <div className="rounded-t-card bg-teal-700 p-5 text-white">
+          <div className="rounded-t-card bg-ink-900 p-5 text-white">
             <Storefront aria-hidden="true" className="size-7" />
             <p className="mt-3 text-caption font-semibold text-white/80">
               Bazar Business
@@ -57,7 +57,7 @@ export default function SellPage() {
               <li key={item} className="flex gap-2 text-body text-ink-700">
                 <Check
                   aria-hidden="true"
-                  className="mt-0.5 size-4 shrink-0 text-teal-500"
+                  className="mt-0.5 size-4 shrink-0 text-lime-700"
                   weight="bold"
                 />
                 {item}
@@ -67,7 +67,7 @@ export default function SellPage() {
           <div className="p-5 pt-0">
             <Link
               href="/dashboard"
-              className="flex min-h-11 items-center justify-center gap-2 rounded-button bg-teal-500 px-5 text-body font-semibold text-white hover:bg-teal-700"
+              className="flex min-h-11 items-center justify-center gap-2 rounded-button bg-lime-400 px-5 text-body font-semibold text-ink-900 hover:bg-lime-300"
             >
               Open your shop
               <ArrowRight aria-hidden="true" className="size-4" />

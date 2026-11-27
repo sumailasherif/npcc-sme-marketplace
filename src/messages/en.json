@@ -44,7 +44,7 @@
   },
   "Auth": {
     "title": "Sign in to Bazar",
-    "subtitle": "Sell from your phone. No password needed: we email you a code.",
+    "subtitle": "One account to shop, sell and run your business. No password: we email you a code.",
     "emailLabel": "Email address",
     "emailPlaceholder": "you@example.com",
     "sendCode": "Send me a code",
@@ -54,7 +54,12 @@
     "verify": "Sign in",
     "resend": "Send a new code",
     "changeEmail": "Use a different email",
-    "spamHint": "No email after a minute? Look in your spam folder."
+    "spamHint": "No email after a minute? Look in your spam folder.",
+    "panelTitle": "Every Mauritian business, in one place",
+    "panelPoint1": "Shop from verified local businesses",
+    "panelPoint2": "Open your shop and take orders",
+    "panelPoint3": "Sell your pre-loved things safely",
+    "newHere": "New here? Enter your email and we’ll create your account."
   },
   "Onboarding": {
     "title": "Create your shop",

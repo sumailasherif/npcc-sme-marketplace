@@ -61,7 +61,7 @@ export function MerchantNav({
                   "flex min-h-14 flex-col items-center justify-center gap-0.5 text-caption",
                   "desktop:min-h-11 desktop:flex-row desktop:justify-start desktop:gap-3 desktop:rounded-button desktop:px-3 desktop:text-body",
                   active
-                    ? "text-teal-700 desktop:bg-teal-50"
+                    ? "text-lime-700 desktop:bg-lime-50"
                     : "text-ink-700 hover:text-ink-900 desktop:hover:bg-ink-100",
                 )}
               >

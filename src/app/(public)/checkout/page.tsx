@@ -59,7 +59,7 @@ export default async function CheckoutPage() {
               <dd className="tabular-price">{formatPrice(cart.total)}</dd>
             </div>
           </dl>
-          <p className="mt-3 rounded-button bg-teal-50 p-3 text-caption text-teal-700">
+          <p className="mt-3 rounded-button bg-lime-50 p-3 text-caption text-lime-700">
             Shop orders are paid directly with Juice or cash on delivery.
             SafePay escrow is only for Pre-loved resale.
           </p>

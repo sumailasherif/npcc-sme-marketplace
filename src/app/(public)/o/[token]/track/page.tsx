@@ -65,12 +65,12 @@ export default async function OrderTrackPage({
               {deliveryLabels[order.deliveryMethod]} · {shop}
             </p>
           </div>
-          <span className="rounded-full bg-teal-50 px-3 py-1.5 text-caption font-semibold text-teal-700">
+          <span className="rounded-full bg-lime-50 px-3 py-1.5 text-caption font-semibold text-lime-700">
             Live
           </span>
         </div>
 
-        <div className="relative mt-4 h-44 overflow-hidden rounded-card bg-teal-50">
+        <div className="relative mt-4 h-44 overflow-hidden rounded-card bg-lime-50">
           <div
             aria-hidden="true"
             className="absolute inset-0 opacity-70"
@@ -80,17 +80,17 @@ export default async function OrderTrackPage({
               backgroundSize: "32px 32px",
             }}
           />
-          <div className="absolute left-[18%] top-[66%] h-1 w-[58%] -rotate-12 rounded-full bg-teal-500" />
+          <div className="absolute left-[18%] top-[66%] h-1 w-[58%] -rotate-12 rounded-full bg-lime-400" />
           <div className="absolute left-[58%] top-[40%] grid size-10 place-items-center rounded-full bg-ink-900 text-yellow-500 shadow-[0_0_0_8px_rgba(20,120,120,0.12)]">
             <Lightning aria-hidden="true" className="size-5" weight="fill" />
           </div>
-          <div className="absolute right-[16%] top-[24%] grid size-8 place-items-center rounded-full bg-white text-teal-700 shadow">
+          <div className="absolute right-[16%] top-[24%] grid size-8 place-items-center rounded-full bg-white text-lime-700 shadow">
             <MapPin aria-hidden="true" className="size-4" weight="fill" />
           </div>
           <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-caption font-semibold text-ink-900 shadow-sm">
             <Lightning
               aria-hidden="true"
-              className="size-3.5 text-teal-700"
+              className="size-3.5 text-lime-700"
               weight="fill"
             />
             Grabbit Express · 25 min away
@@ -99,7 +99,7 @@ export default async function OrderTrackPage({
 
         <section className="mt-4 rounded-card border border-ink-100 bg-surface p-4">
           <div className="flex items-center gap-3">
-            <span className="grid size-11 place-items-center rounded-full bg-teal-50 text-body font-bold text-teal-700">
+            <span className="grid size-11 place-items-center rounded-full bg-lime-50 text-body font-bold text-lime-700">
               RK
             </span>
             <div className="min-w-0 flex-1">
@@ -128,7 +128,7 @@ export default async function OrderTrackPage({
             </div>
             <ShieldCheck
               aria-label="Private code"
-              className="size-6 shrink-0 text-teal-300"
+              className="size-6 shrink-0 text-lime-400"
               weight="fill"
             />
           </div>
@@ -140,9 +140,9 @@ export default async function OrderTrackPage({
                   aria-hidden="true"
                   className={`mt-1.5 size-3 shrink-0 rounded-full ${
                     step.state === "done"
-                      ? "bg-teal-700"
+                      ? "bg-ink-900"
                       : step.state === "active"
-                        ? "border-2 border-teal-700 bg-white"
+                        ? "border-2 border-ink-900 bg-white"
                         : "border-2 border-ink-300 bg-white"
                   }`}
                 />
@@ -191,7 +191,7 @@ export default async function OrderTrackPage({
           </dl>
           <Link
             href={`/track/${tracking.id}/${tracking.code}`}
-            className="mt-3 inline-flex min-h-11 items-center gap-1 text-body font-semibold text-teal-700"
+            className="mt-3 inline-flex min-h-11 items-center gap-1 text-body font-semibold text-lime-700"
           >
             Open the public tracking link
           </Link>

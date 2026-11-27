@@ -12,11 +12,13 @@ import {
 
 import { MarketShell } from "@/components/market/market-shell";
 import { ProductCard } from "@/components/market/product-card";
+import { ValueBadge } from "@/components/market/value-badge";
 import { ShopHeader } from "@/components/shop-header";
 import { SiteHeader } from "@/components/site-header";
 import { Photo } from "@/components/ui/photo";
 import type { Locale } from "@/i18n/config";
-import { getPartner, productsByShop } from "@/lib/catalog/queries";
+import { displayName, getPartner, productsByShop } from "@/lib/catalog/queries";
+import type { Partner } from "@/lib/catalog/types";
 import { categoryName } from "@/lib/database.types";
 import { getShopBySlug, shopUrl } from "@/lib/shops";
 import { whatsappLink } from "@/lib/validation/shop";
@@ -64,9 +66,81 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/**
+ * A real business listed from public facts only. No photos, rating or
+ * products of theirs; the owner can claim it for free.
+ */
+function UnclaimedListing({ partner }: { partner: Partner }) {
+  const { lat, lng } = partner.location;
+  return (
+    <MarketShell>
+      <section className="overflow-hidden rounded-sheet bg-ink-900 text-white">
+        <div className="relative h-44 tablet:h-72">
+          <Photo
+            name={partner.cover}
+            alt={partner.cover === "listing-placeholder" ? "" : partner.name}
+            sizes="100vw"
+            priority
+          />
+        </div>
+        <div className="p-5 tablet:p-8">
+          <p className="inline-flex rounded-full bg-white/10 px-3 py-1 text-caption font-semibold text-white/85">
+            Not on Bazar yet
+          </p>
+          <h1 className="mt-3 font-heading text-[2rem] font-extrabold leading-[2.4rem] tracking-[-0.02em] text-lime-400">
+            {displayName(partner)}
+          </h1>
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-body text-white/80">
+            <span>{partner.tag}</span>
+            <span aria-hidden="true">·</span>
+            <span className="inline-flex items-center gap-1">
+              <MapPin aria-hidden="true" className="size-4" />
+              {partner.district} (approximate location)
+            </span>
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-body font-semibold text-ink-900 hover:bg-lime-400"
+            >
+              <MapPin aria-hidden="true" className="size-4" weight="fill" />
+              Get directions
+            </a>
+            <Link
+              href="/sell"
+              className="inline-flex min-h-11 items-center rounded-full bg-lime-400 px-5 text-body font-semibold text-ink-900 hover:bg-lime-300"
+            >
+              Is this your business? Claim it for free
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <div className="mt-6 rounded-card bg-white p-5 ring-1 ring-ink-100">
+        <h2 className="text-h3 text-ink-900">About this listing</h2>
+        <p className="mt-1 max-w-xl text-body text-ink-700">
+          This page only shows public information so people can find{" "}
+          {partner.name}. The business has not joined Bazar, so there are no
+          products, prices or reviews here. Once the owner claims it, they can
+          add photos, opening hours and take orders.
+        </p>
+        <Link
+          href={`/c/${partner.categories[0]}`}
+          className="mt-4 inline-flex min-h-11 items-center rounded-full bg-ink-900 px-5 text-body font-semibold text-lime-400 hover:bg-ink-800"
+        >
+          See {partner.tag.toLowerCase()} on Bazar
+        </Link>
+      </div>
+    </MarketShell>
+  );
+}
+
 function DemoShop({ slug }: { slug: string }) {
   const partner = getPartner(slug);
   if (!partner) notFound();
+  if (!partner.claimed) return <UnclaimedListing partner={partner} />;
   const products = productsByShop(partner.slug);
 
   return (
@@ -122,6 +196,21 @@ function DemoShop({ slug }: { slug: string }) {
           Delivery in {partner.district} · cash or Juice
         </span>
       </div>
+
+      {partner.values.length > 0 ? (
+        <ul
+          aria-label="What this business stands for"
+          className="mt-3 flex flex-wrap gap-2"
+        >
+          {partner.values.map((value) => (
+            <li key={value}>
+              <Link href={`/v/${value}`} className="block hover:opacity-80">
+                <ValueBadge value={value} />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       {products.length > 0 ? (
         <section aria-labelledby="products-title" className="mt-6">

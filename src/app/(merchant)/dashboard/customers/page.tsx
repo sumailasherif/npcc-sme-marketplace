@@ -45,7 +45,7 @@ export default function CustomersPage() {
             key={customer.name}
             className="flex items-center gap-3 rounded-card border border-ink-100 bg-surface p-3"
           >
-            <span className="grid size-10 place-items-center rounded-full bg-teal-50 text-body font-bold text-teal-700">
+            <span className="grid size-10 place-items-center rounded-full bg-lime-50 text-body font-bold text-lime-700">
               {initials(customer.name)}
             </span>
             <span className="min-w-0 flex-1">
@@ -64,7 +64,7 @@ export default function CustomersPage() {
         ))}
       </ul>
 
-      <div className="mt-4 flex items-start gap-2 rounded-card bg-teal-50 p-4 text-body text-teal-700">
+      <div className="mt-4 flex items-start gap-2 rounded-card bg-lime-50 p-4 text-body text-lime-700">
         <Sparkle
           aria-hidden="true"
           className="mt-0.5 size-5 shrink-0"

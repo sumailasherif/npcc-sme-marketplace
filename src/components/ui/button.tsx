@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Bazar button (spec: Components > Button).
- * Variants: primary (teal), cta (coral-700), secondary (outline), ghost, destructive.
+ * Variants: primary (lime, black text), cta (black), secondary (outline), ghost, destructive.
  * Sizes: sm / md / lg. Every size is at least 44px tall (minimum touch target).
  */
 const buttonVariants = cva(
@@ -24,8 +24,9 @@ const buttonVariants = cva(
           "bg-primary text-primary-foreground hover:bg-primary-pressed active:bg-primary-pressed",
         cta: "bg-cta text-cta-foreground hover:brightness-95 active:brightness-90",
         secondary:
-          "border border-primary bg-surface text-primary hover:bg-teal-50 active:bg-teal-100",
-        ghost: "text-primary hover:bg-teal-50 active:bg-teal-100",
+          "border border-ink-900 bg-surface text-ink-900 hover:bg-lime-50 active:bg-lime-100",
+        ghost:
+          "text-ink-900 underline-offset-4 hover:bg-lime-50 hover:underline active:bg-lime-100",
         destructive:
           "bg-destructive text-white hover:brightness-95 active:brightness-90",
       },

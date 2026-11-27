@@ -62,7 +62,7 @@ export default function AnalyticsPage() {
           <h2 className="text-h3 text-ink-900">Customers worth keeping</h2>
           <Link
             href="/dashboard/customers"
-            className="text-body font-semibold text-teal-700"
+            className="text-body font-semibold text-lime-700"
           >
             All customers
           </Link>

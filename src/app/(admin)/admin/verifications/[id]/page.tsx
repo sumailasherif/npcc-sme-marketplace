@@ -43,7 +43,7 @@ export default async function VerificationDetailPage({
             <button className="min-h-11 rounded-button border border-ink-300 bg-surface px-4 text-body font-semibold text-ink-700">
               Ask for info
             </button>
-            <button className="min-h-11 rounded-button bg-teal-500 px-4 text-body font-semibold text-white">
+            <button className="min-h-11 rounded-button bg-lime-400 px-4 text-body font-semibold text-ink-900">
               Approve
             </button>
           </div>
@@ -67,7 +67,7 @@ export default async function VerificationDetailPage({
             </Badge>
           </div>
           <div className="mt-3 flex items-center gap-3">
-            <span className="grid size-14 place-items-center rounded-full bg-teal-50 text-body font-bold text-teal-700">
+            <span className="grid size-14 place-items-center rounded-full bg-lime-50 text-body font-bold text-lime-700">
               {item.name.slice(0, 2).toUpperCase()}
             </span>
             <div>
@@ -106,7 +106,7 @@ export default async function VerificationDetailPage({
                 {index === checks.length - 1 ? (
                   <Warning
                     aria-hidden="true"
-                    className="size-4 text-coral-700"
+                    className="size-4 text-lime-700"
                   />
                 ) : (
                   <Check
@@ -182,7 +182,7 @@ export default async function VerificationDetailPage({
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            <button className="min-h-11 flex-1 rounded-button bg-teal-500 px-4 text-body font-semibold text-white">
+            <button className="min-h-11 flex-1 rounded-button bg-lime-400 px-4 text-body font-semibold text-ink-900">
               Approve
             </button>
             <button className="min-h-11 rounded-button border border-ink-300 bg-surface px-4 text-body font-semibold text-ink-700">

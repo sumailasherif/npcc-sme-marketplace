@@ -44,7 +44,7 @@
   },
   "Auth": {
     "title": "Konekte lor Bazar",
-    "subtitle": "Vann depi ou portab. Pa bizin mopas: nou avoy ou enn kod par imel.",
+    "subtitle": "Enn sel kont pou aste, vann ek gere ou biznes. Pa bizin mopas: nou avoy ou enn kod par imel.",
     "emailLabel": "Ladres imel",
     "emailPlaceholder": "ou@egzanp.com",
     "sendCode": "Avoy mwa enn kod",
@@ -54,7 +54,12 @@
     "verify": "Konekte",
     "resend": "Avoy enn nouvo kod",
     "changeEmail": "Servi enn lot imel",
-    "spamHint": "Pa gagn imel apre enn minit? Get dan spam."
+    "spamHint": "Pa gagn imel apre enn minit? Get dan spam.",
+    "panelTitle": "Tou biznes morisien, dan enn sel plas",
+    "panelPoint1": "Aste kot biznes lokal ki finn verifye",
+    "panelPoint2": "Ouver ou laboutik ek pran komann",
+    "panelPoint3": "Vann ou zafer segonn-min an sekirite",
+    "newHere": "Nouvo? Met ou imel, nou kreye ou kont."
   },
   "Onboarding": {
     "title": "Kree ou laboutik",

@@ -32,7 +32,7 @@ export function ConsoleShell({
         )}
       >
         <Link href="/" className="flex min-h-11 items-center gap-2 px-2">
-          <span className="grid size-8 place-items-center rounded-lg bg-teal-700 font-heading text-body font-extrabold text-white">
+          <span className="grid size-8 place-items-center rounded-lg bg-ink-900 font-heading text-body font-extrabold text-white">
             B
           </span>
           <span className="flex flex-col leading-tight">
@@ -58,7 +58,7 @@ export function ConsoleShell({
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between gap-3 border-b border-ink-100 bg-surface px-4 py-2 tablet:px-6 desktop:hidden">
           <Link href="/" className="flex min-h-11 items-center gap-2">
-            <span className="grid size-8 place-items-center rounded-lg bg-teal-700 font-heading text-body font-extrabold text-white">
+            <span className="grid size-8 place-items-center rounded-lg bg-ink-900 font-heading text-body font-extrabold text-white">
               B
             </span>
             <span className="font-heading text-body font-bold text-ink-900">

@@ -14,8 +14,11 @@ const shortCode = { en: "EN", fr: "FR", mfe: "KR" } as const;
  */
 export async function LanguageSwitcher({
   compact = false,
+  tone = "light",
 }: {
   compact?: boolean;
+  /** "dark" for black bars: cream text, lime for the current language. */
+  tone?: "light" | "dark";
 }) {
   const t = await getTranslations("LanguageSwitcher");
   const current = await getLocale();
@@ -33,8 +36,10 @@ export async function LanguageSwitcher({
               "min-h-11 min-w-11 rounded-button text-label",
               compact ? "px-2 tablet:px-3" : "px-3",
               locale === current
-                ? "bg-teal-50 text-teal-700"
-                : "text-ink-700 hover:bg-ink-100",
+                ? "bg-lime-400 font-semibold text-ink-900"
+                : tone === "dark"
+                  ? "text-white/80 hover:bg-white/10"
+                  : "text-ink-700 hover:bg-ink-100",
             )}
           >
             {compact ? (

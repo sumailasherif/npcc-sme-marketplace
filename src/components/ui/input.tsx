@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 export const fieldBase = cn(
   "w-full min-h-11 rounded-button border border-input bg-surface px-3 text-body-l text-ink-900",
   "placeholder:text-ink-500",
-  "focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-primary",
+  "focus-visible:border-ink-900 focus-visible:outline-2 focus-visible:outline-ink-900",
   "aria-invalid:border-error-600",
   "disabled:bg-ink-100 disabled:text-ink-500",
 );

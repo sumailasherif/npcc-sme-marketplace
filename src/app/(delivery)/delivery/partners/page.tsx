@@ -69,7 +69,7 @@ export default function DeliveryPartnersPage() {
         ))}
       </ul>
 
-      <div className="mt-4 rounded-card bg-teal-50 p-4 text-body text-teal-700">
+      <div className="mt-4 rounded-card bg-lime-50 p-4 text-body text-lime-700">
         <p className="font-semibold text-ink-900">What verified means</p>
         <p className="mt-1 text-caption">
           Company registration, insurance, fleet size, driver IDs and licences,

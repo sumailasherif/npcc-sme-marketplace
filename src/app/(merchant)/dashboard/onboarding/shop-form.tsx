@@ -76,7 +76,7 @@ export function ShopForm({ userId, categories, shopBaseUrl }: Props) {
   return (
     <form action={action} className="flex flex-col gap-5" noValidate>
       {state.formError ? (
-        <p role="alert" className="rounded-button bg-coral-100 p-3 text-body">
+        <p role="alert" className="rounded-button bg-lime-100 p-3 text-body">
           {tv(state.formError)}
         </p>
       ) : null}

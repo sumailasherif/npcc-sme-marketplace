@@ -18,7 +18,7 @@ export default function MoneyPage() {
             <button className="min-h-11 rounded-button border border-ink-300 bg-surface px-4 text-body font-semibold text-ink-700">
               Export PDF
             </button>
-            <button className="min-h-11 rounded-button bg-teal-500 px-4 text-body font-semibold text-white">
+            <button className="min-h-11 rounded-button bg-lime-400 px-4 text-body font-semibold text-ink-900">
               Send to accountant
             </button>
           </div>
@@ -90,11 +90,11 @@ export default function MoneyPage() {
           </div>
         </section>
 
-        <aside className="rounded-card border border-teal-100 bg-[#f7fcfc] p-4">
+        <aside className="rounded-card border border-lime-100 bg-lime-50 p-4">
           <h2 className="flex items-center gap-2 text-h3 text-ink-900">
             <Sparkle
               aria-hidden="true"
-              className="size-5 text-teal-700"
+              className="size-5 text-lime-700"
               weight="fill"
             />
             AI narrative

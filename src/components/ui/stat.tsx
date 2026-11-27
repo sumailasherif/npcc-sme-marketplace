@@ -27,7 +27,7 @@ export function Stat({
           className={cn(
             "mt-1 text-caption",
             tone === "good" && "text-success-700",
-            tone === "warn" && "text-coral-700",
+            tone === "warn" && "text-lime-700",
             tone === "default" && "text-ink-500",
           )}
         >

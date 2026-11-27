@@ -21,7 +21,7 @@ export function ShopHeader(props: Props) {
   return (
     <section className="flex flex-col gap-4 rounded-card bg-surface p-4 shadow-e1">
       <div className="flex items-start gap-3">
-        <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-card bg-teal-50 tablet:size-20">
+        <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-card bg-lime-50 tablet:size-20">
           {props.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- Supabase storage image
             <img
@@ -32,7 +32,7 @@ export function ShopHeader(props: Props) {
               height={80}
             />
           ) : (
-            <Storefront aria-hidden="true" className="size-8 text-teal-500" />
+            <Storefront aria-hidden="true" className="size-8 text-lime-700" />
           )}
         </div>
         <div className="flex min-w-0 flex-col gap-1">

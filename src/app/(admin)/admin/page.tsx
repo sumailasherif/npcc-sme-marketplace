@@ -34,7 +34,7 @@ export default function AdminOverviewPage() {
             <h2 className="text-h3 text-ink-900">Verification queue</h2>
             <Link
               href="/admin/verifications"
-              className="text-body font-semibold text-teal-700"
+              className="text-body font-semibold text-lime-700"
             >
               See all
             </Link>
@@ -81,7 +81,7 @@ export default function AdminOverviewPage() {
             <h2 className="text-h3 text-ink-900">Pre-loved disputes</h2>
             <Link
               href="/admin/disputes"
-              className="text-body font-semibold text-teal-700"
+              className="text-body font-semibold text-lime-700"
             >
               See all
             </Link>

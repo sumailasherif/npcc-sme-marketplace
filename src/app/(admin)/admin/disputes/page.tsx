@@ -71,7 +71,7 @@ export default function DisputesPage() {
         </Table>
       </div>
 
-      <div className="mt-4 rounded-card bg-teal-50 p-4 text-body text-teal-700">
+      <div className="mt-4 rounded-card bg-lime-50 p-4 text-body text-lime-700">
         <p className="font-semibold text-ink-900">SafePay rules</p>
         <p className="mt-1 text-caption">
           Buyer confirms → release next payout. Refund request → seller has 48

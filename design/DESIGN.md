@@ -220,11 +220,131 @@ SME businesses and individual resellers must never look like the same thing.
 - `/sell/listings` redirects to `/preloved/me`.
 - Account shows both spaces as separate cards.
 
-## 13. Sources
+## 13. Faire-style home and "Shop by what matters" — 27 Nov 2026
 
+Reference: faire.com (homepage structure only; we copy the structure and the
+calm, not the look). Businesses come before products, people come before
+businesses, and the photos do the work.
+
+Home, top to bottom (revised 27 Nov after user references):
+**full-width hero** (three photos under a 70% ink overlay, centred H1,
+`BusinessSearch` bar: what / district / category / coral Search, "Popular"
+chips) → **Shop by category** (6 big photo cards with gradient, name,
+shop and product counts, "Shop now"; other categories as chips) →
+**Featured shops** (one row of 4 `ShopTile`s per category) → Trending
+products (top 3 tagged "Bestseller") → **Shop by what matters** (7 value
+cards + "How we check") → benefit row → Pre-loved teaser → Bazar Business
+with an Academy teaser (white, not a teal band) → **More to explore** tags.
+
+No founder or "Meet the makers" content: Bazar is a place for businesses,
+and the storefront speaks for them.
+
+- `BusinessSearch` is a plain GET form to `/search` (`q`, `district`,
+  `cat`). One pill bar on tablet+, stacked on phones. Search matches a
+  business on name, category, district, tagline or anything it sells, and
+  lists businesses before products.
+- `ShopTile`: 4:3 photo, logo chip on the photo, name + verified seal,
+  district · rating, one `ValueBadge`. No tagline, no socials (those live on
+  the shop page).
+- `ProductCard`: photo (optional tag), name, shop name as its own link with
+  the shop's rating, then price.
+- Values: Made in Mauritius, Woman-led, Handmade, Home business, Family
+  business, Young entrepreneur, Less plastic. Defined in
+  `src/lib/catalog/values.ts` with what verification checks for each.
+  Filter pages at `/v/{value}`; badges on shop tiles and shop pages.
+- Teal is for buttons, links and small icons. Avoid big coloured blocks on
+  buyer pages.
+
+## 14. Brand: lime, black and cream — 27 Nov 2026
+
+Supersedes the teal/coral palette in §3 for every buyer, seller and login
+screen. Tokens in `globals.css` and `design/tokens.json`.
+
+| Token                   | Hex     | Use                                                                                  |
+| ----------------------- | ------- | ------------------------------------------------------------------------------------ |
+| `lime-400`              | #D4F53C | Brand fill: primary buttons, logo block, badges, highlights. Always with black text. |
+| `lime-700`              | #496100 | The only green used as text or icons on cream (6:1).                                 |
+| `ink-900`               | #0E0E0C | Text, header, footer, dark sections and cards.                                       |
+| `sand-50` / `cream-100` | #F4F0E6 | Page background.                                                                     |
+| `white` / `cream-50`    | #FBF8F1 | Cards. There is no pure white anywhere.                                              |
+
+- Never lime text on cream (1.2:1). Lime text is fine on black (14:1).
+- Logo: black "bazar" on a lime block (`components/brand/logo.tsx`).
+- Header and footer are black; the phone bottom bar is cream with a lime
+  pill behind the current tab.
+- Colour comes in blocks, not tints: black shop cards, black price pills
+  with lime text, a lime benefit band, black "Near you" and "Bazar Business"
+  sections.
+- Home hero: six-photo carousel (crossfade + slow zoom, pause button,
+  stops on hover/focus, off with reduced motion). Tagline: "Discover
+  Mauritian businesses and shop smarter".
+- Login: full-bleed photo with the lime headline, cream form card with
+  pill input and button. Sign in and sign up are the same screen.
+- Map: OpenStreetMap tiles darkened with a CSS filter, round photo pins with
+  a bright ring per category (`lib/catalog/pin-colors.ts`), lime "you are
+  here" dot. Bright pin colours are for the dark map only.
+- Categories, in order: Restaurants & food courts, Groceries &
+  supermarkets, Hotels & stays, Car rental, Malls, Phones & electronics,
+  Beauty & salons, Home & furniture, Bakeries & cakes, Gifts & flowers,
+  Kids & baby, Fashion & clothing, Made in Mauritius.
+- Photos: real photographs only, licensed (CC0 / CC BY / CC BY-SA), listed
+  in `public/photos/CREDITS.md`. No illustrations, no watermarks.
+
+## 15. Display type, motion and plain cards — 27 Nov 2026
+
+- **Headings: Unbounded** (Google Fonts, latin-ext). Body stays Inter.
+  Replaces Plus Jakarta Sans. Use it big and bold; it is wide, so keep
+  card titles in Inter.
+- **Motion** (reference: ondira.winebald.tech, ideas only, no code or
+  assets): scroll reveal (`components/motion/reveal.tsx`), count-up
+  numbers, full-width photo panels that stack as you scroll
+  (`numbers-section.tsx`), a slowly rotating circle badge. All of it is
+  off with prefers-reduced-motion. No WebGL.
+- **Hero**: a contained, rounded card (max 1200 px) so 2000 px photos stay
+  sharp; zoom limited to 3%. Each slide has its own audience pill, headline,
+  text and button.
+- **Brand band**: the giant "bazar" wordmark lives in its own lime section
+  near the bottom of the home page, not in the hero.
+- **Cards**: a plain photo-first style was tried and rejected by the product
+  owner; shop cards stay black with a lime logo chip and value badge, and
+  prices stay in black pills with lime text (§14).
+- **Photos**: real Mauritius photos from Wikimedia Commons (CC0 / CC BY /
+  CC BY-SA, 2000 px) where available, credited in `public/photos/CREDITS.md`.
+
+## 17. Hero: the drum and the rising shop window — 27 Nov 2026
+
+Replaces the six-photo carousel (§15). References, layout and motion ideas
+only (no code, text or assets): MotionSites "Vertex" and the Scrolltide AI
+Studio house style (MIT rules only). Links in §16.
+
+- **Layout** (`components/market/hero-stage.tsx`): black ground with one soft
+  lime glow; a floating black pill header (home only); badge, uppercase
+  Unbounded headline with "and shop smarter" in lime, one line of text, the
+  business finder with a lime glow, Popular chips and "Open your shop".
+- **The drum**: 12 cards (real Mauritius photos plus lime / black / cream
+  type cards saying what Bazar does for shoppers, businesses and
+  travellers) bent into a curve with CSS 3D, sliding forever. No animation
+  library. Decorative (`aria-hidden`), with a pause button (WCAG 2.2.2).
+- **The shop window** (`components/market/shop-preview.tsx`): a browser
+  window showing a real demo shop (Kaskad Food Court) with working links.
+- **The one scroll moment** (screens 64rem+ wide, when the words leave room
+  for the drum): the stage pins for about 1.3 screens; the words lift away,
+  the drum flattens and drops, the window rises and grows. One rAF loop
+  writes CSS variables (`--u` per card, `--p` for progress); no React state
+  per frame.
+- **Still versions**: phones, tablets, reduced motion and no-JS get the same
+  pieces stacked, without pinning; with reduced motion the drum stays still.
+- **Checked**: screenshots at 0/25/50/75/100% scroll on 1440, 1366, 1920,
+  768 and 390 px wide; no sideways scroll at 390/768/1024/1280/1920.
+
+## 16. Sources
+
+- Faire homepage (structure reference): https://www.faire.com/
 - Impeccable `DESIGN.md`: https://github.com/pbakaus/impeccable/blob/main/DESIGN.md
 - Anthropic `frontend-design`: https://github.com/anthropics/skills/tree/main/skills/frontend-design
 - UI UX Pro Max: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
 - skills.sh: https://www.skills.sh/
 - Gumtree browse reference: https://www.gumtree.com.au/
 - Dribbble Pre-loved reference: https://dribbble.com/shots/11137171-Second-Hand-Market-App-Platform
+- MotionSites "Vertex" (hero layout and motion): https://motionsites.ai/?prompt=vertex
+- Scrolltide AI Studio house style: https://github.com/scrolltide/ai-studio-skill

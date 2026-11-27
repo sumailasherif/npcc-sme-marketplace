@@ -19,7 +19,7 @@ export default async function AccountPage() {
       <h1 className="text-h1 text-ink-900">Account</h1>
 
       <section className="mt-4 flex items-center gap-3 rounded-card border border-ink-100 bg-surface p-4">
-        <span className="grid size-12 place-items-center rounded-full bg-teal-50 text-teal-700">
+        <span className="grid size-12 place-items-center rounded-full bg-lime-50 text-lime-700">
           <User aria-hidden="true" className="size-6" />
         </span>
         <div>
@@ -35,13 +35,13 @@ export default async function AccountPage() {
       >
         <Link
           href="/dashboard"
-          className="group flex items-center gap-3 rounded-card bg-white p-4 ring-1 ring-ink-100 hover:ring-teal-500"
+          className="group flex items-center gap-3 rounded-card bg-white p-4 ring-1 ring-ink-100 hover:ring-ink-900"
         >
-          <span className="grid size-11 shrink-0 place-items-center rounded-button bg-teal-700 text-white">
+          <span className="grid size-11 shrink-0 place-items-center rounded-button bg-ink-900 text-white">
             <Storefront aria-hidden="true" className="size-6" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-caption font-semibold text-teal-700">
+            <span className="block text-caption font-semibold text-lime-700">
               Bazar Business
             </span>
             <span className="block text-body font-semibold text-ink-900">
@@ -94,7 +94,7 @@ export default async function AccountPage() {
             </p>
             <Link
               href="/"
-              className="mt-4 inline-flex min-h-11 items-center rounded-button bg-teal-500 px-4 text-body font-semibold text-white"
+              className="mt-4 inline-flex min-h-11 items-center rounded-button bg-lime-400 px-4 text-body font-semibold text-ink-900"
             >
               Browse shops
             </Link>
@@ -105,7 +105,7 @@ export default async function AccountPage() {
               <li key={order.token}>
                 <Link
                   href={`/o/${order.token}`}
-                  className="flex items-center justify-between gap-3 rounded-card border border-ink-100 bg-surface p-4 hover:border-teal-500"
+                  className="flex items-center justify-between gap-3 rounded-card border border-ink-100 bg-surface p-4 hover:border-ink-900"
                 >
                   <span>
                     <span className="block text-body font-semibold text-ink-900">
@@ -119,7 +119,7 @@ export default async function AccountPage() {
                     <span className="block text-body font-bold tabular-price text-ink-900">
                       {formatPrice(order.total)}
                     </span>
-                    <span className="text-caption text-teal-700">
+                    <span className="text-caption text-lime-700">
                       {order.paymentMethod === "juice"
                         ? "Juice"
                         : "Cash on delivery"}
@@ -135,13 +135,13 @@ export default async function AccountPage() {
       <section className="mt-6 grid gap-2 tablet:grid-cols-2">
         <Link
           href="/for-you"
-          className="rounded-card border border-ink-100 bg-surface p-4 text-body font-semibold text-ink-900 hover:border-teal-500"
+          className="rounded-card border border-ink-100 bg-surface p-4 text-body font-semibold text-ink-900 hover:border-ink-900"
         >
           For you
         </Link>
         <Link
           href="/saved"
-          className="rounded-card border border-ink-100 bg-surface p-4 text-body font-semibold text-ink-900 hover:border-teal-500"
+          className="rounded-card border border-ink-100 bg-surface p-4 text-body font-semibold text-ink-900 hover:border-ink-900"
         >
           Saved
         </Link>

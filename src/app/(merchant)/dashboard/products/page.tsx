@@ -19,7 +19,7 @@ export default function ProductsPage() {
         actions={
           <Link
             href="/dashboard/products/new"
-            className="inline-flex min-h-11 items-center gap-1 rounded-button bg-teal-500 px-4 text-body font-semibold text-white"
+            className="inline-flex min-h-11 items-center gap-1 rounded-button bg-lime-400 px-4 text-body font-semibold text-ink-900"
           >
             <Plus aria-hidden="true" className="size-4" weight="bold" />
             Add product

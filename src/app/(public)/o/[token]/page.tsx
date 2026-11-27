@@ -41,7 +41,7 @@ export default async function OrderPage({
                 {order.orderNo}
               </p>
             </div>
-            <span className="rounded-full bg-coral-100 px-3 py-1 text-caption font-semibold text-coral-700">
+            <span className="rounded-full bg-lime-100 px-3 py-1 text-caption font-semibold text-lime-700">
               Placed
             </span>
           </div>
@@ -79,7 +79,7 @@ export default async function OrderPage({
             </div>
           </dl>
 
-          <div className="mt-4 flex items-start gap-2 rounded-button bg-teal-50 p-3 text-body text-teal-700">
+          <div className="mt-4 flex items-start gap-2 rounded-button bg-lime-50 p-3 text-body text-lime-700">
             <Receipt aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
             <p>
               {paid
@@ -97,7 +97,7 @@ export default async function OrderPage({
                 <span
                   className={`grid size-7 place-items-center rounded-full text-caption font-bold ${
                     index === 0
-                      ? "bg-teal-500 text-white"
+                      ? "bg-lime-400 text-ink-900"
                       : "bg-ink-100 text-ink-500"
                   }`}
                 >
@@ -113,7 +113,7 @@ export default async function OrderPage({
                   {step}
                 </span>
                 {index === 0 ? (
-                  <span className="ml-auto inline-flex items-center gap-1 text-caption text-teal-700">
+                  <span className="ml-auto inline-flex items-center gap-1 text-caption text-lime-700">
                     <Clock aria-hidden="true" className="size-3" />
                     now
                   </span>
@@ -141,7 +141,7 @@ export default async function OrderPage({
           {order.deliveryMethod !== "pickup" ? (
             <Link
               href={`/o/${order.token}/track`}
-              className="inline-flex min-h-11 items-center rounded-button bg-teal-500 px-4 text-body font-semibold text-white"
+              className="inline-flex min-h-11 items-center rounded-button bg-lime-400 px-4 text-body font-semibold text-ink-900"
             >
               Track delivery
             </Link>

@@ -70,7 +70,7 @@ export default async function DashboardHome() {
             <h2 className="text-h3 text-ink-900">Orders</h2>
             <Link
               href="/dashboard/orders"
-              className="text-body font-semibold text-teal-700"
+              className="text-body font-semibold text-lime-700"
             >
               See all
             </Link>
@@ -109,9 +109,9 @@ export default async function DashboardHome() {
           </div>
         </section>
 
-        <aside className="rounded-card border border-teal-100 bg-[#f7fcfc] p-4">
+        <aside className="rounded-card border border-lime-100 bg-lime-50 p-4">
           <div className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-full bg-teal-50 text-teal-700">
+            <span className="grid size-9 place-items-center rounded-full bg-lime-50 text-lime-700">
               <Sparkle aria-hidden="true" className="size-5" weight="fill" />
             </span>
             <div>
@@ -122,15 +122,15 @@ export default async function DashboardHome() {
             </div>
           </div>
 
-          <ul className="mt-3 flex flex-col divide-y divide-teal-100">
+          <ul className="mt-3 flex flex-col divide-y divide-lime-100">
             <li className="flex items-center gap-2 py-2">
-              <Clock aria-hidden="true" className="size-4 text-coral-700" />
+              <Clock aria-hidden="true" className="size-4 text-lime-700" />
               <span className="flex-1 text-body text-ink-900">
                 Confirm 2 orders before 10:00
               </span>
               <Link
                 href="/dashboard/orders"
-                className="text-caption font-semibold text-teal-700"
+                className="text-caption font-semibold text-lime-700"
               >
                 Open
               </Link>
@@ -142,19 +142,19 @@ export default async function DashboardHome() {
               </span>
               <Link
                 href="/dashboard/analytics"
-                className="text-caption font-semibold text-teal-700"
+                className="text-caption font-semibold text-lime-700"
               >
                 See
               </Link>
             </li>
             <li className="flex items-center gap-2 py-2">
-              <Sparkle aria-hidden="true" className="size-4 text-teal-700" />
+              <Sparkle aria-hidden="true" className="size-4 text-lime-700" />
               <span className="flex-1 text-body text-ink-900">
                 Invoice GM-0039 is ready
               </span>
               <Link
                 href="/dashboard/invoices"
-                className="text-caption font-semibold text-teal-700"
+                className="text-caption font-semibold text-lime-700"
               >
                 Review
               </Link>
@@ -172,7 +172,7 @@ export default async function DashboardHome() {
             <h2 className="text-h3 text-ink-900">This week</h2>
             <Link
               href="/dashboard/analytics"
-              className="text-body font-semibold text-teal-700"
+              className="text-body font-semibold text-lime-700"
             >
               Analytics
             </Link>
@@ -188,7 +188,7 @@ export default async function DashboardHome() {
             <h2 className="text-h3 text-ink-900">Needs attention</h2>
             <Link
               href="/dashboard/inventory"
-              className="text-body font-semibold text-teal-700"
+              className="text-body font-semibold text-lime-700"
             >
               Open
             </Link>
@@ -197,7 +197,7 @@ export default async function DashboardHome() {
             <li className="flex gap-2">
               <Warning
                 aria-hidden="true"
-                className="mt-0.5 size-4 shrink-0 text-coral-700"
+                className="mt-0.5 size-4 shrink-0 text-lime-700"
               />
               <span>
                 <span className="block font-semibold text-ink-900">
@@ -225,7 +225,7 @@ export default async function DashboardHome() {
           </ul>
           <Link
             href="/dashboard/products"
-            className="mt-4 inline-flex min-h-11 items-center gap-1 text-body font-semibold text-teal-700"
+            className="mt-4 inline-flex min-h-11 items-center gap-1 text-body font-semibold text-lime-700"
           >
             Manage products <ArrowRight aria-hidden="true" className="size-4" />
           </Link>

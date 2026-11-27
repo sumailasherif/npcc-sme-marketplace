@@ -47,7 +47,7 @@ export default function SettingsPage() {
       <PageHeader eyebrow="Shop" title="Settings" />
 
       <div className="mt-4 flex items-center gap-3 rounded-card border border-ink-100 bg-surface p-4">
-        <span className="grid size-12 place-items-center rounded-full bg-teal-50 text-body font-bold text-teal-700">
+        <span className="grid size-12 place-items-center rounded-full bg-lime-50 text-body font-bold text-lime-700">
           GM
         </span>
         <div className="min-w-0 flex-1">
@@ -69,7 +69,7 @@ export default function SettingsPage() {
           <li key={title}>
             <Link
               href={href ?? "/dashboard/settings"}
-              className="flex items-center gap-3 rounded-card border border-ink-100 bg-surface p-3 hover:border-teal-500"
+              className="flex items-center gap-3 rounded-card border border-ink-100 bg-surface p-3 hover:border-ink-900"
             >
               <Icon aria-hidden="true" className="size-5 text-ink-500" />
               <span className="min-w-0 flex-1">

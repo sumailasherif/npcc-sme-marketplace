@@ -31,7 +31,7 @@ const listingStatus: Record<MyListingStatus, { label: string; dot: string }> = {
 
 const purchaseStatus: Record<PurchaseState, { label: string; dot: string }> = {
   offer: { label: "Offer sent", dot: "bg-yellow-500" },
-  held: { label: "In SafePay", dot: "bg-coral-500" },
+  held: { label: "In SafePay", dot: "bg-lime-400" },
   done: { label: "Completed", dot: "bg-leaf-700" },
 };
 

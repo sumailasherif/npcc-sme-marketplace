@@ -39,7 +39,7 @@ export default function InvoicesPage() {
         </Table>
       </div>
 
-      <div className="mt-4 flex items-start gap-2 rounded-card bg-teal-50 p-4 text-body text-teal-700">
+      <div className="mt-4 flex items-start gap-2 rounded-card bg-lime-50 p-4 text-body text-lime-700">
         <FileText aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
         <p>
           Every delivered order can become a draft invoice. The shop approves

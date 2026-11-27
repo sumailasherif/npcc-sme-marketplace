@@ -20,7 +20,7 @@ export default async function CartPage() {
           </p>
           <Link
             href="/"
-            className="mt-5 inline-flex min-h-11 items-center rounded-button bg-teal-500 px-5 text-body font-semibold text-white"
+            className="mt-5 inline-flex min-h-11 items-center rounded-button bg-lime-400 px-5 text-body font-semibold text-ink-900"
           >
             Browse shops
           </Link>
@@ -116,7 +116,7 @@ export default async function CartPage() {
           </dl>
           <Link
             href="/checkout"
-            className="mt-4 flex min-h-11 items-center justify-center rounded-button bg-coral-700 px-4 text-body font-semibold text-white hover:bg-coral-500"
+            className="mt-4 flex min-h-11 items-center justify-center rounded-button bg-ink-900 px-4 text-body font-semibold text-white hover:bg-ink-800"
           >
             Checkout
           </Link>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ShieldCheck, Star } from "@phosphor-icons/react/ssr";
 
 import { Photo } from "@/components/ui/photo";
+import { displayName } from "@/lib/catalog/queries";
 import type { Partner } from "@/lib/catalog/types";
 
 export function ShopCard({ partner }: { partner: Partner }) {
@@ -19,31 +20,35 @@ export function ShopCard({ partner }: { partner: Partner }) {
           {partner.open}
         </span>
         {partner.verified ? (
-          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[11px] font-semibold text-[#166b16]">
+          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[11px] font-semibold text-leaf-700">
             <ShieldCheck aria-hidden="true" className="size-3" weight="fill" />
             Verified
           </span>
         ) : null}
       </span>
       <span className="mt-2 flex items-center gap-1">
-        <span className="truncate font-heading text-[1.05rem] font-semibold text-ink-900 decoration-coral-700 decoration-2 underline-offset-4 group-hover:underline">
-          {partner.name}
+        <span className="truncate font-heading text-[1.05rem] font-semibold text-ink-900 decoration-lime-400 decoration-2 underline-offset-4 group-hover:underline">
+          {displayName(partner)}
         </span>
       </span>
       <span className="mt-0.5 truncate text-caption text-ink-500">
         {partner.tag} · {partner.district}
       </span>
-      <span className="mt-0.5 flex items-center gap-1 text-caption text-ink-700">
-        <Star
-          aria-hidden="true"
-          className="size-3 text-yellow-500"
-          weight="fill"
-        />
-        <span className="font-semibold">{partner.rating}</span>
-        <span className="text-ink-500">
-          ({partner.reviews}) · {partner.distance}
+      {partner.claimed ? (
+        <span className="mt-0.5 flex items-center gap-1 text-caption text-ink-700">
+          <Star
+            aria-hidden="true"
+            className="size-3 text-yellow-500"
+            weight="fill"
+          />
+          <span className="font-semibold">{partner.rating}</span>
+          <span className="text-ink-500">({partner.reviews})</span>
         </span>
-      </span>
+      ) : (
+        <span className="mt-1 self-start rounded-full bg-ink-100 px-2 py-0.5 text-caption font-semibold text-ink-700">
+          Not on Bazar yet
+        </span>
+      )}
     </Link>
   );
 }

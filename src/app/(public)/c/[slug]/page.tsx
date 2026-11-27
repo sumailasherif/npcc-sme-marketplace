@@ -41,13 +41,12 @@ export default async function CategoryPage({ params }: Props) {
 
       <header className="mt-3 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-caption text-coral-700">{category.kreol}</p>
+          <p className="text-caption text-lime-700">{category.kreol}</p>
           <h1 className="mt-1 font-heading text-display text-ink-900">
             {category.name}
           </h1>
           <p className="mt-1 text-body text-ink-700">
-            {shops.length} shops · {products.length} products · Rose Hill + 10
-            km
+            {shops.length} shops · {products.length} products
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

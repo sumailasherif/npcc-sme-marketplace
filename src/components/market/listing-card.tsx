@@ -38,7 +38,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
         <span className="min-w-0 truncate text-body font-semibold text-ink-900 decoration-[#1b7a1b] decoration-2 underline-offset-4 group-hover:underline">
           {listing.title}
         </span>
-        <span className="shrink-0 text-body font-bold tabular-price text-[#166b16]">
+        <span className="shrink-0 text-body font-bold tabular-price text-leaf-700">
           {formatPrice(listing.price)}
         </span>
       </span>

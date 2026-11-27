@@ -3,6 +3,71 @@
 Short records of technical choices that are not spelled out in
 [spec.md](spec.md), or that adjust it. Newest first.
 
+## 2026-11-27 — Real businesses as unclaimed listings
+
+**Real businesses appear only as "Not on Bazar yet" listings** (`claimed:
+false`): name, category, town and an approximate map position from public
+sources, with "Get directions" (OpenStreetMap) and "Claim it for free". No
+ratings, reviews, products, opening hours, WhatsApp number or brand
+imagery. A photo is shown only when it is a freely licensed photo of the
+place itself (e.g. La Croisette, CC0); otherwise a neutral placeholder.
+Listed: Tribeca Mall, Mahogany Shopping Promenade, La Croisette, KFC
+Cathedral Square, Dream Price Souillac. "Pan Asian" and Burger King were not
+added because their locations could not be confirmed.
+
+**Headings use Unbounded.** Chosen by the product owner for a distinctive
+look. See `design/DESIGN.md` §15.
+
+## 2026-11-27 — Brand, practical categories, Near you map
+
+**Brand is lime #D4F53C, black and cream.** Chosen by the product owner.
+Lime is only a fill with black text; `lime-700` is the green for text.
+"white" now means cream (#FBF8F1). See `design/DESIGN.md` §14.
+
+**Categories are practical sectors**, led by restaurants and food courts,
+supermarkets, hotels, car rental and malls. Old demo categories were folded
+in (home cooking and drinks into restaurants, pickles and fruit & veg into
+groceries). The database category seed still has the old list: update it
+in M2.
+
+**Hotels and car rental are bookings, not cart items.** Their products have
+a `unit` (night or day) and the product page shows "Enquire on WhatsApp"
+instead of "Add to cart". Real booking (dates, deposits) is later work.
+
+**Near you uses Leaflet + OpenStreetMap, as the spec says**, with the tiles
+darkened by CSS. A CARTO dark basemap was tried and now needs an API key.
+OSM's public tile server is fine for the prototype; production needs a
+tile provider with an agreement. The user's location is only used in the
+browser and never sent to Bazar. Demo shops sit at a stable point near
+their town centre (`lib/geo.ts`).
+
+**No data copied from Google Maps or other sites.** Google's terms forbid
+it, and showing real businesses as if they were on Bazar without consent
+would misrepresent them. Real businesses are added when they sign up.
+
+**Photos are licensed real photographs** found through Openverse (CC0
+from Rawpixel and StockSnap). Rawpixel's 1300 px versions carry a
+watermark, so the clean 1024 px versions are used; swap in larger,
+commissioned or business-supplied photos before launch.
+
+## 2026-11-27 — Faire-style home and business values
+
+**Home follows Faire's structure.** Featured shops by category come before
+products, a business-finder hero (search by what, district and category) and
+"Shop by what matters".
+Wholesale mechanics (hidden prices, minimums) are not copied. Details in
+`design/DESIGN.md` §13.
+
+**Values are business data, self-declared and checked.** Each business has
+`values` (7 options in `src/lib/catalog/values.ts`). The owner picks them at
+sign-up; verification checks the evidence listed per value (e.g. BRN owner
+for Woman-led, ID date of birth for Young entrepreneur) before the badge
+shows. Demo data only for now: the DB column, the picker in shop setup and
+the admin check are M2 work.
+
+**No founder stories.** Bazar presents businesses, not people; the shop is
+the story. The hero is a business finder (what / district / category).
+
 ## 2026-11-26 — Blueprint refinement: photo categories, SafePay, Juice
 
 **Real photography.** 19 product and shop photos plus 12 category tiles, all

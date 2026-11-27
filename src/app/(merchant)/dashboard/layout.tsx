@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { SignOut } from "@phosphor-icons/react/ssr";
 
+import { Logo } from "@/components/brand/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { MerchantNav } from "@/components/merchant-nav";
 import { Button } from "@/components/ui/button";
@@ -24,13 +25,14 @@ export default async function DashboardLayout({
   return (
     <div className="flex flex-1 flex-col">
       <header className="flex items-center justify-between gap-2 border-b bg-surface px-4 py-2 tablet:px-6">
-        {/* Bazar Business: teal lockup, never the Pre-loved plum */}
+        {/* Bazar Business: lime logo + black "Business" chip */}
         <Link
           href="/dashboard"
-          className="flex min-h-11 items-center gap-2 font-heading text-[1.375rem] font-extrabold tracking-[-0.03em] text-teal-700"
+          aria-label={tc("brand")}
+          className="flex min-h-11 items-center gap-2"
         >
-          {tc("brand").toLowerCase()}
-          <span className="rounded-chip bg-teal-700 px-2 py-0.5 text-body font-bold tracking-normal text-white">
+          <Logo />
+          <span className="rounded-chip bg-ink-900 px-2 py-0.5 text-body font-bold tracking-normal text-white">
             Business
           </span>
         </Link>

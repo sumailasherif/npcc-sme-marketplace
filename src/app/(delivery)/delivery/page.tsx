@@ -89,8 +89,8 @@ export default function DeliveryConsolePage() {
             <h2 className="text-h3 text-ink-900">Coverage</h2>
             <Badge tone="teal">Island-wide</Badge>
           </div>
-          <div className="relative mt-3 h-36 overflow-hidden rounded-button bg-teal-50">
-            <div className="absolute left-[18%] top-[62%] h-0.5 w-[60%] -rotate-12 bg-teal-500" />
+          <div className="relative mt-3 h-36 overflow-hidden rounded-button bg-lime-50">
+            <div className="absolute left-[18%] top-[62%] h-0.5 w-[60%] -rotate-12 bg-lime-400" />
             <div className="absolute left-[58%] top-[38%] grid size-8 place-items-center rounded-full bg-ink-900 text-yellow-500">
               <Lightning aria-hidden="true" className="size-4" weight="fill" />
             </div>

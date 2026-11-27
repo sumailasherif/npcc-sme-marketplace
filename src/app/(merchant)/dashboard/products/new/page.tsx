@@ -19,7 +19,7 @@ export default function NewProductPage() {
             <button className="min-h-11 rounded-button border border-ink-300 bg-surface px-4 text-body font-semibold text-ink-700">
               Save draft
             </button>
-            <button className="min-h-11 rounded-button bg-teal-500 px-4 text-body font-semibold text-white">
+            <button className="min-h-11 rounded-button bg-lime-400 px-4 text-body font-semibold text-ink-900">
               Publish
             </button>
           </div>
@@ -36,7 +36,7 @@ export default function NewProductPage() {
             <Camera aria-hidden="true" className="size-5" />
             Replace photo
           </button>
-          <div className="mt-3 flex gap-2 rounded-button bg-teal-50 p-3 text-caption text-teal-700">
+          <div className="mt-3 flex gap-2 rounded-button bg-lime-50 p-3 text-caption text-lime-700">
             <Sparkle
               aria-hidden="true"
               className="size-4 shrink-0"

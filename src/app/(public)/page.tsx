@@ -1,60 +1,195 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BookOpenText,
   ChartLineUp,
+  MapPin,
+  Money,
   Receipt,
   SealCheck,
+  ShoppingBagOpen,
   Sparkle,
   Storefront,
+  Truck,
 } from "@phosphor-icons/react/ssr";
 
+import { BrandBand } from "@/components/market/brand-band";
+import { BusinessSearch } from "@/components/market/business-search";
+import { HeroStage, type RingCard } from "@/components/market/hero-stage";
 import { ListingCard } from "@/components/market/listing-card";
 import { MarketShell } from "@/components/market/market-shell";
+import {
+  NumbersSection,
+  type NumberPanel,
+} from "@/components/market/numbers-section";
 import { ProductCard } from "@/components/market/product-card";
 import { SectionHeader } from "@/components/market/section-header";
+import { ShopPreview } from "@/components/market/shop-preview";
 import { ShopTile } from "@/components/market/shop-tile";
-import { SocialBadges } from "@/components/market/social-badges";
+import { valueIcons } from "@/components/market/value-badge";
+import { Reveal } from "@/components/motion/reveal";
+import { PhoneMapPreview } from "@/components/near/phone-map-preview";
 import { Photo } from "@/components/ui/photo";
 import {
   categories,
-  featuredShops,
-  getPartner,
+  categoryProductCount,
+  featuredInCategory,
+  getCategory,
+  partnersByCategory,
+  partners,
+  partnersByValue,
   popularProducts,
-  productsByShop,
 } from "@/lib/catalog/queries";
+import { pinColor } from "@/lib/catalog/pin-colors";
+import { values } from "@/lib/catalog/values";
 import { listings } from "@/lib/demo/preloved";
-import { formatPrice } from "@/lib/format";
+import { defaultOrigin, distanceKm } from "@/lib/geo";
 
-const spotlightSlug = "atelier-volan";
+const trending = ["Car rental", "Hotel", "Biryani", "iPhone", "Sofa"];
 
-const businessTools = [
+// The curved strip in the hero: real places, plus what Bazar does for
+// shoppers, businesses and travellers.
+const ringCards: RingCard[] = [
+  { kind: "photo", photo: "mu-caudan-umbrellas", eyebrow: "Shoppers", label: "Shop Mauritian, smarter" },
+  { kind: "photo", photo: "cover-food-hall", label: "Restaurants & food courts" },
+  { kind: "type", tone: "lime", eyebrow: "Businesses", label: "Your shop online in minutes" },
+  { kind: "photo", photo: "mu-supermarket", label: "Groceries, delivered" },
+  { kind: "photo", photo: "mu-beach-resort", eyebrow: "Travellers", label: "Hotels, booked direct" },
+  { kind: "type", tone: "ink", eyebrow: "Businesses", label: "Invoices made for you" },
+  { kind: "photo", photo: "cat-car-rental", label: "Car rental by the day" },
+  { kind: "photo", photo: "mu-la-croisette", label: "Malls & arcades" },
+  { kind: "type", tone: "cream", eyebrow: "AI assistant", label: "Your numbers in plain words" },
+  { kind: "photo", photo: "cover-phone-hand", label: "Phones & repairs" },
+  { kind: "photo", photo: "mu-caudan-harbour", eyebrow: "Near you", label: "See who's open now" },
+  { kind: "type", tone: "lime", eyebrow: "Pre-loved", label: "Sell what you don't use" },
+];
+
+const bigCategories = [
+  "restaurants",
+  "groceries",
+  "hotels",
+  "car-rental",
+  "malls",
+  "electronics",
+];
+
+const shopRows = ["restaurants", "hotels", "car-rental", "groceries"];
+
+const benefits = [
   {
-    Icon: Storefront,
-    title: "A real storefront",
-    text: "One link for your catalogue, prices and stock. Share it on Instagram, Facebook and WhatsApp.",
+    Icon: Money,
+    title: "Juice or cash on delivery",
+    text: "Pay the way you already do.",
   },
   {
-    Icon: Receipt,
-    title: "Orders and invoices",
-    text: "Take orders with Juice or cash on delivery. Invoices are made for you.",
+    Icon: Truck,
+    title: "Delivered island-wide",
+    text: "Or collect from the shop.",
   },
   {
-    Icon: Sparkle,
-    title: "AI assistant",
-    text: "Writes product listings from a photo and drafts replies to customers.",
+    Icon: SealCheck,
+    title: "Every business checked",
+    text: "Registration and ID, before they go live.",
   },
   {
-    Icon: ChartLineUp,
-    title: "Know your numbers",
-    text: "Sales, profit and what to restock, in plain words.",
+    Icon: ShoppingBagOpen,
+    title: "One cart, many shops",
+    text: "Order from several businesses at once.",
   },
 ];
 
+const nearChips = [
+  { label: "Restaurants", color: pinColor("restaurants") },
+  { label: "Supermarkets", color: pinColor("groceries") },
+  { label: "Hotels", color: pinColor("hotels") },
+  { label: "Car rental", color: pinColor("car-rental") },
+  { label: "Beauty", color: pinColor("beauty") },
+];
+
+const businessTools = [
+  { Icon: Storefront, text: "A storefront and one link for all your channels" },
+  { Icon: Receipt, text: "Orders, stock and invoices" },
+  { Icon: Sparkle, text: "AI assistant for listings and replies" },
+  { Icon: ChartLineUp, text: "Your numbers in plain words" },
+];
+
+const guides = [
+  "Photograph your products with your phone",
+  "VAT and invoices for small businesses",
+  "Turn Instagram followers into orders",
+];
+
+const explore = [
+  "Biryani",
+  "Food court",
+  "Supermarket",
+  "Hotel",
+  "Guesthouse",
+  "SUV",
+  "Compact car",
+  "Gift card",
+  "Screen repair",
+  "iPhone",
+  "Manicure",
+  "Sofa",
+  "Dining set",
+  "Gato coco",
+  "Bouquet",
+  "Summer dress",
+  "Headwrap",
+];
+
 export default function Home() {
-  const spotlight = getPartner(spotlightSlug);
-  const spotlightProducts = productsByShop(spotlightSlug).slice(0, 3);
-  const shops = featuredShops(8).filter((p) => p.slug !== spotlightSlug);
   const popular = popularProducts(12);
+  const onBazar = partners.filter((p) => p.claimed);
+
+  const numberPanels: NumberPanel[] = [
+    {
+      value: onBazar.length,
+      label: "verified businesses",
+      text: "Every one checked against its business registration and the owner's ID before it goes live.",
+      photo: "cat-malls",
+    },
+    {
+      value: categories.length,
+      label: "sectors, one search",
+      text: "From restaurants and supermarkets to hotels, car rental and phone repairs.",
+      photo: "cover-food-hall",
+    },
+    {
+      value: new Set(onBazar.map((p) => p.district)).size,
+      label: "towns across Mauritius",
+      text: "See what is near you on the map, and who is open right now.",
+      photo: "hero-resort",
+    },
+    {
+      value: 3,
+      label: "languages",
+      text: "English, French and Kreol Morisien, for buyers and for business owners.",
+      photo: "hero-grocer",
+    },
+  ];
+
+  // Nearest shops to the default origin, for the phone preview.
+  const nearPreview = partners
+    .map((p) => ({
+      ...p,
+      km: distanceKm(defaultOrigin, p.location),
+      openNow: true,
+    }))
+    .filter((p) => p.km <= 1.5)
+    .sort((a, b) => a.km - b.km)
+    .slice(0, 9);
+
+  // A different photo on every value card.
+  const usedCovers = new Set<string>();
+  const valueCards = values.map((value) => {
+    const shops = partnersByValue(value.slug);
+    const cover =
+      shops.find((p) => !usedCovers.has(p.cover))?.cover ?? shops[0]?.cover;
+    if (cover) usedCovers.add(cover);
+    return { ...value, count: shops.length, cover };
+  });
 
   // One listing per photo, so the strip never repeats an image.
   const seenPhotos = new Set<string>();
@@ -63,209 +198,434 @@ export default function Home() {
     .slice(0, 4);
 
   return (
-    <MarketShell>
-      {/* Featured storefront: Bazar's job is to make SMEs look their best */}
-      {spotlight ? (
-        <section
-          aria-labelledby="spotlight-title"
-          className="grid overflow-hidden rounded-card bg-white ring-1 ring-ink-100 desktop:grid-cols-[1fr_1.15fr]"
-        >
-          <div className="order-2 flex flex-col p-4 tablet:p-6 desktop:order-1 desktop:p-8">
-            <p className="text-caption font-semibold text-coral-700">
-              Business of the week
-            </p>
-            <div className="mt-3 flex items-center gap-3">
-              <span
-                aria-hidden="true"
-                className="grid size-14 shrink-0 place-items-center rounded-button bg-ink-900 font-heading text-h3 font-extrabold text-white"
+    <MarketShell
+      hero={
+        <HeroStage
+          cards={ringCards}
+          preview={<ShopPreview slug="kaskad-food-court" />}
+          copy={
+            <div className="mx-auto flex max-w-[1040px] flex-col items-center px-4 pt-[92px] text-center tablet:px-6 tablet:pt-[104px]">
+              <p className="inline-flex items-center gap-2 rounded-full bg-white/5 py-1 pl-1 pr-3 text-caption text-white/80 ring-1 ring-white/15">
+                <span className="grid size-6 place-items-center rounded-full bg-lime-400 text-ink-900">
+                  <Storefront aria-hidden="true" className="size-3.5" weight="bold" />
+                </span>
+                The marketplace for Mauritian businesses
+              </p>
+              <h1
+                id="hero-title"
+                className="mt-4 font-heading text-[clamp(1.75rem,4.6vw,3.25rem)] font-extrabold uppercase leading-[0.98] tracking-[-0.03em]"
               >
-                {spotlight.logo}
-              </span>
-              <div className="min-w-0">
-                <h1
-                  id="spotlight-title"
-                  className="flex items-center gap-1.5 text-h1 text-ink-900"
+                Discover Mauritian businesses{" "}
+                <span className="text-lime-400">and shop smarter</span>
+              </h1>
+              <p className="mt-3 max-w-[620px] text-body text-white/70 tablet:text-body-l">
+                Restaurants, supermarkets, hotels, car rental and more, from
+                verified local businesses. For SMEs: a shop, invoices and an AI
+                assistant.
+              </p>
+              <BusinessSearch className="mt-5 w-full max-w-[860px] text-left shadow-[0_18px_60px_-20px_rgb(212_245_60/0.55)]" />
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                <span className="text-caption text-white/60">Popular</span>
+                {trending.map((term) => (
+                  <Link
+                    key={term}
+                    href={`/search?q=${encodeURIComponent(term)}`}
+                    className="inline-flex min-h-9 items-center rounded-full px-3 text-caption font-semibold text-white ring-1 ring-white/25 hover:bg-lime-400 hover:text-ink-900 hover:ring-lime-400"
+                  >
+                    {term}
+                  </Link>
+                ))}
+                <Link
+                  href="/sell"
+                  className="inline-flex min-h-9 items-center gap-1 px-2 text-caption font-semibold text-lime-400 underline-offset-4 hover:underline"
                 >
-                  {spotlight.name}
-                  {spotlight.verified ? (
-                    <SealCheck
-                      aria-label="Verified business"
-                      className="size-6 shrink-0 text-teal-500"
-                      weight="fill"
-                    />
-                  ) : null}
-                </h1>
-                <p className="text-caption text-ink-500">
-                  {spotlight.tag} · {spotlight.district} · ★ {spotlight.rating}{" "}
-                  ({spotlight.reviews} reviews)
-                </p>
+                  Run a business? Open your shop
+                  <ArrowRight aria-hidden="true" className="size-3.5" />
+                </Link>
               </div>
             </div>
-            <p className="mt-4 max-w-md text-body-l text-ink-700">
-              {spotlight.tagline}
+          }
+        />
+      }
+    >
+      {/* Categories: big photo cards, then the rest as chips */}
+      <Reveal>
+        <section
+          aria-labelledby="categories-title"
+          className="mt-6 tablet:mt-10"
+        >
+          <div className="text-center">
+            <h2 id="categories-title" className="text-h1 text-ink-900">
+              Shop by category
+            </h2>
+            <p className="mt-1 text-body text-ink-500">
+              Browse Mauritian businesses by what they sell
             </p>
-            {spotlight.socials ? (
-              <SocialBadges socials={spotlight.socials} className="mt-3" />
-            ) : null}
-
-            <ul className="mt-5 grid grid-cols-3 gap-2">
-              {spotlightProducts.map((product) => (
-                <li key={product.slug}>
-                  <Link href={`/p/${product.slug}`} className="group block">
-                    <span className="relative block aspect-square overflow-hidden rounded-button bg-ink-100">
-                      <Photo
-                        name={product.photo}
-                        alt={product.name}
-                        sizes="140px"
-                      />
-                    </span>
-                    <span className="mt-1 block truncate text-caption text-ink-700 group-hover:underline">
-                      {product.name}
-                    </span>
-                    <span className="block font-heading text-body font-bold tabular-price text-ink-900">
-                      {formatPrice(product.price)}
+          </div>
+          <ul className="mt-5 grid grid-cols-2 gap-3 tablet:grid-cols-3 tablet:gap-4">
+            {bigCategories.map((slug, index) => {
+              const category = getCategory(slug);
+              if (!category) return null;
+              const shopCount = partnersByCategory(slug).length;
+              const productCount = categoryProductCount(slug);
+              return (
+                <li key={slug}>
+                  <Link
+                    href={`/c/${slug}`}
+                    className="group relative block aspect-square overflow-hidden rounded-card bg-ink-100 tablet:aspect-[5/4]"
+                  >
+                    <Photo
+                      name={category.photo}
+                      alt=""
+                      priority={index < 2}
+                      sizes="(max-width: 768px) 50vw, 380px"
+                      className="transition-transform duration-300 ease-out group-hover:scale-[1.04]"
+                    />
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/25 to-transparent"
+                    />
+                    <span className="absolute inset-x-3 bottom-3 text-white tablet:inset-x-5 tablet:bottom-5">
+                      <span className="block font-heading text-h3 font-bold tablet:text-h1">
+                        {category.name}
+                      </span>
+                      <span className="block text-caption text-white/85">
+                        {shopCount} {shopCount === 1 ? "shop" : "shops"} ·{" "}
+                        {productCount}{" "}
+                        {productCount === 1 ? "product" : "products"}
+                      </span>
+                      <span className="mt-1 hidden items-center gap-1 text-caption font-semibold tablet:mt-2 tablet:inline-flex">
+                        Shop now
+                        <ArrowRight
+                          aria-hidden="true"
+                          className="size-3.5 transition-transform group-hover:translate-x-0.5"
+                        />
+                      </span>
                     </span>
                   </Link>
                 </li>
+              );
+            })}
+          </ul>
+          <ul className="mt-4 flex flex-wrap justify-center gap-2">
+            {categories
+              .filter((c) => !bigCategories.includes(c.slug))
+              .map((category) => (
+                <li key={category.slug}>
+                  <Link
+                    href={`/c/${category.slug}`}
+                    className="inline-flex min-h-10 items-center rounded-full bg-white px-4 text-body font-semibold text-ink-900 ring-1 ring-ink-100 hover:ring-ink-300"
+                  >
+                    {category.name}
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        </section>
+      </Reveal>
+
+      {/* Near you: the map, shown on a phone */}
+      <Reveal>
+        <section
+          aria-labelledby="near-title"
+          className="mt-14 grid items-center gap-8 overflow-hidden rounded-sheet bg-ink-900 p-6 text-white tablet:p-10 desktop:grid-cols-[1fr_auto] desktop:gap-16 desktop:px-16"
+        >
+          <div>
+            <p className="inline-flex items-center gap-1.5 rounded-chip bg-lime-400 px-2 py-0.5 text-caption font-bold text-ink-900">
+              <MapPin aria-hidden="true" className="size-3.5" weight="fill" />
+              Near you
+            </p>
+            <h2
+              id="near-title"
+              className="mt-3 max-w-[14ch] font-heading text-[2rem] font-extrabold leading-[2.4rem] tracking-[-0.02em] text-lime-400 tablet:text-[2.5rem] tablet:leading-[2.9rem]"
+            >
+              Discover businesses around you
+            </h2>
+            <p className="mt-3 max-w-md text-body-l text-white/80">
+              See restaurants, shops, hotels and services on a live map, sorted
+              by distance, with who is open right now.
+            </p>
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {nearChips.map(({ label, color }) => (
+                <li
+                  key={label}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-caption font-semibold text-white"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="size-2.5 rounded-full"
+                    style={{ backgroundColor: color }}
+                  />
+                  {label}
+                </li>
               ))}
             </ul>
-
-            <div className="mt-5 flex flex-wrap gap-2 desktop:mt-auto desktop:pt-6">
-              <Link
-                href={`/s/${spotlight.slug}`}
-                className="inline-flex min-h-11 items-center gap-2 rounded-button bg-teal-500 px-5 text-body font-semibold text-white hover:bg-teal-700"
-              >
-                Visit the shop
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </Link>
-            </div>
+            <Link
+              href="/near"
+              className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-full bg-lime-400 px-6 text-body-l font-semibold text-ink-900 hover:bg-lime-300"
+            >
+              Open the map
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
           </div>
-          <div className="relative order-1 min-h-[220px] bg-ink-100 tablet:min-h-[320px] desktop:order-2">
-            <Photo
-              name={spotlight.cover}
-              alt={`${spotlight.name} workshop`}
-              priority
-              sizes="(max-width: 1280px) 100vw, 640px"
-            />
+          <PhoneMapPreview origin={defaultOrigin} shops={nearPreview} />
+        </section>
+      </Reveal>
+
+      {/* Featured shops: businesses first, one row per category */}
+      <section aria-labelledby="featured-title" className="mt-12">
+        <h2 id="featured-title" className="text-h1 text-ink-900">
+          Featured shops
+        </h2>
+        <p className="text-body text-ink-500">
+          Mauritian businesses, picked by category
+        </p>
+        <div className="mt-2 flex flex-col gap-8">
+          {shopRows.map((slug) => {
+            const category = getCategory(slug);
+            if (!category) return null;
+            const shops = featuredInCategory(slug, 4);
+            return (
+              <div key={slug}>
+                <SectionHeader
+                  id={`row-${slug}`}
+                  level={3}
+                  title={category.name}
+                  href={`/c/${slug}`}
+                  linkLabel={`All ${category.name.toLowerCase()}`}
+                />
+                <ul className="no-scrollbar -mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 tablet:mx-0 tablet:grid tablet:grid-cols-4 tablet:gap-4 tablet:overflow-visible tablet:px-0">
+                  {shops.map((partner) => (
+                    <li
+                      key={partner.slug}
+                      className="w-[220px] shrink-0 snap-start tablet:w-auto"
+                    >
+                      <ShopTile partner={partner} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <NumbersSection panels={numberPanels} />
+
+      {/* Products */}
+      <Reveal>
+        <section aria-labelledby="popular-title" className="mt-14">
+          <SectionHeader
+            id="popular-title"
+            title="Trending on Bazar"
+            href="/for-you"
+          />
+          <ul className="grid grid-cols-2 gap-x-3 gap-y-6 tablet:grid-cols-4 desktop:grid-cols-6">
+            {popular.map((product, index) => (
+              <li
+                key={product.slug}
+                className={index >= 8 ? "hidden tablet:block" : undefined}
+              >
+                <ProductCard
+                  product={product}
+                  badge={index < 3 ? "Bestseller" : undefined}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      </Reveal>
+
+      {/* Shop by what matters */}
+      <Reveal>
+        <section aria-labelledby="values-title" className="mt-14">
+          <SectionHeader
+            id="values-title"
+            title="Shop by what matters"
+            note="Find businesses that share what you care about"
+          />
+          <ul className="grid grid-cols-2 gap-3 tablet:grid-cols-4 tablet:gap-4">
+            {valueCards.map(({ slug, label, blurb, count, cover }) => {
+              const Icon = valueIcons[slug];
+              return (
+                <li key={slug}>
+                  <Link
+                    href={`/v/${slug}`}
+                    className="group flex h-full flex-col"
+                  >
+                    <span className="relative block aspect-[4/3] overflow-hidden rounded-card bg-ink-100">
+                      {cover ? (
+                        <Photo
+                          name={cover}
+                          alt=""
+                          sizes="(max-width: 768px) 50vw, 280px"
+                          className="transition-transform duration-200 ease-out group-hover:scale-[1.03]"
+                        />
+                      ) : null}
+                    </span>
+                    <span className="mt-2 flex items-center gap-1.5 font-heading text-h3 text-ink-900 group-hover:underline group-hover:underline-offset-4">
+                      <Icon
+                        aria-hidden="true"
+                        className="size-4 shrink-0 text-lime-700"
+                      />
+                      {label}
+                    </span>
+                    <span className="hidden text-caption text-ink-700 tablet:block">
+                      {blurb}
+                    </span>
+                    <span className="text-caption text-ink-500">
+                      {count} shops
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+            <li className="flex flex-col justify-center rounded-card bg-white p-4 ring-1 ring-ink-100">
+              <SealCheck
+                aria-hidden="true"
+                className="size-6 text-lime-700"
+                weight="fill"
+              />
+              <p className="mt-2 text-body font-semibold text-ink-900">
+                How we check
+              </p>
+              <p className="mt-1 text-caption text-ink-700">
+                Businesses choose their values when they join. We check each one
+                before the badge goes live.
+              </p>
+            </li>
+          </ul>
+        </section>
+      </Reveal>
+
+      {/* Why buy here */}
+      <section
+        aria-label="Why shop on Bazar"
+        className="mt-14 grid grid-cols-2 gap-3 desktop:grid-cols-4 desktop:gap-4"
+      >
+        {benefits.map(({ Icon, title, text }) => (
+          <div
+            key={title}
+            className="flex flex-col gap-1.5 rounded-sheet bg-white p-4 ring-1 ring-ink-100 tablet:p-5"
+          >
+            <span className="grid size-11 place-items-center rounded-full bg-lime-400">
+              <Icon aria-hidden="true" className="size-5 text-ink-900" />
+            </span>
+            <p className="mt-1 text-body font-bold text-ink-900">{title}</p>
+            <p className="text-caption text-ink-800">{text}</p>
+          </div>
+        ))}
+      </section>
+
+      {/* Pre-loved: classifieds from individuals */}
+      <Reveal>
+        <section aria-labelledby="preloved-title" className="mt-14">
+          <SectionHeader
+            id="preloved-title"
+            title="Pre-loved"
+            note="Second-hand from people across Mauritius, paid with SafePay"
+            href="/preloved"
+          />
+          <ul className="grid grid-cols-2 gap-3 tablet:grid-cols-4">
+            {preloved.map((listing) => (
+              <li key={listing.slug}>
+                <ListingCard listing={listing} />
+              </li>
+            ))}
+          </ul>
+          <Link
+            href="/sell/verify"
+            className="mt-4 flex min-h-11 items-center justify-center rounded-button bg-white text-body font-semibold text-ink-900 ring-1 ring-ink-300 hover:ring-ink-900 tablet:inline-flex tablet:px-5"
+          >
+            Post an ad for free
+          </Link>
+        </section>
+      </Reveal>
+
+      {/* For businesses: storefront, tools and support */}
+      <Reveal>
+        <section
+          aria-labelledby="business-title"
+          className="mt-14 grid gap-6 rounded-sheet bg-ink-900 p-5 text-white tablet:p-10 desktop:grid-cols-[1.2fr_1fr] desktop:gap-10"
+        >
+          <div>
+            <p className="inline-flex rounded-chip bg-lime-400 px-2 py-0.5 text-caption font-bold text-ink-900">
+              Bazar Business
+            </p>
+            <h2
+              id="business-title"
+              className="mt-3 font-heading text-[2rem] font-extrabold leading-[2.4rem] tracking-[-0.02em] text-lime-400"
+            >
+              Grow your business with Bazar
+            </h2>
+            <p className="mt-2 max-w-lg text-body-l text-white/80">
+              Keep selling on Facebook, Instagram and WhatsApp. Bazar gives you
+              the storefront, the paperwork and an assistant behind them.
+            </p>
+            <ul className="mt-5 grid gap-3 tablet:grid-cols-2">
+              {businessTools.map(({ Icon, text }) => (
+                <li key={text} className="flex items-start gap-2 text-body">
+                  <Icon
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0 text-lime-400"
+                  />
+                  <span className="text-white/90">{text}</span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/sell"
+              className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-button bg-lime-400 px-5 text-body font-semibold text-ink-900 hover:bg-lime-300"
+            >
+              Open your shop
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          </div>
+          <div className="rounded-card bg-ink-800 p-4 ring-1 ring-white/10 tablet:p-5">
+            <p className="flex items-center gap-2 text-body font-semibold text-white">
+              <BookOpenText
+                aria-hidden="true"
+                className="size-5 text-lime-400"
+              />
+              Bazar Academy
+              <span className="rounded-chip bg-white/10 px-1.5 py-0.5 text-caption font-semibold text-white/80">
+                Coming soon
+              </span>
+            </p>
+            <p className="mt-1 text-caption text-white/60">
+              Free, short guides for running a small business in Mauritius.
+            </p>
+            <ul className="mt-3 divide-y divide-white/10">
+              {guides.map((guide) => (
+                <li key={guide} className="py-2.5 text-body text-white/90">
+                  {guide}
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
-      ) : null}
+      </Reveal>
 
-      {/* Categories: one scrollable row */}
-      <nav aria-label="Categories" className="mt-8">
-        <ul className="no-scrollbar -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 tablet:-mx-6 tablet:px-6 desktop:mx-0 desktop:justify-between desktop:px-0">
-          {categories.map((category) => (
-            <li key={category.slug} className="w-[84px] shrink-0 snap-start">
+      <BrandBand />
+
+      {/* More to explore */}
+      <nav aria-labelledby="explore-title" className="mt-14">
+        <h2 id="explore-title" className="text-h2 text-ink-900">
+          More to explore
+        </h2>
+        <ul className="mt-3 flex flex-wrap gap-2">
+          {explore.map((term) => (
+            <li key={term}>
               <Link
-                href={`/c/${category.slug}`}
-                className="group flex flex-col items-center gap-1.5 text-center"
+                href={`/search?q=${encodeURIComponent(term)}`}
+                className="inline-flex min-h-9 items-center rounded-full bg-white px-3 text-caption text-ink-700 ring-1 ring-ink-100 hover:text-ink-900 hover:ring-ink-300"
               >
-                <span className="relative block size-[68px] overflow-hidden rounded-full bg-ink-100 ring-teal-500 ring-offset-2 ring-offset-sand-50 group-hover:ring-2">
-                  <Photo name={category.photo} alt="" sizes="68px" />
-                </span>
-                <span className="line-clamp-2 text-caption font-semibold leading-tight text-ink-900">
-                  {category.name}
-                </span>
+                {term}
               </Link>
             </li>
           ))}
         </ul>
       </nav>
-
-      {/* Products: dense grid, price first */}
-      <section aria-labelledby="popular-title" className="mt-10">
-        <SectionHeader
-          id="popular-title"
-          title="Trending on Bazar"
-          href="/for-you"
-        />
-        <ul className="grid grid-cols-2 gap-x-3 gap-y-5 tablet:grid-cols-4 desktop:grid-cols-6">
-          {popular.map((product, index) => (
-            <li
-              key={product.slug}
-              className={index >= 8 ? "hidden tablet:block" : undefined}
-            >
-              <ProductCard product={product} />
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Shops as brands */}
-      <section aria-labelledby="shops-title" className="mt-12">
-        <SectionHeader
-          id="shops-title"
-          title="Shops on Bazar"
-          note="Mauritian businesses, verified and in one place"
-          href="/search"
-        />
-        <ul className="no-scrollbar -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 tablet:-mx-6 tablet:px-6 desktop:mx-0 desktop:grid desktop:grid-cols-3 desktop:gap-4 desktop:overflow-visible desktop:px-0">
-          {shops.slice(0, 6).map((partner) => (
-            <li key={partner.slug} className="shrink-0 desktop:shrink">
-              <ShopTile partner={partner} />
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Pre-loved: classifieds from individuals */}
-      <section aria-labelledby="preloved-title" className="mt-12">
-        <SectionHeader
-          id="preloved-title"
-          title="Pre-loved"
-          note="Second-hand from people across Mauritius, paid with SafePay"
-          href="/preloved"
-        />
-        <ul className="grid grid-cols-2 gap-3 tablet:grid-cols-4">
-          {preloved.map((listing) => (
-            <li key={listing.slug}>
-              <ListingCard listing={listing} />
-            </li>
-          ))}
-        </ul>
-        <Link
-          href="/sell/verify"
-          className="mt-4 flex min-h-11 items-center justify-center rounded-button bg-white text-body font-semibold text-ink-900 ring-1 ring-ink-300 hover:ring-ink-900 tablet:inline-flex tablet:px-5"
-        >
-          Post an ad for free
-        </Link>
-      </section>
-
-      {/* For businesses: storefront + business support + AI */}
-      <section
-        aria-labelledby="business-title"
-        className="mt-12 rounded-card bg-teal-700 p-5 text-white tablet:p-8"
-      >
-        <div className="desktop:flex desktop:items-end desktop:justify-between desktop:gap-8">
-          <div className="max-w-xl">
-            <h2 id="business-title" className="text-h1">
-              Run your business from one place
-            </h2>
-            <p className="mt-2 text-body-l text-white/85">
-              Keep selling on Facebook, Instagram and WhatsApp. Bazar gives you
-              the shop, the paperwork and an assistant behind them.
-            </p>
-          </div>
-          <Link
-            href="/dashboard"
-            className="mt-4 inline-flex min-h-11 shrink-0 items-center gap-2 rounded-button bg-white px-5 text-body font-semibold text-teal-700 hover:bg-teal-50 desktop:mt-0"
-          >
-            Open your shop
-            <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
-        </div>
-        <ul className="mt-6 grid gap-4 border-t border-white/20 pt-6 tablet:grid-cols-2 desktop:grid-cols-4">
-          {businessTools.map(({ Icon, title, text }) => (
-            <li key={title} className="flex gap-3 desktop:flex-col">
-              <Icon aria-hidden="true" className="size-6 shrink-0" />
-              <div>
-                <h3 className="text-h3">{title}</h3>
-                <p className="mt-1 text-body text-white/80">{text}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
     </MarketShell>
   );
 }

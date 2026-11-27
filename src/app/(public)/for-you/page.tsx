@@ -35,7 +35,7 @@ export default function ForYouPage() {
             (item) => (
               <span
                 key={item}
-                className="rounded-full bg-teal-50 px-3 py-1.5 text-body font-semibold text-teal-700"
+                className="rounded-full bg-lime-50 px-3 py-1.5 text-body font-semibold text-lime-700"
               >
                 {item}
               </span>

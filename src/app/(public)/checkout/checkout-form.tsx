@@ -41,7 +41,7 @@ export function CheckoutForm({
       {state.formError ? (
         <p
           role="alert"
-          className="rounded-button bg-coral-100 p-3 text-body text-coral-700"
+          className="rounded-button bg-lime-100 p-3 text-body text-lime-700"
         >
           {state.formError === "empty"
             ? "Your cart is empty. Add something first."
@@ -108,7 +108,7 @@ export function CheckoutForm({
               key={option.value}
               className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-button border px-3 py-2 text-body ${
                 method === option.value
-                  ? "border-teal-500 bg-teal-50"
+                  ? "border-ink-900 bg-lime-50"
                   : "border-ink-100 bg-surface"
               }`}
             >
