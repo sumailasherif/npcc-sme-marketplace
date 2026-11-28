@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#0e0e0c">
   <title>Bazar — Every Mauritian business, one intelligent app</title>
   <link rel="stylesheet" href="brand.css">
@@ -16,7 +18,8 @@
     html { scroll-behavior: smooth; }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+      .hero-beams, .hero-aura, .hero-wave i, .orbit-ring, .marquee-track, .scan-frame::after, .wave-bars { animation: none !important; }
+      .reveal, .phone-frame, .receipt-stage .receipt-paper, .bd-fill, .profit-line { transition: none !important; opacity: 1 !important; transform: none !important; stroke-dashoffset: 0 !important; }
     }
 
     body { background: var(--cream); color: var(--black); overflow-x: clip; }
@@ -835,6 +838,46 @@
       .foot-brand, .foot-col { padding: 0 28px; border-left: 1px solid var(--line); }
       .foot-brand { padding-left: 0; border-left: 0; }
     }
+
+    /* ───── DARK MODE CONTRAST & MOTION POLISH FOR LANDING PAGE ───── */
+    .orbit-ring.paused, .marquee-track.paused, .hero-wave.paused i, .hero-beams.paused {
+      animation-play-state: paused !important;
+    }
+    .motion-pause-btn {
+      margin-top: 6px; padding: 4px 12px; border-radius: 999px;
+      background: rgba(251, 248, 241, 0.08); border: 1px solid rgba(251, 248, 241, 0.22);
+      color: #dfd9c8; font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+    }
+    .motion-pause-btn:hover { border-color: var(--lime); color: var(--lime); }
+
+    :root[data-theme="dark"] .pill-nav {
+      background: rgba(25, 28, 22, 0.92);
+      border-color: rgba(212, 245, 60, 0.22);
+    }
+    :root[data-theme="dark"] .pill-nav a { color: #e2dccb; }
+    :root[data-theme="dark"] .pill-nav a:hover { background: var(--lime); color: #0e0e0c; }
+    :root[data-theme="dark"] .sneak-big { color: #0e0e0c; }
+    :root[data-theme="dark"] .sneak-sub { color: #23231f; }
+    :root[data-theme="dark"] .statement-big span {
+      background: var(--lime); color: #0e0e0c;
+    }
+    :root[data-theme="dark"] .orbit-card:not(.orbit-card--photo):not(.orbit-card--dark):not(.orbit-card--lime) {
+      background: #1d2118; color: #f6f3ea; border-color: rgba(212, 245, 60, 0.24);
+    }
+    :root[data-theme="dark"] .orbit-card:not(.orbit-card--lime) .oc-bars i:not(.l) {
+      background: #cfc9bc;
+    }
+    :root[data-theme="dark"] .bd-kpi--vat {
+      background: linear-gradient(135deg, #2b220f 0%, #211a0b 100%);
+      border-color: rgba(251, 191, 36, 0.42); color: #fef3c7;
+    }
+    :root[data-theme="dark"] .bd-kpi--vat small,
+    :root[data-theme="dark"] .bd-kpi--vat em { color: #fcd34d; }
+    :root[data-theme="dark"] .bd-kpi--vat .bd-kpi-ico { background: rgba(251, 191, 36, 0.2); color: #fde68a; }
+    :root[data-theme="dark"] .bd-fill:not(.bd-fill--lime) { background: #e2dccb; }
+    :root[data-theme="dark"] .wave-bars {
+      background: repeating-linear-gradient(90deg, rgba(212, 245, 60, 0.5) 0 3px, transparent 3px 9px);
+    }
   </style>
 </head>
 <body>
@@ -968,8 +1011,21 @@
     <div class="hero-trust">
       <span class="trust-rot" id="trustRot" aria-live="polite">Trusted by Mauritian SMEs &amp; shoppers across the island</span>
       <span class="hero-stars" aria-label="5 out of 5 stars">★★★★★</span>
+      <button type="button" class="motion-pause-btn" id="orbitPauseBtn" onclick="toggleHeroMotion()">Pause showcase</button>
     </div>
     <script>
+      function toggleHeroMotion() {
+        var ring = document.getElementById("orbitRing");
+        var mq = document.querySelector(".marquee-track");
+        var wave = document.getElementById("heroWave");
+        var beams = document.querySelector(".hero-beams");
+        var btn = document.getElementById("orbitPauseBtn");
+        var paused = ring.classList.toggle("paused");
+        if (mq) mq.classList.toggle("paused", paused);
+        if (wave) wave.classList.toggle("paused", paused);
+        if (beams) beams.classList.toggle("paused", paused);
+        btn.textContent = paused ? "Play showcase" : "Pause showcase";
+      }
       // Rotating trust line: one message per thing Bazar does. Add a line here when we add a feature
       // (and its translation row in i18n.js).
       (function () {

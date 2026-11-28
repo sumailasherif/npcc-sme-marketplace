@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#f4f0e6">
   <title>Bazar — Home</title>
   <link rel="stylesheet" href="brand.css">
@@ -569,12 +571,148 @@
       .search label { height: 58px; }
       .search .filter { width: 58px; height: 58px; }
       .intro.hidden + .search-stack { grid-column: 1 / -1; }
-      .cats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; overflow: visible; margin: 0; padding: 0; }
+      .cats-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; overflow: visible; margin: 0; padding: 0; }
       .cat { width: auto; }
-      .shops-row { display: grid; grid-template-columns: repeat(4, 1fr); overflow: visible; margin: 0; padding: 0; }
+      .shops-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; overflow: visible; margin: 0; padding: 0; }
       .shop { width: auto; }
-      .grid { grid-template-columns: repeat(5, 1fr); gap: 28px 20px; }
+      .grid { grid-template-columns: repeat(4, 1fr); gap: 28px 20px; }
       .biz { padding: 28px 32px; }
+    }
+
+    /* ───── CATEGORY SHOP DIRECTORY GRID, STOREFRONT MODAL, MOTION & DARK MODE ───── */
+    .cat { cursor: pointer; text-align: center; }
+    .cat.on {
+      border-color: var(--lime-ink);
+      background: color-mix(in oklab, var(--lime) 18%, var(--card));
+      box-shadow: 0 12px 26px rgba(14, 14, 12, 0.09);
+    }
+    .cat.on .cat-go { background: var(--black); color: var(--lime); }
+    :root[data-theme="dark"] .cat.on {
+      background: #222818 !important;
+      border-color: var(--lime) !important;
+      color: var(--black) !important;
+    }
+    :root[data-theme="dark"] .cat.on .cat-go {
+      background: var(--lime) !important;
+      color: #0e0e0c !important;
+    }
+    :root[data-theme="dark"] .cat:hover .cat-go {
+      background: var(--lime);
+      color: #0e0e0c;
+    }
+
+    .shop-cat-tabs {
+      display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+      margin: -4px 0 16px; padding-bottom: 4px;
+    }
+    .shop-cat-tabs::-webkit-scrollbar { display: none; }
+    .shop-cat-pill {
+      flex: none; display: inline-flex; align-items: center; gap: 6px;
+      min-height: 36px; padding: 0 13px; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--line);
+      font-size: 12.5px; font-weight: 600; color: var(--black-2);
+    }
+    .shop-cat-pill:hover { border-color: var(--lime-ink); }
+    .shop-cat-pill i {
+      font-style: normal; font-size: 10.5px; font-weight: 700;
+      padding: 1px 6px; border-radius: 999px; background: var(--cream); color: var(--muted);
+    }
+    .shop-cat-pill.on {
+      background: var(--black); border-color: var(--black); color: var(--lime);
+    }
+    .shop-cat-pill.on i {
+      background: rgba(212, 245, 60, 0.2); color: var(--lime);
+    }
+    :root[data-theme="dark"] .shop-cat-pill.on {
+      background: var(--lime); border-color: var(--lime); color: #0e0e0c;
+    }
+    :root[data-theme="dark"] .shop-cat-pill.on i {
+      background: rgba(14, 14, 12, 0.14); color: #0e0e0c;
+    }
+
+    /* Multi-column responsive shop grid so 6–7 shops per category shine on every device */
+    .shops-grid {
+      display: grid; grid-template-columns: 1fr; gap: 14px;
+    }
+    .shops-grid .shop { width: 100%; cursor: pointer; }
+    @media (min-width: 560px) {
+      .shops-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .shops-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    }
+
+    @keyframes shopCardIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .shop-anim { animation: shopCardIn 0.44s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    }
+
+    .shop-verified {
+      display: inline-flex; align-items: center; gap: 4px;
+      color: var(--lime-ink); font-weight: 700; font-size: 11px;
+    }
+    .shop-open-btn {
+      display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px;
+      background: var(--lime); color: #0e0e0c !important; font-size: 11.5px; font-weight: 700;
+    }
+
+    /* Storefront Quick-View Modal */
+    .sf-cover { position: relative; height: 176px; overflow: hidden; background: #141611; }
+    .sf-cover img { width: 100%; height: 100%; object-fit: cover; }
+    .sf-cover::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(14, 14, 12, 0.88) 0%, transparent 62%);
+    }
+    .sf-close {
+      position: absolute; top: 12px; right: 12px; z-index: 3;
+      width: 34px; height: 34px; border-radius: 999px;
+      background: rgba(14, 14, 12, 0.72); color: #f6f3ea;
+      display: grid; place-items: center; backdrop-filter: blur(6px);
+    }
+    .sf-head-over {
+      position: absolute; left: 16px; right: 16px; bottom: 12px; z-index: 2; color: #f6f3ea;
+    }
+    .sf-head-over b { display: block; font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+    .sf-head-over span { font-size: 12px; color: var(--lime); font-weight: 600; }
+    .sf-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .sf-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px 12px; border-radius: 14px; background: var(--cream); border: 1px solid var(--line);
+    }
+    .sf-item b { display: block; font-size: 13px; font-weight: 700; }
+    .sf-item small { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+    /* Dark Mode Fine Contrast Adjustments on Customer Home */
+    :root[data-theme="dark"] .loc-btn {
+      background: rgba(212, 245, 60, 0.12);
+      border-color: rgba(212, 245, 60, 0.5);
+    }
+    :root[data-theme="dark"] .free-bar-box {
+      background: linear-gradient(135deg, rgba(212, 245, 60, 0.14), rgba(22, 163, 74, 0.14));
+      border-color: rgba(212, 245, 60, 0.35);
+    }
+    :root[data-theme="dark"] .free-fill {
+      background: linear-gradient(90deg, #a3e635, #d4f53c);
+    }
+    :root[data-theme="dark"] .tier-card.on {
+      border-color: var(--lime);
+      background: rgba(212, 245, 60, 0.14);
+    }
+    :root[data-theme="dark"] .book-ok {
+      background: rgba(212, 245, 60, 0.15);
+      border-color: var(--lime);
+    }
+    :root[data-theme="dark"] #rateSummary { color: #fcd34d !important; }
+    :root[data-theme="dark"] #miniLocMap .maplibregl-canvas {
+      filter: invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(0.92);
+    }
+    :root[data-theme="dark"] .shop-msg-btn:hover {
+      background: var(--lime);
+      color: #0e0e0c;
+      border-color: var(--lime);
     }
   </style>
 </head>
@@ -665,39 +803,39 @@
         <form class="search" onsubmit="return false">
           <label>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input type="search" placeholder="Search shops, products, or services..." aria-label="Search">
+            <input type="search" id="homeSearchInput" oninput="renderShopsDirectory()" placeholder="Search 43 Mauritian shops, products, or towns..." aria-label="Search">
           </label>
           <button class="filter" type="button" aria-label="Filters" onclick="openLoc()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
           </button>
         </form>
         <div class="chips-row" role="group" aria-label="Quick filters">
-          <button type="button" class="chip on" onclick="setChip(this)">All</button>
-          <button type="button" class="chip" onclick="setChip(this)">Near me</button>
-          <button type="button" class="chip" onclick="setChip(this)">Open now</button>
-          <button type="button" class="chip" onclick="setChip(this)">Under Rs 500</button>
-          <button type="button" class="chip" onclick="setChip(this)">Made in MU</button>
-          <button type="button" class="chip" onclick="setChip(this)">Pre-loved</button>
+          <button type="button" class="chip on" onclick="setQuickFilter(this, 'all')">All</button>
+          <button type="button" class="chip" onclick="setQuickFilter(this, 'near')">Near me (&lt; 2 km)</button>
+          <button type="button" class="chip" onclick="setQuickFilter(this, 'top')">Top Rated 4.9★+</button>
+          <button type="button" class="chip" onclick="setQuickFilter(this, 'deliv')">Same-Day Delivery</button>
+          <button type="button" class="chip" onclick="window.location.href='resell.html'">Pre-loved Escrow ↗</button>
         </div>
       </div>
     </div>
 
-    <!-- 3. FEATURED CATEGORIES (Fabrid-style studio cards) -->
+    <!-- 3. FEATURED CATEGORIES (7 Categories × 6–7 Real Mauritian Shops Each = 43 Verified Shops) -->
     <section>
       <div class="row-head">
         <div>
           <h2 class="t-h2" data-text="cats.title">Featured categories</h2>
-          <p class="t-caption" style="color:var(--muted);margin-top:2px;">Shop or book your favourite category in seconds.</p>
+          <p class="t-caption" style="color:var(--muted);margin-top:2px;">Tap any category to explore 6–7 verified Mauritian shops with real photos.</p>
         </div>
-        <a href="resell.html" class="more" data-text="cats.more">Check all ↗</a>
+        <button type="button" class="more" onclick="selectShopCategory('all', true)" data-text="cats.more">All 43 shops ↓</button>
       </div>
-      <div class="scroller cats-row">
-        <a href="resell.html" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-electronics.jpg" alt="Phones"></div><div><span class="cat-name" data-text="cats.4">Phones</span><small>34 listings</small></div></a>
-        <a href="resell.html" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-fashion.jpg" alt="Fashion"></div><div><span class="cat-name" data-text="cats.3">Fashion</span><small>29 listings</small></div></a>
-        <a href="#services" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-beauty.jpg" alt="Salons & Beauty"></div><div><span class="cat-name" data-text="cats.5">Salons &amp; Spa</span><small>Book slots</small></div></a>
-        <a href="resell.html" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-home-living.jpg" alt="Home"></div><div><span class="cat-name" data-text="cats.7">Home</span><small>22 listings</small></div></a>
-        <a href="resell.html" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-car-rental.jpg" alt="Vehicles"></div><div><span class="cat-name" data-text="cats.8">Vehicles</span><small>15 listings</small></div></a>
-        <a href="resell.html" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-kids.jpg" alt="Kids"></div><div><span class="cat-name" data-text="cats.10">Kids</span><small>12 listings</small></div></a>
+      <div class="scroller cats-row" id="featuredCatsRow">
+        <button type="button" class="cat" data-cat="food" onclick="selectShopCategory('food', true)"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-cakes.jpg" alt="Food & Cafés"></div><div><span class="cat-name" data-text="cats.1">Food &amp; Cafés</span><small>7 shops</small></div></button>
+        <button type="button" class="cat" data-cat="phones" onclick="selectShopCategory('phones', true)"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-electronics.jpg" alt="Phones & Tech"></div><div><span class="cat-name" data-text="cats.4">Phones &amp; Tech</span><small>6 shops</small></div></button>
+        <button type="button" class="cat" data-cat="fashion" onclick="selectShopCategory('fashion', true)"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-fashion.jpg" alt="Fashion"></div><div><span class="cat-name" data-text="cats.3">Fashion</span><small>6 shops</small></div></button>
+        <button type="button" class="cat" data-cat="salons" onclick="selectShopCategory('salons', true)"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-beauty.jpg" alt="Salons & Spa"></div><div><span class="cat-name" data-text="cats.5">Salons &amp; Spa</span><small>6 shops</small></div></button>
+        <button type="button" class="cat" data-cat="home" onclick="selectShopCategory('home', true)"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-home-living.jpg" alt="Home & Living"></div><div><span class="cat-name" data-text="cats.7">Home &amp; Living</span><small>6 shops</small></div></button>
+        <button type="button" class="cat" data-cat="vehicles" onclick="selectShopCategory('vehicles', true)"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-car-rental.jpg" alt="Vehicles"></div><div><span class="cat-name" data-text="cats.8">Vehicles</span><small>6 shops</small></div></button>
+        <button type="button" class="cat" data-cat="kids" onclick="selectShopCategory('kids', true)"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-kids.jpg" alt="Kids & Family"></div><div><span class="cat-name" data-text="cats.10">Kids &amp; Family</span><small>6 shops</small></div></button>
       </div>
     </section>
 
@@ -708,12 +846,12 @@
           <h2 class="t-h2">Book Salons &amp; Services</h2>
           <p class="t-caption" style="color:var(--muted);margin-top:2px;">Pick a date &amp; time slot — instant confirmation.</p>
         </div>
-        <a href="map.html" class="more">See on map ↗</a>
+        <button type="button" class="more" onclick="selectShopCategory('salons', true)">All 6 salons ↓</button>
       </div>
       <div class="srv-row">
         <article class="srv-card">
           <div class="srv-top">
-            <img src="photos/cat-beauty.jpg" alt="Lagon Beauty & Hair Salon">
+            <img src="photos/shop-salons-6.jpg" alt="Lagon Beauty & Hair Salon">
             <div><b>Lagon Beauty &amp; Hair</b><span>Grand Baie · Hair &amp; Nails · 4.9★</span></div>
           </div>
           <div class="srv-slots"><span>Today 11:30</span><span>14:00</span><span>16:30</span></div>
@@ -721,7 +859,7 @@
         </article>
         <article class="srv-card">
           <div class="srv-top">
-            <img src="photos/shop-dodo-cafe.jpg" alt="Atelier Cut Barber Studio">
+            <img src="photos/shop-salons-3.jpg" alt="Atelier Cut Barber Studio">
             <div><b>Atelier Cut Studio</b><span>Port Louis · Barber &amp; Grooming · 4.8★</span></div>
           </div>
           <div class="srv-slots"><span>Today 10:00</span><span>13:00</span><span>17:00</span></div>
@@ -729,7 +867,7 @@
         </article>
         <article class="srv-card">
           <div class="srv-top">
-            <img src="photos/cat-home-living.jpg" alt="Zen Wellness Spa">
+            <img src="photos/shop-salons-4.jpg" alt="Zen Wellness Spa">
             <div><b>Zen Wellness Spa</b><span>Curepipe · Massage &amp; Facials · 5.0★</span></div>
           </div>
           <div class="srv-slots"><span>Today 12:00</span><span>15:00</span><span>18:00</span></div>
@@ -738,46 +876,29 @@
       </div>
     </section>
 
-    <!-- 4. SHOPS NEAR YOU -->
+    <!-- 4. SHOPS NEAR YOU (Full Interactive Mauritian Business Directory: 6–7 Real Shops per Category) -->
     <section id="nearby">
       <div class="row-head">
-        <h2 class="t-h2" data-text="shops.title">Businesses near you</h2>
-        <button type="button" class="more" onclick="openLoc()" data-text="shops.more">Change area</button>
+        <div>
+          <h2 class="t-h2" id="shopsHeading" data-text="shops.title">Businesses near you</h2>
+          <p class="t-caption" id="shopsSubCount" style="color:var(--muted);margin-top:2px;">Showing featured shops · Select any category below to view all 6–7 shops</p>
+        </div>
+        <button type="button" class="more" id="toggleAllShopsBtn" onclick="toggleShowAllInAll()">Show all 43 ↗</button>
       </div>
-      <div class="scroller shops-row">
-        <article class="shop reveal-up">
-          <div class="cover"><img src="photos/shop-bookcourt.jpg" alt="Bookcourt Caudan Waterfront"><span class="badge" data-text="shops.1-badge">Caudan · Open</span><span class="dist">0.5 km</span></div>
-          <div class="info"><span class="mono">B</span><div><div class="name" data-text="shops.1-name">Bookcourt Caudan</div><div class="meta" data-text="shops.1-meta">Books &amp; Gifts · Port Louis</div></div></div>
-          <div class="shop-foot">
-            <button type="button" class="rate-pill" onclick="openRatings('Bookcourt Caudan', '4.9', 142)"><span class="star">★</span> 4.9 (142)</button>
-            <button type="button" class="shop-msg-btn" onclick="openMessages('Bookcourt Caudan')">Message</button>
-          </div>
-        </article>
-        <article class="shop reveal-up">
-          <div class="cover"><img src="photos/shop-dodo-cafe.jpg" alt="Dodo Café Boutique"><span class="badge" data-text="shops.2-badge">Local Roastery</span><span class="dist">0.8 km</span></div>
-          <div class="info"><span class="mono">D</span><div><div class="name" data-text="shops.2-name">Dodo Café Boutique</div><div class="meta" data-text="shops.2-meta">Coffee &amp; Lifestyle · Pereybere</div></div></div>
-          <div class="shop-foot">
-            <button type="button" class="rate-pill" onclick="openRatings('Dodo Café Boutique', '4.9', 218)"><span class="star">★</span> 4.9 (218)</button>
-            <button type="button" class="shop-msg-btn" onclick="openMessages('Dodo Café Boutique')">Message</button>
-          </div>
-        </article>
-        <article class="shop reveal-up">
-          <div class="cover"><img src="photos/shop-chelseas.jpg" alt="Chelsea's Cup N Cake"><span class="badge" data-text="shops.3-badge">Delivers today</span><span class="dist">1.1 km</span></div>
-          <div class="info"><span class="mono">C</span><div><div class="name" data-text="shops.3-name">Chelsea's Cup N Cake</div><div class="meta" data-text="shops.3-meta">Patisserie · Curepipe</div></div></div>
-          <div class="shop-foot">
-            <button type="button" class="rate-pill" onclick="openRatings('Chelsea\'s Cup N Cake', '5.0', 186)"><span class="star">★</span> 5.0 (186)</button>
-            <button type="button" class="shop-msg-btn" onclick="openMessages('Chelsea\'s Cup N Cake')">Message</button>
-          </div>
-        </article>
-        <article class="shop reveal-up">
-          <div class="cover"><img src="photos/shop-le-fournil.jpg" alt="Le Fournil Bakery"><span class="badge" data-text="shops.4-badge">Fresh daily</span><span class="dist">1.4 km</span></div>
-          <div class="info"><span class="mono">L</span><div><div class="name" data-text="shops.4-name">Le Fournil Bakery</div><div class="meta" data-text="shops.4-meta">Bakery · Grand Baie</div></div></div>
-          <div class="shop-foot">
-            <button type="button" class="rate-pill" onclick="openRatings('Le Fournil Bakery', '4.8', 164)"><span class="star">★</span> 4.8 (164)</button>
-            <button type="button" class="shop-msg-btn" onclick="openMessages('Le Fournil Bakery')">Message</button>
-          </div>
-        </article>
+
+      <!-- Category Pills for Instant 1-Tap Switching -->
+      <div class="shop-cat-tabs" id="shopCatTabs" role="tablist" aria-label="Filter businesses by category">
+        <button type="button" role="tab" class="shop-cat-pill on" data-cat="all" onclick="selectShopCategory('all', false)">All Featured <i>43</i></button>
+        <button type="button" role="tab" class="shop-cat-pill" data-cat="food" onclick="selectShopCategory('food', false)">Food &amp; Cafés <i>7</i></button>
+        <button type="button" role="tab" class="shop-cat-pill" data-cat="phones" onclick="selectShopCategory('phones', false)">Phones &amp; Tech <i>6</i></button>
+        <button type="button" role="tab" class="shop-cat-pill" data-cat="fashion" onclick="selectShopCategory('fashion', false)">Fashion <i>6</i></button>
+        <button type="button" role="tab" class="shop-cat-pill" data-cat="salons" onclick="selectShopCategory('salons', false)">Salons &amp; Spa <i>6</i></button>
+        <button type="button" role="tab" class="shop-cat-pill" data-cat="home" onclick="selectShopCategory('home', false)">Home &amp; Living <i>6</i></button>
+        <button type="button" role="tab" class="shop-cat-pill" data-cat="vehicles" onclick="selectShopCategory('vehicles', false)">Vehicles <i>6</i></button>
+        <button type="button" role="tab" class="shop-cat-pill" data-cat="kids" onclick="selectShopCategory('kids', false)">Kids &amp; Family <i>6</i></button>
       </div>
+
+      <div class="shops-grid" id="shopsDirectoryGrid"></div>
     </section>
 
     <!-- 5. PRODUCTS (With Ratings & 1-Tap Add to Delivery) -->
@@ -1147,6 +1268,30 @@
     </div>
   </dialog>
 
+  <!-- STOREFRONT QUICK-VIEW MODAL (Shows shop cover, verified badge, items & 1-tap Delivery/Message) -->
+  <dialog id="shopViewDialog" closedby="any" aria-labelledby="sfName">
+    <div class="sf-cover">
+      <img id="sfImg" src="photos/shop-chelseas.jpg" alt="">
+      <button type="button" class="sf-close" aria-label="Close shop preview" onclick="document.getElementById('shopViewDialog').close()">✕</button>
+      <div class="sf-head-over">
+        <span id="sfBadge">Verified Mauritian Shop</span>
+        <b id="sfName">Shop Name</b>
+      </div>
+    </div>
+    <div class="sf-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+        <span class="shop-verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg><span id="sfMeta">Port Louis · Open now</span></span>
+        <button type="button" class="rate-pill" id="sfRateBtn"><span class="star">★</span> 4.9</button>
+      </div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Popular from this shop</div>
+      <div id="sfItems" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button type="button" class="btn btn-lime" style="flex:1;min-height:42px;font-size:13px;" id="sfMsgBtn">Message Shop</button>
+        <a href="map.html" class="btn btn-black" style="flex:0 0 auto;min-height:42px;padding:0 16px;font-size:13px;">Map ↗</a>
+      </div>
+    </div>
+  </dialog>
+
   <!-- BOTTOM TAB BAR (Customer View: Home, Map, Resell, Orders) -->
   <nav class="tab-bar t-caption" aria-label="Main">
     <a href="index.html" class="on"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg></span><span data-text="tab.home">Home</span></a>
@@ -1164,11 +1309,236 @@
     try { if (localStorage.getItem("bazar-intro-closed")) document.getElementById("intro").classList.add("hidden"); } catch (e) {}
 
     // Quick filter chips & save heart
+    var activeShopCat = "all";
+    var activeQuickFilter = "all";
+    var showAllInAllMode = false;
+
     function setChip(btn) {
       btn.parentNode.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("on"); });
       btn.classList.add("on");
     }
+    function setQuickFilter(btn, f) {
+      setChip(btn);
+      activeQuickFilter = f;
+      renderShopsDirectory();
+    }
     function toggleSave(btn) { btn.classList.toggle("saved"); }
+
+    /* ───── 43 REAL MAURITIAN SHOPS ACROSS ALL 7 CATEGORIES (6–7 Shops Each, Unique Verified Photos) ───── */
+    var SHOP_CAT_LABELS = {
+      all: "Businesses near you",
+      food: "Food, Bakeries & Cafés",
+      phones: "Phones, Laptops & Tech",
+      fashion: "Fashion & Island Boutiques",
+      salons: "Salons, Barbers & Wellness Spas",
+      home: "Home, Furniture & Living",
+      vehicles: "Vehicles & Island Car Rentals",
+      kids: "Kids, Baby & Toy Boutiques"
+    };
+
+    var ALL_SHOPS = [
+      // 1. FOOD & CAFÉS (7 shops)
+      { id: "chelseas", cat: "food", featured: true, name: "Chelsea's Cup N Cake", meta: "Artisan Patisserie · Curepipe", badge: "Delivers today", dist: 1.1, rating: "5.0", revs: 186, img: "photos/shop-chelseas.jpg", items: [["Signature Chocolate Fudge Cake", 950], ["Red Velvet Cupcakes (Box of 6)", 480]] },
+      { id: "dodo", cat: "food", featured: true, name: "Dodo Café Boutique", meta: "Specialty Roastery · Pereybere", badge: "Local Roastery", dist: 0.8, rating: "4.9", revs: 218, img: "photos/shop-dodo-cafe.jpg", items: [["Single-Origin Roasted Beans 250g", 420], ["Iced Vanilla Oat Latte", 190]] },
+      { id: "fournil", cat: "food", featured: true, name: "Le Fournil Bakery", meta: "French Bakery · Grand Baie", badge: "Fresh daily", dist: 1.4, rating: "4.8", revs: 164, img: "photos/shop-le-fournil.jpg", items: [["Artisan Butter Croissants (4)", 280], ["Warm Baguette Tradition", 65]] },
+      { id: "laflore", cat: "food", featured: false, name: "La Flore Boodhoo", meta: "Mauritian Café & Snacks · Port Louis", badge: "Delivers today", dist: 0.6, rating: "5.0", revs: 245, img: "photos/shop-food-1.jpg", items: [["Mauritian Samoussas (Box of 12)", 180], ["Gato Pima & Chai Box", 150]] },
+      { id: "levain", cat: "food", featured: false, name: "Artisan Levain Moka", meta: "Sourdough & Brioche · Moka", badge: "Wood-fired", dist: 2.3, rating: "4.9", revs: 98, img: "photos/shop-food-2.jpg", items: [["Country Seeded Sourdough Loaf", 240], ["Cinnamon Brioche Knot", 135]] },
+      { id: "atelierbistro", cat: "food", featured: false, name: "L'Atelier Bistro Caudan", meta: "Brasserie & Lunch · Port Louis", badge: "Open now", dist: 0.7, rating: "4.8", revs: 132, img: "photos/shop-food-3.jpg", items: [["Grilled Catch of the Day Platter", 690], ["Palm Heart Salad Bowl", 380]] },
+      { id: "barachois", cat: "food", featured: false, name: "Terrasse du Barachois", meta: "Coastal Café & Brunch · Tamarin", badge: "Delivers today", dist: 3.8, rating: "4.9", revs: 154, img: "photos/shop-food-4.jpg", items: [["Tropical Passionfruit Cheesecake", 320], ["Cold-Pressed Pineapple Mint", 160]] },
+
+      // 2. PHONES & TECH (6 shops)
+      { id: "sjtech", cat: "phones", featured: true, name: "St Jean Tech Hub", meta: "Smartphones & Repairs · Quatre Bornes", badge: "1-Yr Warranty", dist: 1.6, rating: "4.9", revs: 174, img: "photos/shop-tech-hub.jpg", items: [["iPhone 13 Pro 256GB Certified", 24500], ["20W Fast USB-C Power Adapter", 890]] },
+      { id: "istorebag", cat: "phones", featured: false, name: "iStore Concept Bagatelle", meta: "Apple & Audio Gear · Moka", badge: "Delivers today", dist: 2.1, rating: "4.9", revs: 210, img: "photos/shop-phones-3.jpg", items: [["AirPods Pro (USB-C) Sealed", 11900], ["MagSafe Clear Case", 1450]] },
+      { id: "ebenemac", cat: "phones", featured: false, name: "Ebene Cyber Mac", meta: "Laptops & Workstations · Ebene", badge: "Pro Partner", dist: 2.4, rating: "5.0", revs: 89, img: "photos/shop-phones-2.jpg", items: [["MacBook Air M2 16GB / 512GB", 56500], ["Aluminium Laptop Stand", 1650]] },
+      { id: "plmobile", cat: "phones", featured: false, name: "Port Louis Mobile Lab", meta: "Unlocked Phones · Port Louis", badge: "Delivers today", dist: 0.9, rating: "4.8", revs: 143, img: "photos/shop-phones-1.jpg", items: [["Samsung Galaxy S23 256GB", 27900], ["Tempered Privacy Glass", 450]] },
+      { id: "gbgadget", cat: "phones", featured: false, name: "Grand Baie Gadget Co.", meta: "Smart Tech & Creators · Grand Baie", badge: "Open now", dist: 3.2, rating: "4.8", revs: 77, img: "photos/shop-phones-4.jpg", items: [["Portable SSD 1TB Rugged", 4800], ["Wireless Travel Powerbank", 1850]] },
+      { id: "rhphone", cat: "phones", featured: false, name: "Rose Hill Phone Care", meta: "Certified Pre-Owned · Rose Hill", badge: "Escrow Ready", dist: 1.9, rating: "4.7", revs: 116, img: "photos/shop-phones-5.jpg", items: [["iPhone 12 128GB Mint", 16900], ["Braided Lightning Cable", 390]] },
+
+      // 3. FASHION & BOUTIQUES (6 shops)
+      { id: "goyco", cat: "fashion", featured: true, name: "Goyco Boutique", meta: "Island Fashion & Jewellery · Pereybere", badge: "Delivers today", dist: 1.2, rating: "4.9", revs: 158, img: "photos/shop-goyco.jpg", items: [["Island Gold Drop Earrings", 650], ["Linen Wrap Resort Dress", 1850]] },
+      { id: "tropique", cat: "fashion", featured: false, name: "Maison Tropique", meta: "Linen & Resort Wear · Grand Baie", badge: "Made in MU", dist: 2.8, rating: "4.9", revs: 129, img: "photos/shop-fashion-1.jpg", items: [["Pure Linen Breeze Shirt", 1650], ["Tailored Chino Shorts", 1290]] },
+      { id: "filcoton", cat: "fashion", featured: false, name: "Atelier Fil & Coton", meta: "Womenswear Boutique · Curepipe", badge: "Delivers today", dist: 1.7, rating: "4.8", revs: 94, img: "photos/shop-fashion-2.jpg", items: [["Printed Midi Sundress", 1490], ["Handwoven Raffia Belt", 580]] },
+      { id: "rueroyale", cat: "fashion", featured: false, name: "Rue Royale Studio", meta: "Contemporary Apparel · Port Louis", badge: "New Drop", dist: 0.6, rating: "4.8", revs: 112, img: "photos/shop-fashion-3.jpg", items: [["Structured Cotton Overshirt", 1750], ["Everyday Canvas Tote", 790]] },
+      { id: "sablesoie", cat: "fashion", featured: false, name: "Sable & Soie", meta: "Knitwear & Minimalist · Flic en Flac", badge: "Made in MU", dist: 3.6, rating: "4.9", revs: 83, img: "photos/shop-fashion-4.jpg", items: [["Soft Cotton Ribbed Cardigan", 1590], ["Silk Hair Scarf", 490]] },
+      { id: "phoenixloft", cat: "fashion", featured: false, name: "Phoenix Menswear Loft", meta: "Shirts & Smart Basics · Phoenix", badge: "Delivers today", dist: 2.2, rating: "4.7", revs: 71, img: "photos/shop-fashion-5.jpg", items: [["Pima Cotton Crew Tee (3-Pack)", 1350], ["Oxford Button-Down Shirt", 1450]] },
+
+      // 4. SALONS & SPA (6 shops)
+      { id: "lagon", cat: "salons", featured: true, name: "Lagon Beauty & Hair", meta: "Hair Styling & Nails · Grand Baie", badge: "Slots today", dist: 1.5, rating: "4.9", revs: 192, img: "photos/shop-salons-6.jpg", bookable: true, items: [["Hair Styling & Blowout", 650], ["Gel Manicure & Nail Art", 900]] },
+      { id: "ateliercut", cat: "salons", featured: false, name: "Atelier Cut Studio", meta: "Barber & Grooming · Port Louis", badge: "Slots today", dist: 0.7, rating: "4.8", revs: 168, img: "photos/shop-salons-3.jpg", bookable: true, items: [["Skin Fade & Beard Sculpt", 350], ["Hot Towel Shave Ritual", 450]] },
+      { id: "zenspa", cat: "salons", featured: false, name: "Zen Wellness Spa", meta: "Massage & Facials · Curepipe", badge: "Top Rated", dist: 1.8, rating: "5.0", revs: 224, img: "photos/shop-salons-4.jpg", bookable: true, items: [["60-Min Aromatherapy Massage", 1400], ["Hydra-Glow Botanical Facial", 1650]] },
+      { id: "studiomiroir", cat: "salons", featured: false, name: "Studio Miroir Moka", meta: "Colour & Balayage · Moka", badge: "Slots today", dist: 2.1, rating: "4.9", revs: 109, img: "photos/shop-salons-1.jpg", bookable: true, items: [["Gloss & Cut Package", 1200], ["Botanical Hair Spa Mask", 750]] },
+      { id: "rosevelours", cat: "salons", featured: false, name: "Rose & Velours Salon", meta: "Bridal & Beauty Bar · Quatre Bornes", badge: "Verified", dist: 1.6, rating: "4.8", revs: 87, img: "photos/shop-salons-2.jpg", bookable: true, items: [["Silk Press & Styling", 850], ["Brow Lamination & Tint", 600]] },
+      { id: "bellemarehair", cat: "salons", featured: false, name: "Belle Mare Hair Care", meta: "Keratin & Treatments · Flacq", badge: "Slots today", dist: 4.1, rating: "4.9", revs: 95, img: "photos/shop-salons-5.jpg", bookable: true, items: [["Keratin Smoothing Ritual", 2200], ["Scalp Detox & Blowdry", 780]] },
+
+      // 5. HOME & LIVING (6 shops)
+      { id: "bookcourt", cat: "home", featured: true, name: "Bookcourt Caudan", meta: "Books, Stationery & Gifts · Port Louis", badge: "Caudan · Open", dist: 0.5, rating: "4.9", revs: 142, img: "photos/shop-bookcourt.jpg", items: [["Mauritius Coffee-Table Atlas", 1350], ["Linen Hardcover Journal", 480]] },
+      { id: "vaneron", cat: "home", featured: false, name: "Vaneron Garden & Living", meta: "Indoor Plants & Ceramics · Moka", badge: "Delivers today", dist: 1.9, rating: "4.9", revs: 136, img: "photos/shop-home-5.jpg", items: [["Potted Tropical Succulent", 390], ["Matte Ceramic Planter", 550]] },
+      { id: "maisonteck", cat: "home", featured: false, name: "Maison Teck & Rotin", meta: "Crafted Sofas & Wood · Curepipe", badge: "Made in MU", dist: 2.3, rating: "4.9", revs: 88, img: "photos/shop-home-1.jpg", items: [["Velvet Accent Cushion Pair", 1150], ["Solid Teak Side Table", 4900]] },
+      { id: "nordik", cat: "home", featured: false, name: "Nordik Studio Bagatelle", meta: "Modern Lounge & Lighting · Moka", badge: "Delivers today", dist: 2.0, rating: "4.8", revs: 104, img: "photos/shop-home-2.jpg", items: [["Minimalist Brass Floor Lamp", 3450], ["Framed Abstract Wall Print", 1600]] },
+      { id: "villaveranda", cat: "home", featured: false, name: "Villa Véranda Interiors", meta: "Coastal Living & Rugs · Grand Baie", badge: "Showroom", dist: 3.4, rating: "5.0", revs: 79, img: "photos/shop-home-3.jpg", items: [["Handwoven Jute Area Rug", 3900], ["Scented Vanilla Cane Candle", 590]] },
+      { id: "qbhomeloft", cat: "home", featured: false, name: "Quatre Bornes Home Loft", meta: "Storage & Décor · Quatre Bornes", badge: "Delivers today", dist: 1.5, rating: "4.8", revs: 67, img: "photos/shop-home-4.jpg", items: [["Woven Seagrass Basket Set", 980], ["Matte Desk Reading Lamp", 1250]] },
+
+      // 6. VEHICLES & RENTALS (6 shops)
+      { id: "lagonauto", cat: "vehicles", featured: true, name: "Lagon Auto Rentals", meta: "Coastal Hatchbacks · Grand Baie", badge: "Instant Book", dist: 1.8, rating: "4.9", revs: 162, img: "photos/cat-car-rental.jpg", items: [["Compact Automatic (Per Day)", 1450], ["Airport Delivery Add-On", 600]] },
+      { id: "plcitycars", cat: "vehicles", featured: false, name: "Port Louis City Cars", meta: "Compact & Hybrid Fleet · Port Louis", badge: "No Deposit", dist: 0.9, rating: "4.8", revs: 118, img: "photos/shop-vehicles-1.jpg", items: [["City Hatchback Rental (Day)", 1250], ["3-Day Island Explorer Pass", 3400]] },
+      { id: "mokaprestige", cat: "vehicles", featured: false, name: "Moka Prestige Motors", meta: "Certified Pre-Owned · Moka", badge: "Escrow Ready", dist: 2.2, rating: "4.9", revs: 91, img: "photos/shop-vehicles-2.jpg", items: [["Full Vehicle Inspection & Diag", 1800], ["Weekend Sport Coupe Hire", 4500]] },
+      { id: "island4x4", cat: "vehicles", featured: false, name: "Island 4x4 & SUV Hire", meta: "7-Seater & Family SUVs · Tamarin", badge: "Free Child Seat", dist: 3.5, rating: "4.9", revs: 134, img: "photos/shop-vehicles-3.jpg", items: [["7-Seater Family SUV (Per Day)", 2600], ["Roof Rack & Cooler Kit", 450]] },
+      { id: "plaisancedrive", cat: "vehicles", featured: false, name: "Plaisance Executive Drive", meta: "SSR Airport Transfers · Mahébourg", badge: "24/7 Pickup", dist: 4.2, rating: "4.8", revs: 205, img: "photos/shop-vehicles-4.jpg", items: [["Private SSR Airport Transfer", 1600], ["Executive Sedan Full Day", 3200]] },
+      { id: "phoenixauto", cat: "vehicles", featured: false, name: "Phoenix Performance Auto", meta: "Detailing & Dealership · Phoenix", badge: "Verified Dealer", dist: 2.5, rating: "4.9", revs: 84, img: "photos/shop-vehicles-5.jpg", items: [["Ceramic Coat & Interior Detail", 2900], ["Pre-Purchase Mechanical Check", 1200]] },
+
+      // 7. KIDS & FAMILY (6 shops)
+      { id: "petitdodo", cat: "kids", featured: true, name: "Petit Dodo Kids", meta: "Baby & Toddler Boutique · Bagatelle", badge: "Delivers today", dist: 1.7, rating: "4.9", revs: 149, img: "photos/shop-kids-1.jpg", items: [["Plush Safari Montessori Set", 890], ["Illustrated Kreol & EN Picture Book", 380]] },
+      { id: "boisjeux", cat: "kids", featured: false, name: "Atelier Bois & Jeux", meta: "Wooden Educational Toys · Curepipe", badge: "Eco Safe", dist: 2.0, rating: "5.0", revs: 112, img: "photos/shop-kids-2.jpg", items: [["Wooden Train & Station Set", 1450], ["Rainbow Stacking Blocks", 690]] },
+      { id: "playbox", cat: "kids", featured: false, name: "PlayBox Caudan", meta: "Figures, Puzzles & Games · Port Louis", badge: "Delivers today", dist: 0.6, rating: "4.8", revs: 127, img: "photos/shop-kids-3.jpg", items: [["Collector Adventure Figures Pack", 1150], ["Family Board Game Classic", 950]] },
+      { id: "cocondoux", cat: "kids", featured: false, name: "Cocon Doux Layette", meta: "Organic Cotton Babywear · Quatre Bornes", badge: "Made in MU", dist: 1.5, rating: "4.9", revs: 93, img: "photos/shop-kids-4.jpg", items: [["Cozy Knit Bear Romper", 980], ["Organic Muslin Swaddle (2-Pack)", 720]] },
+      { id: "lagonkids", cat: "kids", featured: false, name: "Lagon Kids Swim & Sun", meta: "UV Swimwear & Pool Floats · Grand Baie", badge: "Beach Ready", dist: 3.1, rating: "4.8", revs: 76, img: "photos/shop-kids-5.jpg", items: [["UPF 50+ Kids Swim Set & Ring", 850], ["Polarized Kids Sunnies", 420]] },
+      { id: "explorateurs", cat: "kids", featured: false, name: "Les Petits Explorateurs", meta: "Kids Fashion & School Gear · Rose Hill", badge: "Delivers today", dist: 1.8, rating: "4.9", revs: 108, img: "photos/cat-kids.jpg", items: [["Cotton Everyday Play Outfit", 790], ["Junior ergonomic Backpack", 1100]] }
+    ];
+
+    function selectShopCategory(cat, scrollIntoViewNow) {
+      activeShopCat = cat;
+      if (cat !== "all") showAllInAllMode = false;
+
+      document.querySelectorAll("#featuredCatsRow .cat").forEach(function (c) {
+        c.classList.toggle("on", c.getAttribute("data-cat") === cat);
+      });
+      document.querySelectorAll("#shopCatTabs .shop-cat-pill").forEach(function (p) {
+        var on = p.getAttribute("data-cat") === cat;
+        p.classList.toggle("on", on);
+        p.setAttribute("aria-selected", on);
+      });
+
+      renderShopsDirectory();
+      if (scrollIntoViewNow) {
+        document.getElementById("nearby").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function toggleShowAllInAll() {
+      if (activeShopCat !== "all") {
+        activeShopCat = "all";
+        showAllInAllMode = true;
+        selectShopCategory("all", false);
+        return;
+      }
+      showAllInAllMode = !showAllInAllMode;
+      renderShopsDirectory();
+    }
+
+    function renderShopsDirectory() {
+      var grid = document.getElementById("shopsDirectoryGrid");
+      if (!grid) return;
+      var qEl = document.getElementById("homeSearchInput");
+      var q = qEl ? qEl.value.trim().toLowerCase() : "";
+
+      var filtered = ALL_SHOPS.filter(function (s) {
+        var catOk = activeShopCat === "all" || s.cat === activeShopCat;
+        var qOk = !q || s.name.toLowerCase().indexOf(q) > -1 || s.meta.toLowerCase().indexOf(q) > -1 || s.cat.indexOf(q) > -1;
+        var fOk = true;
+        if (activeQuickFilter === "near") fOk = s.dist <= 2.0;
+        if (activeQuickFilter === "top") fOk = parseFloat(s.rating) >= 4.9;
+        if (activeQuickFilter === "deliv") fOk = /Deliver|Open|Warranty|Escrow/i.test(s.badge);
+        return catOk && qOk && fOk;
+      });
+
+      var totalMatches = filtered.length;
+      var displayList = (activeShopCat === "all" && !q && activeQuickFilter === "all" && !showAllInAllMode)
+        ? filtered.filter(function (s) { return s.featured; }).slice(0, 6)
+        : filtered;
+
+      document.getElementById("shopsHeading").textContent = SHOP_CAT_LABELS[activeShopCat] || "Businesses near you";
+      var subEl = document.getElementById("shopsSubCount");
+      if (subEl) {
+        subEl.textContent = activeShopCat === "all" && !showAllInAllMode && !q && activeQuickFilter === "all"
+          ? "Showing 6 spotlight shops across categories · Tap any category tab to explore all 6–7 shops"
+          : "Showing " + displayList.length + " verified Mauritian businesses with real storefront photos";
+      }
+      var toggleBtn = document.getElementById("toggleAllShopsBtn");
+      if (toggleBtn) {
+        toggleBtn.textContent = (activeShopCat === "all" && !showAllInAllMode && !q && activeQuickFilter === "all")
+          ? "Show all " + totalMatches + " ↗"
+          : (activeShopCat !== "all" ? "All 43 shops" : "Show 6 spotlight");
+      }
+
+      grid.innerHTML = "";
+      displayList.forEach(function (s, idx) {
+        var card = document.createElement("article");
+        card.className = "shop shop-anim";
+        card.style.animationDelay = Math.min(idx * 0.045, 0.36) + "s";
+        var initial = s.name.charAt(0).toUpperCase();
+        var safeName = s.name.replace(/'/g, "\\'");
+        card.onclick = function (ev) {
+          if (ev.target.closest("button")) return;
+          openShopStorefront(s.id);
+        };
+        card.innerHTML =
+          '<div class="cover">' +
+            '<img src="' + s.img + '" alt="' + s.name.replace(/"/g, "&quot;") + '" loading="lazy">' +
+            '<span class="badge">' + s.badge + '</span>' +
+            '<span class="dist">' + s.dist.toFixed(1) + ' km</span>' +
+          '</div>' +
+          '<div class="info">' +
+            '<span class="mono">' + initial + '</span>' +
+            '<div style="min-width:0;flex:1;">' +
+              '<div class="name">' + s.name + '</div>' +
+              '<div class="meta">' + s.meta + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="shop-foot">' +
+            '<button type="button" class="rate-pill" onclick="openRatings(\'' + safeName + '\', \'' + s.rating + '\', ' + s.revs + ')"><span class="star">★</span> ' + s.rating + ' (' + s.revs + ')</button>' +
+            '<div style="display:flex;gap:6px;">' +
+              '<button type="button" class="shop-msg-btn" onclick="openMessages(\'' + safeName + '\', \'' + s.img + '\', \'' + s.meta.replace(/'/g, "\\'") + '\')">Message</button>' +
+              '<button type="button" class="shop-open-btn" onclick="openShopStorefront(\'' + s.id + '\')">View ↗</button>' +
+            '</div>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+    }
+
+    function openShopStorefront(shopId) {
+      var s = ALL_SHOPS.find(function (x) { return x.id === shopId; });
+      if (!s) return;
+      document.getElementById("sfImg").src = s.img;
+      document.getElementById("sfImg").alt = s.name;
+      document.getElementById("sfBadge").textContent = s.badge + " · " + s.dist.toFixed(1) + " km away";
+      document.getElementById("sfName").textContent = s.name;
+      document.getElementById("sfMeta").textContent = s.meta + " · Verified SME";
+      var rateBtn = document.getElementById("sfRateBtn");
+      rateBtn.innerHTML = '<span class="star">★</span> ' + s.rating + ' (' + s.revs + ')';
+      rateBtn.onclick = function () {
+        document.getElementById("shopViewDialog").close();
+        openRatings(s.name, s.rating, s.revs);
+      };
+      var msgBtn = document.getElementById("sfMsgBtn");
+      msgBtn.onclick = function () {
+        document.getElementById("shopViewDialog").close();
+        openMessages(s.name, s.img, s.meta);
+      };
+      var itemsWrap = document.getElementById("sfItems");
+      itemsWrap.innerHTML = "";
+      (s.items || []).forEach(function (it) {
+        var row = document.createElement("div");
+        row.className = "sf-item";
+        var title = it[0], price = it[1];
+        row.innerHTML = '<div><b>' + title + '</b><small>Rs ' + price.toLocaleString() + '</small></div>';
+        var act = document.createElement("button");
+        act.type = "button";
+        act.className = "add-deliv-btn";
+        if (s.bookable) {
+          act.textContent = "Book slot";
+          act.onclick = function () {
+            document.getElementById("shopViewDialog").close();
+            openBooking(s.name, title, "Rs " + price.toLocaleString());
+          };
+        } else {
+          act.textContent = "+ Add";
+          act.onclick = function () { addToDelivery(act, title, price, s.img); };
+        }
+        row.appendChild(act);
+        itemsWrap.appendChild(row);
+      });
+      document.getElementById("shopViewDialog").showModal();
+    }
 
     // Interactive Mini-Map Location Picker (MapLibre + OpenFreeMap: free, no API key)
     var miniMap = null;
@@ -1452,6 +1822,7 @@
       els.forEach(function (el) { io.observe(el); });
     })();
     renderCart();
+    renderShopsDirectory();
 
     // Direct Customer ↔ Shop / Business Owner Messaging
     var shopThreads = [
@@ -1528,13 +1899,30 @@
       if (dot) dot.style.display = anyUnread ? "block" : "none";
     }
 
-    function openMessages(shopName) {
+    function openMessages(shopName, shopImg, shopMeta) {
+      if (shopName) {
+        var found = shopThreads.find(function (t) { return t.shop === shopName; });
+        if (!found) {
+          found = {
+            id: "shop-" + Date.now(),
+            shop: shopName,
+            status: (shopMeta || "Mauritius") + " · Online now",
+            time: "Now",
+            unread: 0,
+            img: shopImg || "photos/shop-bookcourt.jpg",
+            msgs: [
+              { from: "shop", text: "Bonzour! Welcome to " + shopName + ". How can we help you today?" }
+            ]
+          };
+          shopThreads.unshift(found);
+        }
+      }
       renderMsgList();
       closeShopThread();
       document.getElementById("msgDialog").showModal();
       if (shopName) {
-        var found = shopThreads.find(function (t) { return t.shop === shopName; });
-        if (found) openShopThread(found.id);
+        var target = shopThreads.find(function (t) { return t.shop === shopName; });
+        if (target) openShopThread(target.id);
       }
     }
 

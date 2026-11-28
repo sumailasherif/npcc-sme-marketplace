@@ -1,4 +1,4 @@
-/* Bazar brand. Colours, font, screen sizes and text sizes.
+/* Bazar brand. Colours, font, screen sizes, accessible light/dark themes, and shared motion.
    Every screen links this file. */
 
 /* Inter with its optical-size axis: big text automatically uses the
@@ -20,25 +20,45 @@
    ───────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Colour */
-  --lime: #d4f53c;       /* brand fill, always with black text */
-  --lime-ink: #496100;   /* the only green allowed as text on cream */
-  --black: #0e0e0c;
-  --black-2: #23231f;
-  --cream: #f4f0e6;      /* page background */
-  --card: #fbf8f1;       /* cards — no pure white anywhere */
-  --line: #e8e2d3;
-  --muted: #6b665a;
+  color-scheme: light dark;
+
+  /* Light-mode Brand Tokens */
+  --lime: #d4f53c;          /* brand fill — ALWAYS paired with --on-lime (#0e0e0c) */
+  --on-lime: #0e0e0c;       /* fixed dark ink on lime fills (13.8:1 contrast) */
+  --lime-ink: #465d00;      /* accessible olive-green text on cream/card (6.6:1 contrast) */
+  --black: #0e0e0c;         /* primary text in light mode */
+  --black-2: #262621;       /* secondary text in light mode */
+  --cream: #f4f0e6;         /* page canvas */
+  --card: #fbf8f1;          /* elevated card surface */
+  --surface-2: #ece7da;     /* secondary tinted well */
+  --line: #e2dccb;          /* crisp border / divider */
+  --muted: #5f5a4e;         /* readable secondary caption text (6.1:1 on card) */
+
+  /* Fixed Dark Surface Tokens (for hero/feature cards that stay dark in both themes) */
+  --dark-bg: #11130e;
+  --dark-bg-2: #1c2016;
+  --on-dark: #f6f3ea;
+  --on-dark-muted: #cbc5b5;
+
+  /* Native browser UI theming */
+  --scrollbar-track: #ece7da;
+  --scrollbar-thumb: #7b7567;
+  accent-color: var(--lime-ink);
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 
   /* Font */
   --font: "Inter", system-ui, sans-serif;
 
   /* Layout — phone values */
-  --gutter: 16px;        /* space at the left/right edge of the screen */
-  --max: 100%;           /* widest the content gets */
-  --top-bar: 56px;       /* app bar height */
-  --tab-bar: 64px;       /* bottom tab bar height (phone + tablet) */
-  --tap: 44px;           /* smallest tap target */
+  --gutter: 16px;
+  --max: 100%;
+  --top-bar: 56px;
+  --tab-bar: 64px;
+  --tap: 44px;
+
+  /* Motion curves */
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Text sizes — phone values (size / line height) */
   --hero: 40px;    --hero-lh: 1.04;
@@ -49,6 +69,46 @@
   --body: 14px;    --body-lh: 1.45;
   --label: 13px;
   --caption: 12px;
+}
+
+/* Follow system dark mode when no manual override is pinned */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --cream: #10120e;
+    --card: #191c16;
+    --surface-2: #23271e;
+    --line: #33392c;
+    --muted: #b9b3a3;        /* 8.5:1 contrast on #191c16 */
+    --black: #f6f3ea;        /* 15.2:1 contrast on #191c16 */
+    --black-2: #e2dccb;      /* 12.6:1 contrast on #191c16 */
+    --lime-ink: #d4f53c;     /* 13.8:1 contrast on #191c16 */
+    --scrollbar-track: #191c16;
+    --scrollbar-thumb: #7f8674;
+    accent-color: var(--lime);
+  }
+}
+
+/* Explicit Dark Mode Override */
+:root[data-theme="dark"],
+:root:has(> head > meta[name="color-scheme"][content="dark"]) {
+  color-scheme: dark;
+  --cream: #10120e;
+  --card: #191c16;
+  --surface-2: #23271e;
+  --line: #33392c;
+  --muted: #b9b3a3;
+  --black: #f6f3ea;
+  --black-2: #e2dccb;
+  --lime-ink: #d4f53c;
+  --scrollbar-track: #191c16;
+  --scrollbar-thumb: #7f8674;
+  accent-color: var(--lime);
+}
+
+/* Explicit Light Mode Override */
+:root[data-theme="light"],
+:root:has(> head > meta[name="color-scheme"][content="light"]) {
+  color-scheme: light;
 }
 
 @media (min-width: 768px) {          /* TABLET */
@@ -70,7 +130,7 @@
     --gutter: 48px;
     --max: 1200px;
     --top-bar: 72px;
-    --tab-bar: 0px;      /* no bottom bar on laptop; menu moves to the top */
+    --tab-bar: 0px;
     --hero: 84px;
     --h1: 44px;
     --h2: 30px;
@@ -92,11 +152,20 @@ body {
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+::selection {
+  background: var(--lime);
+  color: #0e0e0c;
 }
 h1, h2, h3, p { margin: 0; }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
-button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button {
+  font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer;
+  transition: transform 0.16s var(--ease-spring), background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.2s ease;
+}
+button:active:not(:disabled) { transform: scale(0.97); }
 
 /* Shared text styles */
 .t-hero { font-size: var(--hero); line-height: var(--hero-lh); font-weight: 600; letter-spacing: -0.045em; }
@@ -116,22 +185,222 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   min-height: 48px; padding: 0 24px; border-radius: 999px;
   font-size: 15px; font-weight: 600; white-space: nowrap;
+  transition: transform 0.18s var(--ease-spring), background-color 0.18s ease, color 0.18s ease, box-shadow 0.2s ease;
 }
-.btn-lime  { background: var(--lime); color: var(--black); }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: scale(0.97); }
+.btn-lime  { background: var(--lime); color: var(--on-lime); }
 .btn-black { background: var(--black); color: var(--card); }
 
-/* ───── DARK MODE THEME OVERRIDES (Preserves #D4F53C lime accent) ───── */
-[data-theme="dark"] {
-  --cream: #0e0e0c;
-  --card: #181815;
-  --line: #2a2a24;
-  --muted: #a8a294;
-  --black: #fbf8f1;
-  --black-2: #ded8c8;
-  --lime-ink: #d4f53c;
+/* ───────────────────────── GLOBAL DARK-MODE CONTRAST SAFEGUARDS ─────────────────────────
+   Prevents white-on-lime (~1.1:1) and blinding inverted dark banners across EVERY screen. */
+
+/* 1. Every element with a lime fill MUST keep crisp #0e0e0c dark ink */
+.logo,
+.btn-lime,
+.ed-btn--lime,
+.cat-btn--lime,
+.pill-btn--lime,
+.ai-fill-btn,
+.shop .badge,
+.loc-btn .pin,
+.loc-chip .pin,
+.assist-fab .dot-ai,
+.deliv-side-ico,
+.tab-bar a.on .pill,
+.time-opt.on,
+.rad-opt.on,
+.view-tabs button.on,
+.mode-switch button.on,
+.chat-form button,
+.assist-form button,
+.chat-send button,
+.inline-chip--lime,
+.suite-tag,
+.p3-tag,
+.order-av--lime,
+.inv-ico--lime,
+.st-tile.key,
+.st-tile.key b,
+.buy-pill,
+.orbit-card--lime,
+.bd-kpi--rev,
+.biz,
+.biz b {
+  color: #0e0e0c !important;
 }
-[data-theme="dark"] .btn-black { background: var(--lime); color: #0e0e0c; }
-[data-theme="dark"] .logo { color: #0e0e0c; }
+.biz p { color: #262621 !important; }
+.biz .go { background: #0e0e0c !important; color: var(--lime) !important; }
+
+/* 2. Dark Mode Overrides (both manual [data-theme="dark"] and OS dark fallback) */
+:root[data-theme="dark"] .btn-black,
+:root[data-theme="dark"] .ed-btn--black,
+:root[data-theme="dark"] .pill-btn--primary,
+:root[data-theme="dark"] .btn-solid,
+:root[data-theme="dark"] .sell-cta,
+:root[data-theme="dark"] .find-btn,
+:root[data-theme="dark"] .book-btn,
+:root[data-theme="dark"] .add-deliv-btn:not(.added) {
+  background: var(--lime);
+  color: #0e0e0c;
+  border-color: var(--lime);
+}
+:root[data-theme="dark"] .ed-btn--black .sq {
+  background: #0e0e0c;
+  color: var(--lime);
+}
+:root[data-theme="dark"] .ed-btn--outline-dark {
+  background: var(--card);
+  color: var(--black);
+  border-color: var(--line);
+}
+:root[data-theme="dark"] .ed-btn--outline-dark:hover {
+  border-color: var(--lime);
+  color: var(--lime);
+}
+
+/* Active filter chips, dark avatars, and dark badges in Dark Mode: crisp dark-olive + lime text */
+:root[data-theme="dark"] .chip.on,
+:root[data-theme="dark"] .cat.on,
+:root[data-theme="dark"] .loc-chip.on,
+:root[data-theme="dark"] .near-chip.on,
+:root[data-theme="dark"] .deliv-switch button.on,
+:root[data-theme="dark"] .mode-bar button.on,
+:root[data-theme="dark"] .pop-menu button.on,
+:root[data-theme="dark"] .lang-opt.on,
+:root[data-theme="dark"] .cal-day.on,
+:root[data-theme="dark"] .rc-pill--dark,
+:root[data-theme="dark"] .prod-chips .mini-pill.on,
+:root[data-theme="dark"] .st-pend,
+:root[data-theme="dark"] .escrow-badge {
+  background: #252b1b !important;
+  color: var(--lime) !important;
+  border-color: rgba(212, 245, 60, 0.55) !important;
+}
+:root[data-theme="dark"] .shop .mono,
+:root[data-theme="dark"] .mono,
+:root[data-theme="dark"] .dlg-avatar,
+:root[data-theme="dark"] .assist-avatar,
+:root[data-theme="dark"] .profile-btn,
+:root[data-theme="dark"] .profile-av,
+:root[data-theme="dark"] .chat-who .av,
+:root[data-theme="dark"] .logo-prev,
+:root[data-theme="dark"] .search .filter,
+:root[data-theme="dark"] .js-go,
+:root[data-theme="dark"] .msg-unread,
+:root[data-theme="dark"] .ad-msg,
+:root[data-theme="dark"] .sys-plus,
+:root[data-theme="dark"] .assist-fab {
+  background: #222719 !important;
+  color: var(--lime) !important;
+  border: 1px solid rgba(212, 245, 60, 0.38);
+}
+:root[data-theme="dark"] .bubble--user,
+:root[data-theme="dark"] .msg--user,
+:root[data-theme="dark"] .bub.me {
+  background: #242a1a !important;
+  color: #f6f3ea !important;
+  border: 1px solid rgba(212, 245, 60, 0.35);
+}
+
+/* Intentionally Dark Hero / Feature Sections stay rich dark in Dark Mode (never invert to white!) */
+:root[data-theme="dark"] .hero-wrap,
+:root[data-theme="dark"] .assist-band,
+:root[data-theme="dark"] .intro,
+:root[data-theme="dark"] .fab-banner,
+:root[data-theme="dark"] .fab-spot,
+:root[data-theme="dark"] .ai-anchor,
+:root[data-theme="dark"] .kpi--featured,
+:root[data-theme="dark"] .scan-mock,
+:root[data-theme="dark"] .bd-kpi--profit,
+:root[data-theme="dark"] .printer-slot {
+  background-color: #151812 !important;
+  color: #f6f3ea !important;
+  border-color: rgba(212, 245, 60, 0.24) !important;
+}
+:root[data-theme="dark"] .hero-wrap h1,
+:root[data-theme="dark"] .assist-band h2,
+:root[data-theme="dark"] .intro b,
+:root[data-theme="dark"] .r-copy h2,
+:root[data-theme="dark"] .scan-meta b,
+:root[data-theme="dark"] .bd-kpi--profit b,
+:root[data-theme="dark"] .kpi--featured .kpi-num {
+  color: #f6f3ea !important;
+}
+:root[data-theme="dark"] .hero-center p,
+:root[data-theme="dark"] .hero-trust,
+:root[data-theme="dark"] .assist-copy p,
+:root[data-theme="dark"] .intro p,
+:root[data-theme="dark"] .r-copy p,
+:root[data-theme="dark"] .scan-meta span {
+  color: #cbc5b5 !important;
+}
+:root[data-theme="dark"] .cat-btn--ghost,
+:root[data-theme="dark"] .ed-btn--outline-light {
+  background: rgba(246, 243, 234, 0.08) !important;
+  border-color: rgba(246, 243, 234, 0.32) !important;
+  color: #f6f3ea !important;
+}
+:root[data-theme="dark"] .cat-btn--ghost:hover,
+:root[data-theme="dark"] .ed-btn--outline-light:hover {
+  border-color: var(--lime) !important;
+  color: var(--lime) !important;
+}
+:root[data-theme="dark"] .shop .dist,
+:root[data-theme="dark"] .prod .tag,
+:root[data-theme="dark"] .ad-cond {
+  background: rgba(16, 18, 14, 0.88) !important;
+  color: #f6f3ea !important;
+  border: 1px solid rgba(246, 243, 234, 0.16);
+}
+:root[data-theme="dark"] .chat-chips button:hover,
+:root[data-theme="dark"] .assist-chips button:hover,
+:root[data-theme="dark"] .chat-quick button:hover {
+  background: var(--lime) !important;
+  color: #0e0e0c !important;
+  border-color: var(--lime) !important;
+}
+
+/* Light-paper / Studio-cutout surfaces that keep light ink in Dark Mode */
+.receipt-paper,
+.p2-paper,
+.p3-sheet {
+  color-scheme: only light;
+  color: #0e0e0c !important;
+}
+.receipt-paper .rc-top,
+.receipt-paper .rc-row span:first-child,
+.receipt-paper .rc-sub,
+.receipt-paper .rc-note,
+.p3-sheet small {
+  color: #5b564a !important;
+}
+.receipt-paper .rc-row,
+.p3-sheet p {
+  color: #23231f !important;
+}
+
+/* Shared GPU-composited Page Entrance & Scroll-Driven Card Polish */
+@keyframes bazarPageFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  main {
+    animation: bazarPageFade 0.42s var(--ease-spring) both;
+  }
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    @keyframes bazarScrollReveal {
+      entry 0% { opacity: 0.35; transform: translateY(18px) scale(0.985); }
+      entry 100%, exit 0% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .srv-card, .kpi, .card, .ad-card, .escrow-card {
+      animation: bazarScrollReveal auto linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% cover 22%;
+    }
+  }
+}
 
 /* Small floating Theme Toggle Button (Dark / Light) across all pages */
 #themeToggleBtn {
@@ -139,15 +408,20 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   right: 16px;
   top: calc(var(--top-bar, 56px) + env(safe-area-inset-top) + 10px);
   z-index: 90;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
   background: var(--card);
   color: var(--black);
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   display: grid;
   place-items: center;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-  transition: transform .15s ease, background .15s ease;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+  transition: transform 0.22s var(--ease-spring), background-color 0.2s ease, border-color 0.2s ease;
 }
-#themeToggleBtn:hover { transform: scale(1.06); }
+:root[data-theme="dark"] #themeToggleBtn {
+  background: #23281b;
+  color: var(--lime);
+  border-color: rgba(212, 245, 60, 0.45);
+}
+#themeToggleBtn:hover { transform: scale(1.08) rotate(-8deg); border-color: var(--lime-ink); }

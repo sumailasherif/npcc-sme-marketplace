@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#f4f0e6">
   <title>Bazar — Create your shop</title>
   <link rel="stylesheet" href="brand.css">
@@ -83,6 +85,20 @@
     .done .big { width: 64px; height: 64px; border-radius: 999px; background: var(--lime); display: grid; place-items: center; font-size: 30px; box-shadow: inset 0 0 0 2px var(--black); }
     .share { display: flex; align-items: center; gap: 8px; width: 100%; background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: 8px 8px 8px 14px; }
     .share code { flex: 1; text-align: left; font: 600 13px/1.3 var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    @keyframes stepFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .card:not([hidden]) { animation: stepFadeIn 0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    }
+    :root[data-theme="dark"] .notice {
+      background: #2b220f; border-color: rgba(251, 191, 36, 0.45); color: #fef3c7;
+    }
+    :root[data-theme="dark"] .err { color: #fca5a5; }
+    :root[data-theme="dark"] .done .big { color: #0e0e0c; box-shadow: inset 0 0 0 2px #0e0e0c; }
+    :root[data-theme="dark"] .steps i.on { background: var(--lime); }
   </style>
 </head>
 <body>

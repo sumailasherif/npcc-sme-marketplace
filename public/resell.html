@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#0e0e0c">
   <title>Bazar — Resell Marketplace &amp; Escrow</title>
   <link rel="stylesheet" href="brand.css">
@@ -469,6 +471,90 @@
       .ads-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
       .cat-strip { display: grid; grid-template-columns: repeat(7, 1fr); overflow: visible; }
     }
+
+    /* ───── DARK MODE CONTRAST & STUDIO CUTOUT FIXES + STAGGER MOTION ───── */
+    @keyframes adCardPop {
+      from { opacity: 0; transform: translateY(14px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .ad-card { animation: adCardPop 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; }
+      dialog[open] { animation: adCardPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    }
+
+    /* Studio product cutout wells stay soft warm ivory so mix-blend-mode: multiply never muddies,
+       while surrounding card surfaces & typography switch cleanly to high-contrast dark mode! */
+    :root[data-theme="dark"] .fab-stat {
+      background: var(--card);
+      border-color: var(--line);
+    }
+    :root[data-theme="dark"] .fab-stat b { color: var(--black); }
+    :root[data-theme="dark"] .fab-stat span { color: var(--muted); }
+
+    :root[data-theme="dark"] .c-tile {
+      background: var(--card);
+      border-color: var(--line);
+    }
+    :root[data-theme="dark"] .c-tile:hover {
+      background: #22261d;
+      border-color: rgba(212, 245, 60, 0.45);
+    }
+    :root[data-theme="dark"] .c-tile.on {
+      background: #232919;
+      border-color: var(--lime);
+    }
+    :root[data-theme="dark"] .c-go {
+      background: #262b1f;
+      color: var(--black);
+    }
+    :root[data-theme="dark"] .c-tile:hover .c-go,
+    :root[data-theme="dark"] .c-tile.on .c-go {
+      background: var(--lime);
+      color: #0e0e0c;
+    }
+    :root[data-theme="dark"] .c-ph {
+      background: #f2efe6;
+      border-radius: 18px;
+      padding: 10px;
+    }
+    :root[data-theme="dark"] .ad-ph {
+      background: #f2efe6;
+    }
+    :root[data-theme="dark"] .ad-save {
+      background: #191c16;
+      color: #f6f3ea;
+      border: 1px solid rgba(246, 243, 234, 0.18);
+    }
+    :root[data-theme="dark"] .ad-save.saved {
+      background: var(--lime);
+      color: #0e0e0c;
+    }
+    :root[data-theme="dark"] .ad-disc {
+      background: rgba(212, 245, 60, 0.18);
+      color: var(--lime);
+    }
+    :root[data-theme="dark"] .opt-pill.on {
+      background: rgba(212, 245, 60, 0.18);
+      border-color: var(--lime);
+      color: var(--lime);
+    }
+    :root[data-theme="dark"] .step.done {
+      background: rgba(212, 245, 60, 0.14);
+      border-color: var(--lime);
+    }
+    :root[data-theme="dark"] .step.active {
+      border-color: var(--lime);
+      box-shadow: 0 0 0 1px var(--lime);
+    }
+    :root[data-theme="dark"] .detail-trust {
+      background: rgba(212, 245, 60, 0.12);
+      border-color: rgba(212, 245, 60, 0.42);
+      color: var(--black);
+    }
+    :root[data-theme="dark"] .add-slot:hover {
+      background: var(--lime);
+      color: #0e0e0c;
+    }
   </style>
 </head>
 <body>
@@ -506,9 +592,12 @@
       <div class="fab-banner" id="resellBanner">
         <div class="fab-top-bar">
           <span style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);">bazar® Resell · Mauritius</span>
-          <div class="view-tabs" role="tablist">
-            <button type="button" id="v-browse" class="on" onclick="switchView('browse')">Browse</button>
-            <button type="button" id="v-escrow" onclick="switchView('escrow')">My Escrow <span class="cnt">1</span></button>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button type="button" id="resellPauseBtn" onclick="toggleResellPause()" style="padding:5px 10px;border-radius:999px;background:rgba(251,248,241,0.1);border:1px solid rgba(251,248,241,0.2);color:#e2dcd0;font-size:11px;font-weight:600;">Pause</button>
+            <div class="view-tabs" role="tablist">
+              <button type="button" id="v-browse" class="on" onclick="switchView('browse')">Browse</button>
+              <button type="button" id="v-escrow" onclick="switchView('escrow')">My Escrow <span class="cnt">1</span></button>
+            </div>
           </div>
         </div>
 
@@ -778,8 +867,8 @@
           <button type="button" class="thumb-slot on" onclick="pickUploadPhoto(this, 'photos/resell-iphone.jpg')"><img src="photos/resell-iphone.jpg" alt=""></button>
           <button type="button" class="thumb-slot" onclick="pickUploadPhoto(this, 'photos/resell-macbook.jpg')"><img src="photos/resell-macbook.jpg" alt=""></button>
           <button type="button" class="thumb-slot" onclick="pickUploadPhoto(this, 'photos/resell-headphones.jpg')"><img src="photos/resell-headphones.jpg" alt=""></button>
-          <button type="button" class="thumb-slot add-slot" onclick="takeListingPhoto()" aria-label="Take a photo with the camera"><span>📷</span><small>Camera</small></button>
-          <button type="button" class="thumb-slot add-slot" onclick="uploadListingPhotos()" aria-label="Upload photos"><span>⬆</span><small>Upload</small></button>
+          <button type="button" class="thumb-slot add-slot" onclick="takeListingPhoto()" aria-label="Take a photo with the camera"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg><small>Camera</small></button>
+          <button type="button" class="thumb-slot add-slot" onclick="uploadListingPhotos()" aria-label="Upload photos"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg><small>Upload</small></button>
         </div>
       </div>
 
@@ -790,7 +879,7 @@
       <div class="opt-group">
         <div class="desc-tools">
           <label for="itemDesc" style="margin:0">Description</label>
-          <button type="button" class="ai-fill-btn" onclick="suggestDescription()">✨ Write it for me</button>
+          <button type="button" class="ai-fill-btn" onclick="suggestDescription()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8Z"/></svg>Write it for me</button>
         </div>
         <textarea id="itemDesc" class="desc-box" placeholder="Tell buyers about the item: how old it is, how it works, any marks, what's included…" oninput="updateDescMeter()"></textarea>
         <div class="desc-tools">
@@ -976,10 +1065,11 @@
       grid.innerHTML = "";
       document.getElementById("feedTitle").textContent = list.length + " Escrow deals";
 
-      list.forEach(function (a) {
+      list.forEach(function (a, idx) {
         var disc = a.orig ? Math.round((1 - a.price / a.orig) * 100) : 0;
         var card = document.createElement("article");
         card.className = "ad-card";
+        card.style.animationDelay = Math.min(idx * 0.045, 0.32) + "s";
         card.onclick = function (ev) {
           if (ev.target.closest(".ad-save")) return;
           if (ev.target.closest(".ad-msg")) { openChat(a); return; }
@@ -1259,7 +1349,15 @@
     (function initResellBanner() {
       var slides = document.querySelectorAll("#resellSlides .r-slide");
       var banner = document.getElementById("resellBanner");
-      var cur = 0, tmr = null, startX = null;
+      var cur = 0, tmr = null, startX = null, bannerPaused = false;
+
+      window.toggleResellPause = function () {
+        bannerPaused = !bannerPaused;
+        var b = document.getElementById("resellPauseBtn");
+        if (b) b.textContent = bannerPaused ? "Play" : "Pause";
+        if (bannerPaused) clearInterval(tmr);
+        else resetTimer();
+      };
 
       window.goResellSlide = function (next) {
         if (!slides.length) return;
@@ -1275,7 +1373,7 @@
 
       function resetTimer() {
         clearInterval(tmr);
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (bannerPaused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         tmr = setInterval(function () { window.goResellSlide(cur + 1); }, 2000);
       }
 

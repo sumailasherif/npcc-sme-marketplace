@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#f4f0e6">
   <title>Bazar — Map</title>
   <link rel="stylesheet" href="brand.css">
@@ -153,6 +155,27 @@
       .nearby { flex-direction: column; overflow: visible; }
       .near-chip { width: 100%; border-radius: 16px; }
       .near-chip .km { margin-left: auto; }
+    }
+
+    /* Dark Mode Map Tint & Card Slide Animation */
+    @keyframes placeSlideUp {
+      from { opacity: 0; transform: translateY(16px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .place.show { animation: placeSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    }
+    :root[data-theme="dark"] #map .maplibregl-canvas {
+      filter: invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(0.92);
+    }
+    :root[data-theme="dark"] .shop-pin {
+      background: #1a1e15; color: var(--lime); border-color: rgba(212, 245, 60, 0.45);
+    }
+    :root[data-theme="dark"] .shop-pin.on {
+      background: var(--lime); color: #0e0e0c; border-color: #0e0e0c;
+    }
+    :root[data-theme="dark"] .me-dot {
+      border-color: #10120e;
     }
   </style>
 </head>
