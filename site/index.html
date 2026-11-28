@@ -2,73 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- viewport-fit=cover lets the app use the full phone screen (notch / home bar) -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f4f0e6">
   <title>Bazar — Home</title>
   <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="app.css">
   <style>
-    /* ───── APP BAR (top) ───── */
-    .app-bar {
-      position: sticky; top: 0; z-index: 10;
-      height: calc(var(--top-bar) + env(safe-area-inset-top));
-      padding-top: env(safe-area-inset-top);
-      background: var(--cream);
-    }
-    .app-bar .wrap { height: 100%; display: flex; align-items: center; gap: 12px; }
-    .logo { background: var(--lime); padding: 4px 10px; border-radius: 8px;
-            font-size: 18px; font-weight: 700; letter-spacing: -0.04em; }
-    .top-nav { display: none; }                       /* laptop only */
-    .app-bar .right { margin-left: auto; display: flex; align-items: center; gap: 4px; }
-    .icon-btn { width: var(--tap); height: var(--tap); display: grid; place-items: center; border-radius: 999px; }
-    .icon-btn:hover { background: var(--line); }
-    .app-bar .btn { display: none; }                  /* laptop only */
+    main section { margin-top: 28px; }
 
-    /* ───── HERO ───── */
-    .hero {
-      min-height: calc(100svh - var(--top-bar) - var(--tab-bar) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-      display: flex; flex-direction: column; justify-content: center;
-      padding-top: 32px; padding-bottom: 48px;
-    }
-    .hero .sub { margin-top: 16px; color: var(--black-2); max-width: 560px; }
-    .hero .actions { margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
-    .hero .actions .btn { width: 100%; }
+    /* 1. Intro strip */
+    .intro { margin-top: 8px; position: relative; background: var(--black); color: var(--card);
+             border-radius: 20px; padding: 18px 48px 18px 18px; }
+    .intro b { display: block; font-size: var(--h3); line-height: 1.25; font-weight: 600; letter-spacing: -0.02em; }
+    .intro b em { font-style: normal; color: var(--lime); }
+    .intro p { margin-top: 6px; color: #cfc7b4; }
+    .intro .close { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; border-radius: 999px;
+                    display: grid; place-items: center; color: #a8a294; }
+    .intro .close:hover { background: var(--black-2); color: var(--card); }
+    .intro.hidden { display: none; }
 
-    /* ───── BOTTOM TAB BAR (phone + tablet) ───── */
-    .tab-bar {
-      position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-      height: calc(var(--tab-bar) + env(safe-area-inset-bottom));
-      padding-bottom: env(safe-area-inset-bottom);
-      background: var(--card); border-top: 1px solid var(--line);
-      display: flex;
-    }
-    .tab-bar a {
-      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-      color: var(--muted);
-    }
-    .tab-bar a .pill { width: 52px; height: 30px; display: grid; place-items: center; border-radius: 999px; }
-    .tab-bar a.on { color: var(--black); }
-    .tab-bar a.on .pill { background: var(--lime); }
-    .tab-bar svg, .icon-btn svg { width: 22px; height: 22px; }
+    /* 2. Search */
+    .search { margin-top: 16px; display: flex; gap: 8px; }
+    .search label { flex: 1; display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px;
+                    background: var(--card); border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
+    .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; font-size: 16px; color: var(--black); }
+    .search input::placeholder { color: var(--muted); }
+    .search .filter { width: 52px; height: 52px; border-radius: 999px; background: var(--black); color: var(--lime); display: grid; place-items: center; flex: none; }
+    .search svg { width: 20px; height: 20px; flex: none; }
+
+    /* 3. Categories */
+    .cat { width: 76px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+    .cat .ph { width: 72px; height: 72px; border-radius: 999px; overflow: hidden; background: var(--line); }
+    .cat img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+    .cat:hover img { transform: scale(1.08); }
+    .cat span { font-size: var(--caption); line-height: 1.25; font-weight: 600; }
+
+    /* 4. Shops */
+    .shop { width: 260px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+    .shop .cover { position: relative; aspect-ratio: 16/10; }
+    .shop .cover img { width: 100%; height: 100%; object-fit: cover; }
+    .shop .badge { position: absolute; top: 10px; left: 10px; background: var(--lime); color: var(--black);
+                   padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .shop .info { display: flex; gap: 10px; align-items: center; padding: 12px; }
+    .shop .mono { width: 40px; height: 40px; border-radius: 12px; background: var(--black); color: var(--lime);
+                  display: grid; place-items: center; font-weight: 700; flex: none; }
+    .shop .name { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
+    .shop .meta { color: var(--muted); font-size: var(--caption); margin-top: 2px; }
+
+    /* 5. Products */
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 12px; }
+    .prod .ph { position: relative; aspect-ratio: 1; border-radius: 16px; overflow: hidden; background: var(--line); }
+    .prod img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+    .prod:hover img { transform: scale(1.04); }
+    .prod .save { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 999px;
+                  background: var(--card); display: grid; place-items: center; }
+    .prod .save svg { width: 18px; height: 18px; }
+    .prod .name { margin-top: 8px; font-weight: 500; font-size: var(--body); line-height: 1.3;
+                  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .prod .shopname { color: var(--muted); font-size: var(--caption); margin-top: 2px; }
+    .prod .price { display: inline-block; margin-top: 6px; background: var(--black); color: var(--lime);
+                   padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: 13px; }
+
+    /* 6. Business banner */
+    .biz { display: flex; align-items: center; gap: 16px; background: var(--lime); border-radius: 20px; padding: 20px; margin-bottom: 32px; }
+    .biz b { display: block; font-size: var(--h3); font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; }
+    .biz p { margin-top: 4px; color: var(--black-2); }
+    .biz .go { margin-left: auto; flex: none; width: 48px; height: 48px; border-radius: 999px; background: var(--black); color: var(--lime);
+               display: grid; place-items: center; }
 
     /* ───── TABLET ───── */
     @media (min-width: 768px) {
-      .hero { text-align: center; align-items: center; }
-      .hero .sub { margin-left: auto; margin-right: auto; }
-      .hero .actions { flex-direction: row; justify-content: center; }
-      .hero .actions .btn { width: auto; min-width: 200px; }
-      .tab-bar { justify-content: center; }
-      .tab-bar a { flex: 0 0 120px; }
+      main section { margin-top: 36px; }
+      .intro { padding: 24px 56px 24px 24px; }
+      .cat { width: 88px; }
+      .cat .ph { width: 84px; height: 84px; }
+      .shop { width: 300px; }
+      .grid { grid-template-columns: repeat(3, 1fr); gap: 20px 16px; }
     }
 
     /* ───── LAPTOP ───── */
     @media (min-width: 1280px) {
-      .top-nav { display: flex; gap: 32px; margin-left: 40px; }
-      .top-nav a { font-size: 15px; font-weight: 500; color: var(--black-2); }
-      .top-nav a:hover, .top-nav a.on { color: var(--black); }
-      .app-bar .btn { display: inline-flex; margin-left: 8px; min-height: 44px; }
-      .tab-bar { display: none; }
-      .hero .sub { max-width: 680px; }
+      main section { margin-top: 48px; }
+      .top-area { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; align-items: stretch; margin-top: 16px; }
+      .intro { margin-top: 0; display: flex; flex-direction: column; justify-content: center; padding: 28px 64px 28px 28px; }
+      .search { margin-top: 0; align-self: center; }
+      .search label { height: 60px; }
+      .search .filter { width: 60px; height: 60px; }
+      .intro.hidden + .search { grid-column: 1 / -1; }
+      .cats-row { display: grid; grid-template-columns: repeat(10, 1fr); overflow: visible; margin: 0; padding: 0; }
+      .cat { width: auto; }
+      .cat .ph { width: 96px; height: 96px; }
+      .shops-row { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; margin: 0; padding: 0; }
+      .shops-row .shop:nth-child(n+4) { display: none; }
+      .shop { width: auto; }
+      .grid { grid-template-columns: repeat(5, 1fr); gap: 28px 20px; }
+      .biz { padding: 28px 32px; }
     }
   </style>
 </head>
@@ -79,13 +107,14 @@
     <div class="wrap">
       <a href="index.html" class="logo" data-text="bar.logo">bazar</a>
       <nav class="top-nav">
-        <a href="#" class="on" data-text="nav.home">Home</a>
+        <a href="index.html" class="on" data-text="nav.home">Home</a>
         <a href="#" data-text="nav.search">Search</a>
         <a href="#" data-text="nav.sell">Sell</a>
         <a href="#" data-text="nav.orders">Orders</a>
+        <a href="business.html" data-text="nav.business">For business</a>
       </nav>
       <div class="right">
-        <button class="icon-btn" aria-label="Notifications">
+        <button class="icon-btn" aria-label="Notifications"><span class="dot"></span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
         </button>
         <button class="icon-btn" aria-label="Cart">
@@ -96,27 +125,136 @@
     </div>
   </header>
 
-  <main>
-    <!-- HERO -->
-    <section class="hero wrap">
-      <h1 class="t-hero" data-text="hero.title">One place for every Mauritian business</h1>
-      <p class="sub t-body-l" data-text="hero.subtitle">Shop local brands, sell what you don't need, and grow your business — all on Bazar.</p>
-      <div class="actions">
-        <a href="#" class="btn btn-lime" data-text="hero.button-1">Start shopping</a>
-        <a href="#" class="btn btn-black" data-text="hero.button-2">Open your shop</a>
+  <main class="wrap">
+
+    <div class="top-area">
+      <!-- 1. INTRO STRIP (first-time visitors; can be closed) -->
+      <div class="intro" id="intro">
+        <b data-text="intro.title">Every Mauritian business, <em>one app.</em></b>
+        <p class="t-body" data-text="intro.text">Shop local brands, sell what you don't need, and get delivery island-wide.</p>
+        <button class="close" aria-label="Close" onclick="hideIntro()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <!-- 2. SEARCH -->
+      <form class="search" onsubmit="return false">
+        <label>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" placeholder="Search shops and products" aria-label="Search">
+        </label>
+        <button class="filter" type="button" aria-label="Filters">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+        </button>
+      </form>
+    </div>
+
+    <!-- 3. CATEGORIES -->
+    <section>
+      <div class="row-head">
+        <h2 class="t-h2" data-text="cats.title">Categories</h2>
+        <a href="#" class="more" data-text="cats.more">See all</a>
+      </div>
+      <div class="scroller cats-row">
+        <a href="#" class="cat"><div class="ph"><img src="photos/cat-restaurants.jpg" alt=""></div><span data-text="cats.1">Food</span></a>
+        <a href="#" class="cat"><div class="ph"><img src="photos/cat-groceries.jpg" alt=""></div><span data-text="cats.2">Groceries</span></a>
+        <a href="#" class="cat"><div class="ph"><img src="photos/cat-fashion.jpg" alt=""></div><span data-text="cats.3">Fashion</span></a>
+        <a href="#" class="cat"><div class="ph"><img src="photos/cat-electronics.jpg" alt=""></div><span data-text="cats.4">Phones</span></a>
+        <a href="#" class="cat"><div class="ph"><img src="photos/cat-beauty.jpg" alt=""></div><span data-text="cats.5">Beauty</span></a>
+        <a href="#" class="cat"><div class="ph"><img src="photos/cat-cakes.jpg" alt=""></div><span data-text="cats.6">Cakes</span></a>
+        <a href="#" class="cat"><div class="ph"><img src="photos/cat-home-living.jpg" alt=""></div><span data-text="cats.7">Home</span></a>
+        <a href="#" class="cat"><div class="ph"><img src="photos/cat-car-rental.jpg" alt=""></div><span data-text="cats.8">Car rental</span></a>
+        <a href="#" class="cat"><div class="ph"><img src="photos/cat-crafts.jpg" alt=""></div><span data-text="cats.9">Made in MU</span></a>
+        <a href="#" class="cat"><div class="ph"><img src="photos/cat-kids.jpg" alt=""></div><span data-text="cats.10">Kids</span></a>
       </div>
     </section>
+
+    <!-- 4. SHOPS -->
+    <section>
+      <div class="row-head">
+        <h2 class="t-h2" data-text="shops.title">Popular shops</h2>
+        <a href="#" class="more" data-text="shops.more">See all</a>
+      </div>
+      <div class="scroller shops-row">
+        <a href="#" class="shop">
+          <div class="cover"><img src="photos/bakery-cover.jpg" alt=""><span class="badge" data-text="shops.1-badge">Delivers today</span></div>
+          <div class="info"><span class="mono">R</span><div><div class="name" data-text="shops.1-name">Rosie's Cakes</div><div class="meta" data-text="shops.1-meta">Cakes · Curepipe</div></div></div>
+        </a>
+        <a href="#" class="shop">
+          <div class="cover"><img src="photos/crafts-cover.jpg" alt=""><span class="badge" data-text="shops.2-badge">Made in Mauritius</span></div>
+          <div class="info"><span class="mono">T</span><div><div class="name" data-text="shops.2-name">Ti Kaz Crafts</div><div class="meta" data-text="shops.2-meta">Crafts · Mahébourg</div></div></div>
+        </a>
+        <a href="#" class="shop">
+          <div class="cover"><img src="photos/cover-phone-hand.jpg" alt=""><span class="badge" data-text="shops.3-badge">Pay on delivery</span></div>
+          <div class="info"><span class="mono">V</span><div><div class="name" data-text="shops.3-name">Vik Phone Corner</div><div class="meta" data-text="shops.3-meta">Phones · Port Louis</div></div></div>
+        </a>
+        <a href="#" class="shop">
+          <div class="cover"><img src="photos/hero-boutique.jpg" alt=""><span class="badge" data-text="shops.4-badge">New</span></div>
+          <div class="info"><span class="mono">L</span><div><div class="name" data-text="shops.4-name">Lagon Boutique</div><div class="meta" data-text="shops.4-meta">Fashion · Grand Baie</div></div></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- 5. PRODUCTS -->
+    <section>
+      <div class="row-head">
+        <h2 class="t-h2" data-text="products.title">Picked for you</h2>
+        <a href="#" class="more" data-text="products.more">See all</a>
+      </div>
+      <div class="grid">
+        <a href="#" class="prod"><div class="ph"><img src="photos/chocolate-cake.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+          <div class="name" data-text="p.1-name">Chocolate fudge cake</div><div class="shopname" data-text="p.1-shop">Rosie's Cakes</div><span class="price" data-text="p.1-price">Rs 950</span></a>
+        <a href="#" class="prod"><div class="ph"><img src="photos/raffia-bag.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+          <div class="name" data-text="p.2-name">Handwoven raffia bag</div><div class="shopname" data-text="p.2-shop">Ti Kaz Crafts</div><span class="price" data-text="p.2-price">Rs 1,200</span></a>
+        <a href="#" class="prod"><div class="ph"><img src="photos/iphone-red.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+          <div class="name" data-text="p.3-name">iPhone 11, 128GB, red</div><div class="shopname" data-text="p.3-shop">Vik Phone Corner</div><span class="price" data-text="p.3-price">Rs 14,500</span></a>
+        <a href="#" class="prod"><div class="ph"><img src="photos/earrings.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+          <div class="name" data-text="p.4-name">Shell drop earrings</div><div class="shopname" data-text="p.4-shop">Lagon Boutique</div><span class="price" data-text="p.4-price">Rs 450</span></a>
+        <a href="#" class="prod"><div class="ph"><img src="photos/achard.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+          <div class="name" data-text="p.5-name">Homemade achard, 500g</div><div class="shopname" data-text="p.5-shop">Lakwizinn Mama</div><span class="price" data-text="p.5-price">Rs 180</span></a>
+        <a href="#" class="prod"><div class="ph"><img src="photos/soap.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+          <div class="name" data-text="p.6-name">Coconut &amp; vanilla soap</div><div class="shopname" data-text="p.6-shop">Ile Savon</div><span class="price" data-text="p.6-price">Rs 150</span></a>
+        <a href="#" class="prod"><div class="ph"><img src="photos/woven-hat.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+          <div class="name" data-text="p.7-name">Vacoas straw hat</div><div class="shopname" data-text="p.7-shop">Ti Kaz Crafts</div><span class="price" data-text="p.7-price">Rs 650</span></a>
+        <a href="#" class="prod"><div class="ph"><img src="photos/gato-coco.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+          <div class="name" data-text="p.8-name">Gato coco, box of 6</div><div class="shopname" data-text="p.8-shop">Rosie's Cakes</div><span class="price" data-text="p.8-price">Rs 120</span></a>
+        <a href="#" class="prod"><div class="ph"><img src="photos/plant.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+          <div class="name" data-text="p.9-name">Potted monstera</div><div class="shopname" data-text="p.9-shop">Jardin Vert</div><span class="price" data-text="p.9-price">Rs 800</span></a>
+        <a href="#" class="prod"><div class="ph"><img src="photos/juice.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+          <div class="name" data-text="p.10-name">Fresh pineapple juice</div><div class="shopname" data-text="p.10-shop">Lakwizinn Mama</div><span class="price" data-text="p.10-price">Rs 90</span></a>
+      </div>
+    </section>
+
+    <!-- 6. BUSINESS BANNER -->
+    <section>
+      <a href="business.html" class="biz">
+        <div>
+          <b data-text="biz.title">Own a business?</b>
+          <p class="t-body" data-text="biz.text">Open your shop on Bazar in 10 minutes. Free to start.</p>
+        </div>
+        <span class="go" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+    </section>
+
   </main>
 
   <!-- BOTTOM TAB BAR -->
   <nav class="tab-bar t-caption" aria-label="Main">
-    <a href="#" class="on"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg></span><span data-text="tab.home">Home</span></a>
+    <a href="index.html" class="on"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg></span><span data-text="tab.home">Home</span></a>
     <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><span data-text="tab.search">Search</span></a>
     <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg></span><span data-text="tab.sell">Sell</span></a>
     <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><span data-text="tab.orders">Orders</span></a>
     <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span data-text="tab.account">Account</span></a>
   </nav>
 
+  <script>
+    // The intro strip is for first-time visitors: once closed, it stays closed.
+    function hideIntro() {
+      document.getElementById("intro").classList.add("hidden");
+      try { localStorage.setItem("bazar-intro-closed", "1"); } catch (e) {}
+    }
+    try { if (localStorage.getItem("bazar-intro-closed")) document.getElementById("intro").classList.add("hidden"); } catch (e) {}
+  </script>
   <script src="edit-text.js"></script>
 </body>
 </html>

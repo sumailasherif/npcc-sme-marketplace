@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e6">
+  <title>Bazar for Business</title>
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    /* Info page: simple top bar, no app tab bar. */
+    .top { height: var(--top-bar); display: flex; align-items: center; }
+    .top .wrap { display: flex; align-items: center; gap: 12px; }
+    .logo { background: var(--lime); padding: 4px 10px; border-radius: 8px; font-size: 18px; font-weight: 700; letter-spacing: -0.04em; }
+    .top .back { margin-left: auto; font-size: var(--label); font-weight: 600; color: var(--lime-ink); }
+
+    /* HERO (moved here from the first draft) */
+    .hero {
+      min-height: calc(100svh - var(--top-bar));
+      display: flex; flex-direction: column; justify-content: center;
+      padding-top: 32px; padding-bottom: 48px;
+    }
+    .hero .sub { margin-top: 16px; color: var(--black-2); max-width: 560px; }
+    .hero .actions { margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
+    .hero .actions .btn { width: 100%; }
+
+    @media (min-width: 768px) {
+      .hero { text-align: center; align-items: center; }
+      .hero .sub { margin-left: auto; margin-right: auto; }
+      .hero .actions { flex-direction: row; justify-content: center; }
+      .hero .actions .btn { width: auto; min-width: 200px; }
+    }
+    @media (min-width: 1280px) { .hero .sub { max-width: 680px; } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a href="index.html" class="logo" data-text="bar.logo">bazar</a>
+      <a href="index.html" class="back" data-text="bar.back">Go to the app →</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero wrap">
+    <h1 class="t-hero" data-text="hero.title">One place for every Mauritian business</h1>
+    <p class="sub t-body-l" data-text="hero.subtitle">Shop local brands, sell what you don't need, and grow your business — all on Bazar.</p>
+    <div class="actions">
+      <a href="#" class="btn btn-lime" data-text="hero.button-1">Open your shop</a>
+      <a href="#" class="btn btn-black" data-text="hero.button-2">See how it works</a>
+    </div>
+  </section>
+
+  <!-- More sections will be added here one by one -->
+
+  <script src="edit-text.js"></script>
+</body>
+</html>

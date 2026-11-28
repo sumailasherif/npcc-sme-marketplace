@@ -35,6 +35,7 @@ bar; laptop gets a top menu instead.
 
 ### How the drafts work
 - `site/brand.css` — colours, fonts, type scale. Every page uses it.
+- `site/app.css` — app top bar + bottom tab bar, shared by every app screen.
 - `site/preview.html` — shows any screen on phone, tablet and laptop side by side.
 - `site/edit-text.js` — the **Edit text** button (bottom right, or press E):
   every text gets a lime outline with its name; click and type to change it;
@@ -43,7 +44,8 @@ bar; laptop gets a top menu instead.
 ### Pages
 | # | Page | File | State |
 |---|------|------|-------|
-| 1 | Home — app bar, hero, tab bar | `site/index.html` | Draft — waiting for feedback |
+| 1 | App Home — intro strip, search, categories, shops, products, business banner | `site/index.html` | Draft — waiting for feedback |
+| 2 | For business (info page) — hero only so far | `site/business.html` | Draft |
 
 ### Next
-Get feedback on the landing page, then agree the next page.
+Get feedback on App Home. Buyers open straight on products; the pitch lives on /business.
