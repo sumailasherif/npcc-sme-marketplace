@@ -30,21 +30,20 @@
     .search .filter { width: 52px; height: 52px; border-radius: 999px; background: var(--black); color: var(--lime); display: grid; place-items: center; flex: none; }
     .search svg { width: 20px; height: 20px; flex: none; }
 
-    /* 3. Categories */
-    .cat { width: 76px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-    .cat .ph { width: 72px; height: 72px; border-radius: 999px; overflow: hidden; background: var(--line); }
-    .cat img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
-    .cat:hover img { transform: scale(1.08); }
-    .cat span { font-size: var(--caption); line-height: 1.25; font-weight: 600; }
+    /* 3. Categories (text pills) */
+    .cat { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 999px;
+           background: var(--card); border: 1px solid var(--line); font-size: var(--label); font-weight: 600; white-space: nowrap; }
+    .cat:hover { border-color: var(--black); }
+    .cat.on { background: var(--black); color: var(--card); border-color: var(--black); }
+    .cats-row { gap: 8px; }
 
     /* 4. Shops */
     .shop { width: 260px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
-    .shop .cover { position: relative; aspect-ratio: 16/10; }
-    .shop .cover img { width: 100%; height: 100%; object-fit: cover; }
-    .shop .badge { position: absolute; top: 10px; left: 10px; background: var(--lime); color: var(--black);
+    .shop { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .shop .badge { align-self: flex-start; background: var(--lime); color: var(--black);
                    padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-    .shop .info { display: flex; gap: 10px; align-items: center; padding: 12px; }
-    .shop .mono { width: 40px; height: 40px; border-radius: 12px; background: var(--black); color: var(--lime);
+    .shop .info { display: flex; gap: 12px; align-items: center; }
+    .shop .mono { width: 48px; height: 48px; font-size: 18px; border-radius: 12px; background: var(--black); color: var(--lime);
                   display: grid; place-items: center; font-weight: 700; flex: none; }
     .shop .name { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
     .shop .meta { color: var(--muted); font-size: var(--caption); margin-top: 2px; }
@@ -52,8 +51,8 @@
     /* 5. Products */
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 12px; }
     .prod .ph { position: relative; aspect-ratio: 1; border-radius: 16px; overflow: hidden; background: var(--line); }
-    .prod img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
-    .prod:hover img { transform: scale(1.04); }
+    .prod .empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: var(--caption); font-weight: 500; }
+    .prod:hover .ph { outline: 1px solid var(--black); }
     .prod .save { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 999px;
                   background: var(--card); display: grid; place-items: center; }
     .prod .save svg { width: 18px; height: 18px; }
@@ -74,8 +73,6 @@
     @media (min-width: 768px) {
       main section { margin-top: 36px; }
       .intro { padding: 24px 56px 24px 24px; }
-      .cat { width: 88px; }
-      .cat .ph { width: 84px; height: 84px; }
       .shop { width: 300px; }
       .grid { grid-template-columns: repeat(3, 1fr); gap: 20px 16px; }
     }
@@ -89,9 +86,7 @@
       .search label { height: 60px; }
       .search .filter { width: 60px; height: 60px; }
       .intro.hidden + .search { grid-column: 1 / -1; }
-      .cats-row { display: grid; grid-template-columns: repeat(10, 1fr); overflow: visible; margin: 0; padding: 0; }
-      .cat { width: auto; }
-      .cat .ph { width: 96px; height: 96px; }
+      .cats-row { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; }
       .shops-row { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; margin: 0; padding: 0; }
       .shops-row .shop:nth-child(n+4) { display: none; }
       .shop { width: auto; }
@@ -156,16 +151,17 @@
         <a href="#" class="more" data-text="cats.more">See all</a>
       </div>
       <div class="scroller cats-row">
-        <a href="#" class="cat"><div class="ph"><img src="photos/cat-restaurants.jpg" alt=""></div><span data-text="cats.1">Food</span></a>
-        <a href="#" class="cat"><div class="ph"><img src="photos/cat-groceries.jpg" alt=""></div><span data-text="cats.2">Groceries</span></a>
-        <a href="#" class="cat"><div class="ph"><img src="photos/cat-fashion.jpg" alt=""></div><span data-text="cats.3">Fashion</span></a>
-        <a href="#" class="cat"><div class="ph"><img src="photos/cat-electronics.jpg" alt=""></div><span data-text="cats.4">Phones</span></a>
-        <a href="#" class="cat"><div class="ph"><img src="photos/cat-beauty.jpg" alt=""></div><span data-text="cats.5">Beauty</span></a>
-        <a href="#" class="cat"><div class="ph"><img src="photos/cat-cakes.jpg" alt=""></div><span data-text="cats.6">Cakes</span></a>
-        <a href="#" class="cat"><div class="ph"><img src="photos/cat-home-living.jpg" alt=""></div><span data-text="cats.7">Home</span></a>
-        <a href="#" class="cat"><div class="ph"><img src="photos/cat-car-rental.jpg" alt=""></div><span data-text="cats.8">Car rental</span></a>
-        <a href="#" class="cat"><div class="ph"><img src="photos/cat-crafts.jpg" alt=""></div><span data-text="cats.9">Made in MU</span></a>
-        <a href="#" class="cat"><div class="ph"><img src="photos/cat-kids.jpg" alt=""></div><span data-text="cats.10">Kids</span></a>
+        <a href="#" class="cat on"><span data-text="cats.all">All</span></a>
+        <a href="#" class="cat"><span data-text="cats.1">Food</span></a>
+        <a href="#" class="cat"><span data-text="cats.2">Groceries</span></a>
+        <a href="#" class="cat"><span data-text="cats.3">Fashion</span></a>
+        <a href="#" class="cat"><span data-text="cats.4">Phones</span></a>
+        <a href="#" class="cat"><span data-text="cats.5">Beauty</span></a>
+        <a href="#" class="cat"><span data-text="cats.6">Cakes</span></a>
+        <a href="#" class="cat"><span data-text="cats.7">Home</span></a>
+        <a href="#" class="cat"><span data-text="cats.8">Car rental</span></a>
+        <a href="#" class="cat"><span data-text="cats.9">Made in MU</span></a>
+        <a href="#" class="cat"><span data-text="cats.10">Kids</span></a>
       </div>
     </section>
 
@@ -177,20 +173,20 @@
       </div>
       <div class="scroller shops-row">
         <a href="#" class="shop">
-          <div class="cover"><img src="photos/bakery-cover.jpg" alt=""><span class="badge" data-text="shops.1-badge">Delivers today</span></div>
           <div class="info"><span class="mono">R</span><div><div class="name" data-text="shops.1-name">Rosie's Cakes</div><div class="meta" data-text="shops.1-meta">Cakes · Curepipe</div></div></div>
+          <span class="badge" data-text="shops.1-badge">Delivers today</span>
         </a>
         <a href="#" class="shop">
-          <div class="cover"><img src="photos/crafts-cover.jpg" alt=""><span class="badge" data-text="shops.2-badge">Made in Mauritius</span></div>
           <div class="info"><span class="mono">T</span><div><div class="name" data-text="shops.2-name">Ti Kaz Crafts</div><div class="meta" data-text="shops.2-meta">Crafts · Mahébourg</div></div></div>
+          <span class="badge" data-text="shops.2-badge">Made in Mauritius</span>
         </a>
         <a href="#" class="shop">
-          <div class="cover"><img src="photos/cover-phone-hand.jpg" alt=""><span class="badge" data-text="shops.3-badge">Pay on delivery</span></div>
           <div class="info"><span class="mono">V</span><div><div class="name" data-text="shops.3-name">Vik Phone Corner</div><div class="meta" data-text="shops.3-meta">Phones · Port Louis</div></div></div>
+          <span class="badge" data-text="shops.3-badge">Pay on delivery</span>
         </a>
         <a href="#" class="shop">
-          <div class="cover"><img src="photos/hero-boutique.jpg" alt=""><span class="badge" data-text="shops.4-badge">New</span></div>
           <div class="info"><span class="mono">L</span><div><div class="name" data-text="shops.4-name">Lagon Boutique</div><div class="meta" data-text="shops.4-meta">Fashion · Grand Baie</div></div></div>
+          <span class="badge" data-text="shops.4-badge">New</span>
         </a>
       </div>
     </section>
@@ -202,25 +198,25 @@
         <a href="#" class="more" data-text="products.more">See all</a>
       </div>
       <div class="grid">
-        <a href="#" class="prod"><div class="ph"><img src="photos/chocolate-cake.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
           <div class="name" data-text="p.1-name">Chocolate fudge cake</div><div class="shopname" data-text="p.1-shop">Rosie's Cakes</div><span class="price" data-text="p.1-price">Rs 950</span></a>
-        <a href="#" class="prod"><div class="ph"><img src="photos/raffia-bag.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
           <div class="name" data-text="p.2-name">Handwoven raffia bag</div><div class="shopname" data-text="p.2-shop">Ti Kaz Crafts</div><span class="price" data-text="p.2-price">Rs 1,200</span></a>
-        <a href="#" class="prod"><div class="ph"><img src="photos/iphone-red.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
           <div class="name" data-text="p.3-name">iPhone 11, 128GB, red</div><div class="shopname" data-text="p.3-shop">Vik Phone Corner</div><span class="price" data-text="p.3-price">Rs 14,500</span></a>
-        <a href="#" class="prod"><div class="ph"><img src="photos/earrings.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
           <div class="name" data-text="p.4-name">Shell drop earrings</div><div class="shopname" data-text="p.4-shop">Lagon Boutique</div><span class="price" data-text="p.4-price">Rs 450</span></a>
-        <a href="#" class="prod"><div class="ph"><img src="photos/achard.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
           <div class="name" data-text="p.5-name">Homemade achard, 500g</div><div class="shopname" data-text="p.5-shop">Lakwizinn Mama</div><span class="price" data-text="p.5-price">Rs 180</span></a>
-        <a href="#" class="prod"><div class="ph"><img src="photos/soap.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
           <div class="name" data-text="p.6-name">Coconut &amp; vanilla soap</div><div class="shopname" data-text="p.6-shop">Ile Savon</div><span class="price" data-text="p.6-price">Rs 150</span></a>
-        <a href="#" class="prod"><div class="ph"><img src="photos/woven-hat.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
           <div class="name" data-text="p.7-name">Vacoas straw hat</div><div class="shopname" data-text="p.7-shop">Ti Kaz Crafts</div><span class="price" data-text="p.7-price">Rs 650</span></a>
-        <a href="#" class="prod"><div class="ph"><img src="photos/gato-coco.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
           <div class="name" data-text="p.8-name">Gato coco, box of 6</div><div class="shopname" data-text="p.8-shop">Rosie's Cakes</div><span class="price" data-text="p.8-price">Rs 120</span></a>
-        <a href="#" class="prod"><div class="ph"><img src="photos/plant.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
           <div class="name" data-text="p.9-name">Potted monstera</div><div class="shopname" data-text="p.9-shop">Jardin Vert</div><span class="price" data-text="p.9-price">Rs 800</span></a>
-        <a href="#" class="prod"><div class="ph"><img src="photos/juice.jpg" alt=""><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
+        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
           <div class="name" data-text="p.10-name">Fresh pineapple juice</div><div class="shopname" data-text="p.10-shop">Lakwizinn Mama</div><span class="price" data-text="p.10-price">Rs 90</span></a>
       </div>
     </section>

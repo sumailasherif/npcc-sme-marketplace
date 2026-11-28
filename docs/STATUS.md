@@ -15,7 +15,7 @@ after the pages are agreed.
 - Brand colours: lime `#D4F53C`, black `#0E0E0C`, cream `#F4F0E6`, card `#FBF8F1`,
   readable green `#496100`. No pure white.
 - Font: Inter Display for headlines (Inter with optical sizing, weight 600, tight spacing), Inter for body. Unbounded dropped 28 Nov.
-- Licensed photos in `site/photos/` (credits in `site/photos/CREDITS.md`).
+- No photos for now (removed 28 Nov; still on the backup branch). Product photo spots are empty boxes.
 - The product brief: `docs/spec.md`.
 
 ### It's an app (PWA)
