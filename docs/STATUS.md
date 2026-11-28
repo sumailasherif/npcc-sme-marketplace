@@ -14,7 +14,7 @@ after the pages are agreed.
 ### What was kept
 - Brand colours: lime `#D4F53C`, black `#0E0E0C`, cream `#F4F0E6`, card `#FBF8F1`,
   readable green `#496100`. No pure white.
-- Fonts: Unbounded (headings), Inter (body).
+- Font: Inter Display for headlines (Inter with optical sizing, weight 600, tight spacing), Inter for body. Unbounded dropped 28 Nov.
 - Type scale: display 32/40, h1 24/32, h2 20/28, h3 17/24, body-l 16/24,
   body 14/20, label 13/16, caption 12/16, price 18/24.
 - Licensed photos in `site/photos/` (credits in `site/photos/CREDITS.md`).
@@ -29,7 +29,7 @@ after the pages are agreed.
 ### Pages
 | # | Page | File | State |
 |---|------|------|-------|
-| 1 | Landing page | `site/index.html` | Draft — waiting for feedback |
+| 1 | Landing — hero section | `site/index.html` | Draft — waiting for feedback |
 
 ### Next
 Get feedback on the landing page, then agree the next page.
