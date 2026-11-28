@@ -55,7 +55,16 @@ Shared: `brand.css`, `app.css`, `i18n.js` (EN / FR / Kreol), `doc-tools.js`
 - **Needs:** Supabase URL + publishable key + secret key in `.env` (template
   in `.env.example`). Until then screens run in demo mode.
 
+### Sign-in methods (28–29 Nov)
+- **Password:** `POST /api/auth/password` (sign in / sign up), `POST /api/auth/update-password`.
+- **Email code:** `send-code` (sends via Resend when `RESEND_API_KEY` is set, else Supabase email), `verify-code`.
+- **Forgot?** sends a reset code, then the screen asks for a new password.
+- **Google:** `GET|POST /api/auth/google` starts it, `GET /api/auth/callback` finishes it.
+  Needs Google turned on in Supabase (see below).
+
 ### Next
-1. Fill `.env`, check the Supabase tables are still there, test real sign-in.
-2. Tables + APIs for products, orders, resell listings, chat, invoices/expenses.
-3. Design: shop page, product page, cart/checkout, order tracking.
+1. Fill `.env`: publishable key, secret key, Resend key. Then test each method for real.
+2. Turn on Google in Supabase: Authentication → Providers → Google, with the Google OAuth client ID and secret; add `http://localhost:3000/api/auth/callback` under URL Configuration → Redirect URLs.
+3. Verify a sending domain in Resend (until then, mail only reaches the account owner).
+3. Tables + APIs for products, orders, resell listings, chat, invoices/expenses.
+4. Design: shop page, product page, cart/checkout, order tracking.

@@ -6,7 +6,7 @@ import { emailSchema, otpSchema } from "@/lib/validation/auth";
 /**
  * Step 2 of sign-in (from the old login action): check the code and start
  * the session (Supabase sets the login cookies on this response).
- * Body: { email, code, next?, fullName? }  →  { ok, next, hasShop }
+ * Body: { email, code, next?, fullName?, purpose?: "reset" }  →  { ok, next, hasShop, recovery? }
  */
 export async function POST(request: Request) {
   const blocked = guardWrite(request);
@@ -28,6 +28,9 @@ export async function POST(request: Request) {
   if (error || !data.user) {
     return fail(error?.status === 429 ? 429 : 400, error?.status === 429 ? "tooManyRequests" : "codeWrong");
   }
+
+  // "Forgot?" flow: the code signed the person in; now they set a new password.
+  if (body.purpose === "reset") return ok({ recovery: true, hasShop: false, next: "/" });
 
   // Sign-up form's "Full name or Business name" goes on the profile.
   const fullName = typeof body.fullName === "string" ? body.fullName.trim().slice(0, 100) : "";

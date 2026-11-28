@@ -766,6 +766,16 @@
   T("Categories will appear once Supabase is connected.", "Les catégories apparaîtront une fois Supabase connecté.", "Bann kategori pou paret kan Supabase konekte.");
   T("Sign-in isn't set up yet — add your Supabase keys to .env. You can look through the steps, but the shop won't be saved.", "La connexion n'est pas encore configurée — ajoutez vos clés Supabase dans .env. Vous pouvez parcourir les étapes, mais la boutique ne sera pas enregistrée.", "Konekte pankor pare — met ou kle Supabase dan .env. Ou kapav get bann etap, me laboutik pa pou sove.");
 
+  /* ───────────── Password, reset and Google (auth.html) ───────────── */
+  T("Set a new password", "Choisissez un nouveau mot de passe", "Met enn nouvo modpas");
+  T("At least 6 characters.", "Au moins 6 caractères.", "Omwin 6 karaktere.");
+  T("New password", "Nouveau mot de passe", "Nouvo modpas");
+  T("Saving…", "Enregistrement…", "Pe anrezistre…");
+  T("Save →", "Enregistrer →", "Anrezistre →");
+  T("Your code has expired. Please start again.", "Votre code a expiré. Recommencez, s'il vous plaît.", "Ou kod finn expire. Koumans ankor.");
+  T("Continue with Google", "Continuer avec Google", "Kontinye ar Google");
+  T("Forgot?", "Mot de passe oublié ?", "Bliye modpas?");
+
   /* ═════════════ Engine (no need to edit below) ═════════════ */
   var ATTRS = ["placeholder", "aria-label", "alt", "title"];
   var SKIP = "script,style,svg,textarea,[data-no-i18n],#edit-bar";

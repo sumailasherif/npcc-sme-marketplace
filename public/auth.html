@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#f4f0e6">
   <title>Bazar — Sign in or Sign up</title>
   <link rel="stylesheet" href="brand.css">
@@ -32,24 +34,33 @@
     .auth-bg {
       position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
       background: var(--cream);
+      transition: background-color 0.3s ease;
     }
     .bg-zoom-stage {
       position: absolute; inset: -12%;
       display: grid; grid-template-columns: 18% 46% 36%;
       transform-origin: center center;
-      animation: bgZoom 5.6s ease-in-out infinite alternate;
       will-change: transform;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .bg-zoom-stage { animation: bgZoom 5.6s ease-in-out infinite alternate; }
+      .b-lime-1 { animation: swipeRight 4.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate; }
+      .b-ink-1  { animation: swipeLeft 5.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate; }
+      .b-lime-2 { animation: swipeUpDown 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) -1.2s infinite alternate; }
+      .b-ink-2  { animation: swipeRight 5.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) -2.2s infinite alternate; }
+      .b-lime-3 { animation: swipeLeft 4.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) -1.8s infinite alternate; }
+      .bg-fold  { animation: foldSwipe 6.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate; }
     }
     @keyframes bgZoom {
       0%   { transform: scale(0.96) translate3d(-2%, -1.5%, 0); }
       50%  { transform: scale(1.20) translate3d(2.5%, 1.5%, 0); }
       100% { transform: scale(1.02) translate3d(-1.5%, 2%, 0); }
     }
-    /* Clipped vertical refraction panels: sharp seams + sweeping volumetric blooms */
     .bg-strip {
       position: relative; overflow: hidden; height: 100%;
       border-right: 1px solid rgba(14, 14, 12, 0.1);
     }
+    :root[data-theme="dark"] .bg-strip { border-right-color: rgba(212, 245, 60, 0.08); }
     .bg-strip:last-child { border-right: 0; }
     .bg-bloom {
       position: absolute; border-radius: 999px; filter: blur(48px);
@@ -57,37 +68,40 @@
     }
     .b-lime-1 {
       width: 90vw; height: 70vh; top: -15%; left: -45%;
-      background: radial-gradient(circle, rgba(212, 245, 60, 0.96) 0%, rgba(212, 245, 60, 0.42) 45%, transparent 72%);
-      animation: swipeRight 4.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+      background: radial-gradient(circle, rgba(212, 245, 60, 0.92) 0%, rgba(212, 245, 60, 0.38) 45%, transparent 72%);
     }
     .b-ink-1 {
       width: 72vw; height: 60vh; bottom: -20%; right: -40%;
-      background: radial-gradient(circle, rgba(73, 97, 0, 0.52) 0%, rgba(14, 14, 12, 0.30) 50%, transparent 74%);
-      animation: swipeLeft 5.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+      background: radial-gradient(circle, rgba(73, 97, 0, 0.48) 0%, rgba(14, 14, 12, 0.26) 50%, transparent 74%);
     }
     .b-lime-2 {
       width: 96vw; height: 76vh; top: 5%; left: -38%;
-      background: radial-gradient(circle, rgba(212, 245, 60, 0.98) 0%, rgba(182, 218, 28, 0.45) 45%, transparent 70%);
-      animation: swipeUpDown 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) -1.2s infinite alternate;
+      background: radial-gradient(circle, rgba(212, 245, 60, 0.94) 0%, rgba(182, 218, 28, 0.42) 45%, transparent 70%);
     }
     .b-ink-2 {
       width: 68vw; height: 58vh; bottom: -12%; left: -10%;
-      background: radial-gradient(circle, rgba(14, 14, 12, 0.30) 0%, rgba(73, 97, 0, 0.30) 48%, transparent 72%);
-      animation: swipeRight 5.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) -2.2s infinite alternate;
+      background: radial-gradient(circle, rgba(14, 14, 12, 0.26) 0%, rgba(73, 97, 0, 0.28) 48%, transparent 72%);
     }
     .b-lime-3 {
       width: 84vw; height: 72vh; top: -20%; right: -42%;
-      background: radial-gradient(circle, rgba(212, 245, 60, 0.94) 0%, rgba(73, 97, 0, 0.38) 50%, transparent 74%);
-      animation: swipeLeft 4.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) -1.8s infinite alternate;
+      background: radial-gradient(circle, rgba(212, 245, 60, 0.9) 0%, rgba(73, 97, 0, 0.34) 50%, transparent 74%);
     }
-    /* Sweeping diagonal razor-edge curved silk fold */
     .bg-fold {
       position: absolute; inset: -18%;
       clip-path: ellipse(72% 52% at 24% 82%);
-      background: linear-gradient(120deg, rgba(212, 245, 60, 0.58) 0%, rgba(73, 97, 0, 0.24) 38%, transparent 68%);
-      animation: foldSwipe 6.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+      background: linear-gradient(120deg, rgba(212, 245, 60, 0.54) 0%, rgba(73, 97, 0, 0.22) 38%, transparent 68%);
       will-change: transform;
     }
+    /* Toned atmospheric lime glow in Dark Mode so rotating white text has ≥ 11:1 contrast */
+    :root[data-theme="dark"] .b-lime-1,
+    :root[data-theme="dark"] .b-lime-2,
+    :root[data-theme="dark"] .b-lime-3 {
+      opacity: 0.24;
+    }
+    :root[data-theme="dark"] .bg-fold {
+      opacity: 0.28;
+    }
+
     @keyframes swipeRight {
       0%   { transform: translate3d(-28%, -18%, 0) scale(0.9); }
       100% { transform: translate3d(34%, 22%, 0) scale(1.22); }
@@ -104,79 +118,76 @@
       0%   { transform: translate3d(-14%, 10%, 0) scale(0.95) rotate(-5deg); }
       100% { transform: translate3d(16%, -12%, 0) scale(1.18) rotate(6deg); }
     }
-    @media (prefers-reduced-motion: reduce) {
-      .bg-zoom-stage, .bg-bloom, .bg-fold { animation: none !important; }
-    }
 
     header, main { position: relative; z-index: 2; }
 
-    /* ───── 3D CUBE SWIPE TEXT ROTATOR (Plain transparent over background, no card, no photos) ───── */
+    /* Adaptive colors for Auth Top Bar, 3D Cube Text Rotator, and Footer */
+    .auth-kicker { color: var(--lime-ink); }
+    .auth-heading { color: var(--black); }
+    .auth-sub { color: var(--muted); }
+    .auth-back { color: var(--muted); }
+    .auth-back:hover { color: var(--black); }
+    .cube-dot { background: color-mix(in oklab, var(--black) 26%, transparent); }
+    .cube-dot.on { background: var(--black); width: 20px; }
+    :root[data-theme="dark"] .cube-dot.on { background: var(--lime); }
+
+    /* Dark Curved Auth Card — stays rich obsidian in both Light & Dark modes */
+    .auth-card-dark {
+      background: #0e0e0c;
+      color: #fbf8f1;
+      border: 1px solid rgba(251, 248, 241, 0.12);
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.34);
+      animation: cardSpringIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    :root[data-theme="dark"] .auth-card-dark {
+      background: #171a13;
+      border-color: rgba(212, 245, 60, 0.25);
+      box-shadow: 0 28px 64px rgba(0, 0, 0, 0.65);
+    }
+    @keyframes cardSpringIn {
+      from { opacity: 0; transform: translateY(18px) scale(0.985); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ───── 3D CUBE SWIPE TEXT ROTATOR ───── */
     .cube-scene {
-      position: relative;
-      width: 100%;
-      height: 126px;
-      perspective: 1100px;
-      overflow: hidden;
-      background: transparent;
-      touch-action: pan-y;
-      user-select: none;
+      position: relative; width: 100%; height: 126px;
+      perspective: 1100px; overflow: hidden; background: transparent;
+      touch-action: pan-y; user-select: none;
     }
-    @media (min-width: 768px) {
-      .cube-scene { height: 136px; }
-    }
+    @media (min-width: 768px) { .cube-scene { height: 136px; } }
     .cube {
-      width: 100%;
-      height: 100%;
-      position: relative;
+      width: 100%; height: 100%; position: relative;
       transform-style: preserve-3d;
       transition: transform 0.85s cubic-bezier(0.65, 0, 0.35, 1);
     }
     @media (prefers-reduced-motion: reduce) {
-      .cube { transition: none; }
+      .cube, .auth-card-dark { transition: none; animation: none; }
     }
     .cube-face {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      background: transparent;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 4px 12px 24px;
-      opacity: 0;
-      transition: opacity 0.65s ease;
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      backface-visibility: hidden; background: transparent;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 4px 12px 24px;
+      opacity: 0; transition: opacity 0.65s ease;
     }
-    .cube-face.active {
-      opacity: 1;
-    }
+    .cube-face.active { opacity: 1; }
     .cube-face > * {
-      transform: translateY(10px);
-      opacity: 0;
+      transform: translateY(10px); opacity: 0;
       transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.55s ease;
     }
-    .cube-face.active > * {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    .cube-face.active > * { transform: translateY(0); opacity: 1; }
     .cube-face.active > :nth-child(2) { transition-delay: 0.08s; }
     .cube-face.active > :nth-child(3) { transition-delay: 0.16s; }
 
-    /* Underline inputs inside the dark curved card (matching reference mockup) */
+    /* Underline inputs inside the dark curved card */
     .u-input {
-      width: 100%;
-      background: transparent;
-      border: 0;
-      border-bottom: 1px solid rgba(251, 248, 241, 0.22);
-      padding: 10px 0;
-      font-size: 15px;
-      color: #fbf8f1;
+      width: 100%; background: transparent; border: 0;
+      border-bottom: 1px solid rgba(251, 248, 241, 0.24);
+      padding: 10px 0; font-size: 15px; color: #fbf8f1;
       transition: border-color 0.2s ease;
     }
-    .u-input::placeholder { color: rgba(251, 248, 241, 0.4); }
+    .u-input::placeholder { color: rgba(251, 248, 241, 0.45); }
     .u-input:focus { outline: 0; border-bottom-color: #d4f53c; }
 
     /* Remember me pill switch */
@@ -184,16 +195,19 @@
       width: 44px; height: 24px; border-radius: 999px;
       background: #cfc9bc; position: relative; transition: background 0.2s;
     }
+    :root[data-theme="dark"] .sw-track { background: #33392c; }
     .sw-track::after {
       content: ""; position: absolute; top: 3px; left: 3px;
       width: 18px; height: 18px; border-radius: 999px;
       background: #0e0e0c; transition: transform 0.2s;
     }
+    :root[data-theme="dark"] .sw-track::after { background: #b9b3a3; }
     input:checked + .sw-track { background: #0e0e0c; }
+    :root[data-theme="dark"] input:checked + .sw-track { background: #262d1a; border: 1px solid rgba(212,245,60,0.45); }
     input:checked + .sw-track::after { transform: translateX(20px); background: #d4f53c; }
 
     /* Circular Flag Language Switcher */
-    .lang-menu { display: none; }
+    .lang-menu { display: none; background: var(--card); border: 1px solid var(--line); color: var(--black); }
     .lang-menu.open { display: flex; }
   </style>
 </head>
@@ -221,7 +235,7 @@
   <!-- TOP BAR -->
   <header class="w-full max-w-[460px] md:max-w-[500px] mx-auto px-4 pt-4 pb-2 flex items-center justify-between">
     <a href="business.html" class="inline-flex items-center gap-2">
-      <span class="bg-limebz text-ink font-bold text-lg tracking-tight px-2.5 py-1 rounded-lg leading-none" data-text="bar.logo">bazar</span>
+      <span class="logo bg-limebz text-ink font-bold text-lg tracking-tight px-2.5 py-1 rounded-lg leading-none" data-text="bar.logo">bazar</span>
     </a>
 
     <div class="flex items-center gap-3">
@@ -232,110 +246,113 @@
           <svg viewBox="0 0 60 60" id="langFlagSvg" class="w-5 h-5 rounded-full"><clipPath id="a-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#a-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
         </button>
         <div id="langMenu" role="menu"
-          class="lang-menu absolute right-0 top-11 z-50 min-w-[160px] bg-card border border-[#e8e2d3] rounded-2xl p-1.5 shadow-xl flex-col gap-0.5">
-          <button type="button" data-lang="en" onclick="setLang('en')" class="lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold bg-ink text-limebz">
+          class="lang-menu absolute right-0 top-11 z-50 min-w-[164px] rounded-2xl p-1.5 shadow-xl flex-col gap-0.5">
+          <button type="button" data-lang="en" onclick="setLang('en')" class="lang-opt on flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold bg-ink text-limebz">
             <svg viewBox="0 0 60 60" class="w-5 h-5 rounded-full shrink-0"><clipPath id="am-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
             English
           </button>
-          <button type="button" data-lang="fr" onclick="setLang('fr')" class="lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-ink hover:bg-cream">
+          <button type="button" data-lang="fr" onclick="setLang('fr')" class="lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold">
             <svg viewBox="0 0 60 60" class="w-5 h-5 rounded-full shrink-0"><clipPath id="am-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg>
             Français
           </button>
-          <button type="button" data-lang="mfe" onclick="setLang('mfe')" class="lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-ink hover:bg-cream">
+          <button type="button" data-lang="mfe" onclick="setLang('mfe')" class="lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold">
             <svg viewBox="0 0 60 60" class="w-5 h-5 rounded-full shrink-0"><clipPath id="am-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg>
             Kreol Morisien
           </button>
         </div>
       </div>
-      <a href="business.html" class="text-xs font-semibold text-[#6b665a] hover:text-ink" data-text="bar.back">← Back</a>
+      <a href="business.html" class="auth-back text-xs font-semibold transition" data-text="bar.back">← Back</a>
     </div>
   </header>
 
   <!-- MAIN AUTH SHELL -->
   <main class="flex-1 w-full max-w-[460px] md:max-w-[500px] mx-auto px-4 pb-8 flex flex-col justify-center gap-4">
 
-    <!-- 1. TOP 3D CUBE SWIPE TEXT ROTATOR (Plain background, no pictures, no card) -->
+    <!-- 1. TOP 3D CUBE SWIPE TEXT ROTATOR -->
     <section aria-label="What Bazar offers" class="relative">
       <div class="cube-scene" id="cubeScene">
         <div class="cube" id="cube">
-          <!-- Face 0: Customers — Discover nearby -->
           <div class="cube-face" data-face="0">
-            <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#496100] mb-1">For Customers</span>
-            <h2 class="text-xl md:text-2xl font-bold tracking-tight text-ink leading-tight">Discover businesses around you</h2>
-            <p class="text-xs md:text-sm text-[#6b665a] mt-1 max-w-[360px]">Explore verified local shops, food, and services nearby across Mauritius.</p>
+            <span class="auth-kicker text-[11px] font-bold uppercase tracking-[0.14em] mb-1">For Customers</span>
+            <h2 class="auth-heading text-xl md:text-2xl font-bold tracking-tight leading-tight">Discover businesses around you</h2>
+            <p class="auth-sub text-xs md:text-sm mt-1 max-w-[360px]">Explore verified local shops, food, and services nearby across Mauritius.</p>
           </div>
-          <!-- Face 1: Customers — Secondhand -->
           <div class="cube-face" data-face="1">
-            <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#496100] mb-1">For Customers</span>
-            <h2 class="text-xl md:text-2xl font-bold tracking-tight text-ink leading-tight">Get quality secondhand finds</h2>
-            <p class="text-xs md:text-sm text-[#6b665a] mt-1 max-w-[360px]">Buy and resell pre-loved items easily with people in your area.</p>
+            <span class="auth-kicker text-[11px] font-bold uppercase tracking-[0.14em] mb-1">For Customers</span>
+            <h2 class="auth-heading text-xl md:text-2xl font-bold tracking-tight leading-tight">Get quality secondhand finds</h2>
+            <p class="auth-sub text-xs md:text-sm mt-1 max-w-[360px]">Buy and resell pre-loved items safely with Bazar Escrow protection.</p>
           </div>
-          <!-- Face 2: Business Owners — Dashboard & Visibility -->
           <div class="cube-face" data-face="2">
-            <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#496100] mb-1">For Business Owners</span>
-            <h2 class="text-xl md:text-2xl font-bold tracking-tight text-ink leading-tight">One dashboard to control your business</h2>
-            <p class="text-xs md:text-sm text-[#6b665a] mt-1 max-w-[360px]">Manage orders, boost visibility among nearby customers, and grow sales.</p>
+            <span class="auth-kicker text-[11px] font-bold uppercase tracking-[0.14em] mb-1">For Business Owners</span>
+            <h2 class="auth-heading text-xl md:text-2xl font-bold tracking-tight leading-tight">One dashboard to control your business</h2>
+            <p class="auth-sub text-xs md:text-sm mt-1 max-w-[360px]">Manage orders, boost visibility among nearby customers, and grow sales.</p>
           </div>
-          <!-- Face 3: Business Owners — Invoicing, Scan & Analytics -->
           <div class="cube-face" data-face="3">
-            <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#496100] mb-1">For Business Owners</span>
-            <h2 class="text-xl md:text-2xl font-bold tracking-tight text-ink leading-tight">Smart invoicing, scan &amp; analytics</h2>
-            <p class="text-xs md:text-sm text-[#6b665a] mt-1 max-w-[360px]">Auto-generate invoices, scan receipts with your camera, and track live performance.</p>
+            <span class="auth-kicker text-[11px] font-bold uppercase tracking-[0.14em] mb-1">For Business Owners</span>
+            <h2 class="auth-heading text-xl md:text-2xl font-bold tracking-tight leading-tight">Smart invoicing, scan &amp; analytics</h2>
+            <p class="auth-sub text-xs md:text-sm mt-1 max-w-[360px]">Auto-generate MRA invoices, scan receipts with your camera, and track live profit.</p>
           </div>
         </div>
 
-        <!-- Cube Indicator Dots -->
+        <!-- Cube Indicator Dots + Pause Toggle -->
         <div class="absolute bottom-1 left-0 right-0 z-10 flex items-center justify-center gap-1.5" id="cubeDots">
-          <button type="button" aria-label="Slide 1" onclick="goSlide(0)" class="w-5 h-1.5 rounded-full bg-ink transition-all"></button>
-          <button type="button" aria-label="Slide 2" onclick="goSlide(1)" class="w-1.5 h-1.5 rounded-full bg-ink/25 transition-all"></button>
-          <button type="button" aria-label="Slide 3" onclick="goSlide(2)" class="w-1.5 h-1.5 rounded-full bg-ink/25 transition-all"></button>
-          <button type="button" aria-label="Slide 4" onclick="goSlide(3)" class="w-1.5 h-1.5 rounded-full bg-ink/25 transition-all"></button>
+          <button type="button" aria-label="Slide 1" onclick="goSlide(0)" class="cube-dot on w-5 h-1.5 rounded-full transition-all"></button>
+          <button type="button" aria-label="Slide 2" onclick="goSlide(1)" class="cube-dot w-1.5 h-1.5 rounded-full transition-all"></button>
+          <button type="button" aria-label="Slide 3" onclick="goSlide(2)" class="cube-dot w-1.5 h-1.5 rounded-full transition-all"></button>
+          <button type="button" aria-label="Slide 4" onclick="goSlide(3)" class="cube-dot w-1.5 h-1.5 rounded-full transition-all"></button>
         </div>
       </div>
     </section>
 
-    <!-- 2. DARK CURVED AUTH CARD (Inspired by uploaded Login/Signup mockup) -->
-    <section class="bg-ink text-card rounded-[34px] px-6 py-7 md:px-8 md:py-8 shadow-2xl border border-white/10">
+    <!-- 2. DARK CURVED AUTH CARD (Email + Password, Resend 6-digit OTP, & Google OAuth) -->
+    <section class="auth-card-dark rounded-[34px] px-6 py-7 md:px-8 md:py-8">
 
       <!-- Segmented Pill Toggle: Login / Sign up -->
-      <div class="grid grid-cols-2 p-1 rounded-full bg-white/15 mb-6" role="tablist">
+      <div class="grid grid-cols-2 p-1 rounded-full bg-white/15 mb-5" role="tablist">
         <button type="button" role="tab" id="t-login" aria-selected="true" onclick="setAuthTab('login')"
-          class="py-2.5 rounded-full text-sm font-semibold bg-card text-ink transition">Login</button>
+          class="py-2.5 rounded-full text-sm font-semibold bg-[#fbf8f1] text-[#0e0e0c] transition">Login</button>
         <button type="button" role="tab" id="t-signup" aria-selected="false" onclick="setAuthTab('signup')"
-          class="py-2.5 rounded-full text-sm font-semibold text-card/75 hover:text-card transition">Sign up</button>
+          class="py-2.5 rounded-full text-sm font-semibold text-[#fbf8f1]/75 hover:text-[#fbf8f1] transition">Sign up</button>
       </div>
 
       <!-- Role Switcher (Customer vs Business / SME) -->
       <div class="grid grid-cols-2 gap-2 mb-5">
         <button type="button" onclick="pickRole(this, 'customer')"
-          class="role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-limebz text-ink transition">Customer</button>
+          class="role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-limebz text-[#0e0e0c] transition">Customer</button>
         <button type="button" onclick="pickRole(this, 'business')"
-          class="role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 text-card/80 hover:bg-white/15 transition">Business / SME</button>
+          class="role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 text-[#fbf8f1]/80 hover:bg-white/15 transition">Business / SME</button>
+      </div>
+
+      <!-- Method Switcher: Password vs Resend 6-Digit Email Code -->
+      <div class="flex items-center justify-between text-[11px] mb-4 px-0.5">
+        <span class="text-[#fbf8f1]/65 font-medium" id="methodHint">Sign in with password or 6-digit code</span>
+        <button type="button" id="methodToggleBtn" onclick="toggleAuthMethod()"
+          class="font-bold text-limebz hover:underline">Use 6-digit code →</button>
       </div>
 
       <!-- Form -->
-      <form id="authForm" onsubmit="handleAuthSubmit(event)" class="flex flex-col gap-5">
+      <form id="authForm" onsubmit="handleAuthSubmit(event)" class="flex flex-col gap-4">
         <!-- Sign-up only: Name -->
         <div id="f-name" class="hidden">
-          <label for="fullName" class="block text-xs font-semibold text-card/80 mb-1">Full name or Business name</label>
+          <label for="fullName" class="block text-xs font-semibold text-[#fbf8f1]/85 mb-1">Full name or Business name</label>
           <input type="text" id="fullName" autocomplete="name" placeholder="e.g. Chelsea's Cup N Cake" class="u-input">
         </div>
 
         <div>
-          <label for="email" class="block text-xs font-semibold text-card/80 mb-1">Email</label>
+          <label for="email" class="block text-xs font-semibold text-[#fbf8f1]/85 mb-1">Email</label>
           <input type="email" id="email" required autocomplete="email" placeholder="you@business.mu" class="u-input">
         </div>
 
-        <!-- Password: hidden for now — sign-in uses a 6-digit email code (old Supabase backend). -->
-        <div id="f-password" class="hidden">
+        <!-- Password Field (Active by default; hides when switching to passwordless Resend OTP mode) -->
+        <div id="f-password">
           <div class="flex items-center justify-between mb-1">
-            <label for="password" class="block text-xs font-semibold text-card/80">Password</label>
-            <a href="#" id="forgotLink" onclick="return false" class="text-[11px] font-semibold text-limebz hover:underline">Forgot?</a>
+            <label for="password" class="block text-xs font-semibold text-[#fbf8f1]/85">Password</label>
+            <button type="button" id="forgotLink" onclick="sendForgotCode()" class="text-[11px] font-semibold text-limebz hover:underline">Forgot? Send code</button>
           </div>
           <div class="relative">
             <input type="password" id="password" minlength="6" autocomplete="current-password" placeholder="••••••••" class="u-input pr-10">
             <button type="button" aria-label="Toggle password visibility" onclick="togglePw()"
-              class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center text-card/60 hover:text-limebz">
+              class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center text-[#fbf8f1]/65 hover:text-limebz">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
@@ -343,44 +360,67 @@
 
         <!-- Primary Submit Button -->
         <button type="submit" id="submitBtn"
-          class="mt-2 w-full min-h-[48px] rounded-2xl bg-card text-ink font-bold text-sm hover:bg-limebz transition">
-          Send code
+          class="mt-2 w-full min-h-[48px] rounded-2xl bg-limebz text-[#0e0e0c] font-bold text-sm hover:brightness-105 transition">
+          Login
         </button>
-        <p id="authMsg" class="hidden text-xs font-semibold text-limebz -mt-2" role="alert"></p>
+
+        <div id="authMsgWrap" class="hidden rounded-xl bg-white/10 border border-limebz/40 px-3.5 py-2.5 text-xs text-[#fbf8f1]" role="alert">
+          <p id="authMsg" class="font-semibold text-limebz"></p>
+          <button type="button" id="demoContinueBtn" onclick="continueDemoFlow()"
+            class="hidden mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-limebz text-[#0e0e0c] font-bold text-[11px]">
+            Continue to Preview Flow →
+          </button>
+        </div>
 
         <!-- Divider -->
-        <div class="flex items-center gap-3 text-[11px] text-card/45">
+        <div class="flex items-center gap-3 text-[11px] text-[#fbf8f1]/50">
           <span class="flex-1 h-px bg-white/15"></span>
-          <span>or</span>
+          <span>or continue with</span>
           <span class="flex-1 h-px bg-white/15"></span>
         </div>
 
-        <!-- Continue with Google -->
-        <button type="button" onclick="handleGoogleAuth()"
-          class="w-full min-h-[46px] rounded-2xl bg-white/10 border border-white/15 text-card font-semibold text-sm flex items-center justify-center gap-2.5 hover:bg-white/15 transition">
+        <!-- Continue with Google (Wired to /api/auth/google + Supabase OAuth) -->
+        <button type="button" id="googleBtn" onclick="handleGoogleAuth()"
+          class="w-full min-h-[46px] rounded-2xl bg-white/10 border border-white/20 text-[#fbf8f1] font-semibold text-sm flex items-center justify-center gap-2.5 hover:bg-white/15 hover:border-limebz/50 transition">
           <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.7 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.6c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.6-5.2 3.6-8.8Z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.1C3.3 21.3 7.3 24 12 24Z"/><path fill="#FBBC05" d="M5.3 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3V6.6H1.3C.5 8.2 0 10.1 0 12s.5 3.8 1.3 5.4l4-3.1Z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.4.6 4.6 1.8l3.5-3.5C18 1.1 15.2 0 12 0 7.3 0 3.3 2.7 1.3 6.6l4 3.1c.9-2.9 3.6-4.9 6.7-4.9Z"/></svg>
           Continue with Google
         </button>
       </form>
 
-      <!-- Resend Verification Box (shown on Sign up) -->
-      <div id="otpBox" class="hidden mt-5 p-4 rounded-2xl bg-limebz/15 border border-limebz/40 text-card" aria-live="polite">
-        <b id="otpMsg" class="text-xs font-bold text-limebz">Check your email</b>
-        <p class="text-xs text-card/80 mt-1">Enter the 6-digit code we sent to <span id="otpEmail"></span>.</p>
+      <!-- Resend 6-Digit Verification Box -->
+      <div id="otpBox" class="hidden mt-5 p-4 rounded-2xl bg-limebz/15 border border-limebz/45 text-[#fbf8f1]" aria-live="polite">
+        <div class="flex items-center justify-between gap-2">
+          <b id="otpMsg" class="text-xs font-bold text-limebz">Check your email · Sent via Resend</b>
+          <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-limebz text-[#0e0e0c]">6-Digit OTP</span>
+        </div>
+        <p class="text-xs text-[#fbf8f1]/85 mt-1">Enter the 6-digit verification code sent to <span id="otpEmail" class="font-semibold text-limebz"></span>.</p>
         <div class="flex gap-2 mt-3">
           <input type="text" id="otpCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" aria-label="6-digit code"
             onkeydown="if (event.key === 'Enter') finishAuth()"
-            class="flex-1 min-w-0 h-11 text-center font-bold tracking-[0.2em] rounded-xl bg-ink border border-limebz text-limebz">
-          <button type="button" id="verifyBtn" onclick="finishAuth()" class="px-4 rounded-xl bg-limebz text-ink font-bold text-xs">Verify →</button>
+            class="flex-1 min-w-0 h-11 text-center font-bold tracking-[0.22em] rounded-xl bg-[#0e0e0c] border border-limebz text-limebz">
+          <button type="button" id="verifyBtn" onclick="finishAuth()" class="px-4 rounded-xl bg-limebz text-[#0e0e0c] font-bold text-xs">Verify →</button>
         </div>
         <p id="otpErr" class="hidden text-xs font-semibold text-limebz mt-2" role="alert"></p>
-        <button type="button" onclick="resendCode()" class="mt-3 text-[11px] font-semibold text-card/70 hover:text-limebz underline">Send a new code</button>
+        <button type="button" onclick="resendCode()" class="mt-3 text-[11px] font-semibold text-[#fbf8f1]/75 hover:text-limebz underline">Resend 6-digit code</button>
       </div>
     </section>
 
-    <!-- 3. REMEMBER ME FOOTER SWITCH (Matching uploaded mockup) -->
+    <!-- NEW PASSWORD (after a Forgot? code is checked) -->
+    <div id="newPwBox" class="hidden mt-5 p-4 rounded-2xl bg-limebz/15 border border-limebz/45 text-[#fbf8f1]" aria-live="polite">
+      <b class="text-xs font-bold text-limebz">Set a new password</b>
+      <p class="text-xs text-[#fbf8f1]/85 mt-1">At least 6 characters.</p>
+      <div class="flex gap-2 mt-3">
+        <input type="password" id="newPw" minlength="6" autocomplete="new-password" placeholder="New password" aria-label="New password"
+          onkeydown="if (event.key === 'Enter') setNewPassword()"
+          class="flex-1 min-w-0 h-11 px-3 rounded-xl bg-[#0e0e0c] border border-limebz text-[#fbf8f1]">
+        <button type="button" id="setPwBtn" onclick="setNewPassword()" class="px-4 rounded-xl bg-limebz text-[#0e0e0c] font-bold text-xs">Save →</button>
+      </div>
+      <p id="newPwErr" class="hidden text-xs font-semibold text-limebz mt-2" role="alert"></p>
+    </div>
+
+    <!-- 3. REMEMBER ME FOOTER SWITCH -->
     <div class="flex items-center justify-end gap-3 px-2 pt-1">
-      <label for="rememberMe" class="text-xs font-bold text-ink cursor-pointer">Remember me</label>
+      <label for="rememberMe" class="auth-heading text-xs font-bold cursor-pointer">Remember me</label>
       <label class="inline-flex items-center cursor-pointer">
         <input type="checkbox" id="rememberMe" checked class="sr-only">
         <span class="sw-track"></span>
@@ -390,7 +430,7 @@
   </main>
 
   <script>
-    /* ───── 3D CUBE SWIPE ENGINE (Responsive translateZ + Auto-swipe + Touch drag) ───── */
+    /* ───── 3D CUBE SWIPE ENGINE ───── */
     var cubeScene = document.getElementById("cubeScene");
     var cube = document.getElementById("cube");
     var faces = document.querySelectorAll(".cube-face");
@@ -413,13 +453,9 @@
       var active = ((slideIndex % 4) + 4) % 4;
       faces.forEach(function (f, i) { f.classList.toggle("active", i === active); });
       dots.forEach(function (d, i) {
-        if (i === active) {
-          d.classList.remove("w-1.5", "bg-ink/25");
-          d.classList.add("w-5", "bg-ink");
-        } else {
-          d.classList.remove("w-5", "bg-ink");
-          d.classList.add("w-1.5", "bg-ink/25");
-        }
+        d.classList.toggle("on", i === active);
+        d.classList.toggle("w-5", i === active);
+        d.classList.toggle("w-1.5", i !== active);
       });
     }
 
@@ -438,7 +474,6 @@
       }, 3800);
     }
 
-    // Touch & pointer swipe support on the 3D cube
     var startX = null;
     cubeScene.addEventListener("pointerdown", function (e) { startX = e.clientX; });
     cubeScene.addEventListener("pointerup", function (e) {
@@ -460,34 +495,74 @@
     layoutCube();
     resetAutoSwipe();
 
-    /* ───── AUTH LOGIC (Login / Sign up + Google + Resend Hook) ───── */
-    var authMode = "login";
-    var userRole = "customer";
+    /* ───── AUTHENTICATION ENGINE: Email+Password, Resend 6-digit OTP, & Google OAuth ───── */
+    var authMode = "login";      // "login" | "signup"
+    var authMethod = "password"; // "password" | "otp"
+    var userRole = "customer";   // "customer" | "business"
+    var pendingEmail = "";
+    var pendingPurpose = "auth";   // "auth" = sign-in code, "reset" = Forgot? code
+
+    var AUTH_ERRORS = {
+      emailFormat: "Please enter a valid email address.",
+      passwordShort: "Password must be at least 6 characters.",
+      badCredentials: "Incorrect email or password. Try again or send a 6-digit code.",
+      emailUnconfirmed: "Please verify your email with the 6-digit code sent to you.",
+      userExists: "An account with this email already exists. Switch to Login.",
+      codeFormat: "Please enter all 6 digits of your code.",
+      codeWrong: "That code is invalid or expired. Request a new code below.",
+      tooManyRequests: "Too many attempts. Please wait a minute and try again.",
+      googleNotEnabled: "Enable Google in Supabase Auth → Providers → Google (or continue in preview mode below).",
+      oauthFailed: "Google sign-in could not be completed. Please try again.",
+      notConfigured: "Backend keys (.env.local) are not connected yet — you can test the full preview flow right now!",
+      badOrigin: "Session check failed. Please reload the page.",
+      generic: "Could not complete request. Please try again.",
+      network: "Server offline or static preview — tap below to continue in preview mode."
+    };
+
+    function syncSubmitLabel() {
+      var isSignup = authMode === "signup";
+      var isOtp = authMethod === "otp";
+      document.getElementById("f-password").classList.toggle("hidden", isOtp);
+      document.getElementById("password").required = !isOtp;
+      document.getElementById("methodToggleBtn").textContent = isOtp ? "Use password instead →" : "Use 6-digit code →";
+      document.getElementById("methodHint").textContent = isOtp
+        ? "Passwordless 6-digit code via Resend"
+        : (isSignup ? "Create account + Resend verification" : "Sign in with email & password");
+      document.getElementById("submitBtn").textContent = isOtp
+        ? "Send 6-digit code"
+        : (isSignup ? "Create Account & Verify" : "Login");
+    }
+
+    function toggleAuthMethod() {
+      authMethod = authMethod === "password" ? "otp" : "password";
+      syncSubmitLabel();
+      showBanner("", false);
+    }
 
     function setAuthTab(mode) {
       authMode = mode;
       var isSignup = mode === "signup";
       var tLogin = document.getElementById("t-login");
       var tSignup = document.getElementById("t-signup");
-      tLogin.className = "py-2.5 rounded-full text-sm font-semibold transition " + (!isSignup ? "bg-card text-ink" : "text-card/75 hover:text-card");
-      tSignup.className = "py-2.5 rounded-full text-sm font-semibold transition " + (isSignup ? "bg-card text-ink" : "text-card/75 hover:text-card");
+      tLogin.className = "py-2.5 rounded-full text-sm font-semibold transition " + (!isSignup ? "bg-[#fbf8f1] text-[#0e0e0c]" : "text-[#fbf8f1]/75 hover:text-[#fbf8f1]");
+      tSignup.className = "py-2.5 rounded-full text-sm font-semibold transition " + (isSignup ? "bg-[#fbf8f1] text-[#0e0e0c]" : "text-[#fbf8f1]/75 hover:text-[#fbf8f1]");
       tLogin.setAttribute("aria-selected", !isSignup);
       tSignup.setAttribute("aria-selected", isSignup);
 
       document.getElementById("f-name").classList.toggle("hidden", !isSignup);
       document.getElementById("forgotLink").classList.toggle("hidden", isSignup);
       document.getElementById("password").setAttribute("autocomplete", isSignup ? "new-password" : "current-password");
-      document.getElementById("submitBtn").textContent = "Send code";
       document.getElementById("otpBox").classList.add("hidden");
-      showMsg("authMsg", "");
+      syncSubmitLabel();
+      showBanner("", false);
     }
 
     function pickRole(btn, role) {
       userRole = role;
       document.querySelectorAll(".role-btn").forEach(function (b) {
-        b.className = "role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 text-card/80 hover:bg-white/15 transition";
+        b.className = "role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 text-[#fbf8f1]/80 hover:bg-white/15 transition";
       });
-      btn.className = "role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-limebz text-ink transition";
+      btn.className = "role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-limebz text-[#0e0e0c] transition";
     }
 
     function togglePw() {
@@ -495,85 +570,216 @@
       inp.type = inp.type === "password" ? "text" : "password";
     }
 
-    /* ───── Real sign-in: email → 6-digit code → signed in (Supabase, via /api/auth/*) ───── */
-    var AUTH_ERRORS = {
-      emailFormat: "Please enter a valid email address.",
-      codeFormat: "The code is 6 numbers.",
-      codeWrong: "That code is wrong or has expired. Try again or send a new code.",
-      tooManyRequests: "Too many tries. Please wait a minute and try again.",
-      notConfigured: "Sign-in isn't set up yet (Supabase keys missing).",
-      badOrigin: "Something went wrong. Please reload the page.",
-      generic: "Something went wrong. Please try again.",
-      network: "No connection. Check your internet and try again."
-    };
-    var pendingEmail = "";
+    function showBanner(text, allowDemo) {
+      var wrap = document.getElementById("authMsgWrap");
+      var msg = document.getElementById("authMsg");
+      var demoBtn = document.getElementById("demoContinueBtn");
+      msg.textContent = text;
+      wrap.classList.toggle("hidden", !text);
+      demoBtn.classList.toggle("hidden", !allowDemo);
+    }
 
-    function showMsg(id, text) {
-      var el = document.getElementById(id);
-      if (!el) return;
+    function showOtpErr(text) {
+      var el = document.getElementById("otpErr");
       el.textContent = text;
       el.classList.toggle("hidden", !text);
     }
+
     function currentLang() {
       try { return localStorage.getItem("bazar-lang") || "en"; } catch (e) { return "en"; }
     }
+
     function api(path, body) {
-      return fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      return fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
         .then(function (r) { return r.json(); })
         .catch(function () { return { ok: false, error: "network" }; });
     }
+
     function busy(btn, on, label) {
       btn.disabled = on;
-      btn.style.opacity = on ? "0.6" : "";
+      btn.style.opacity = on ? "0.65" : "";
       if (label) btn.textContent = label;
     }
 
-    function handleGoogleAuth() {
-      // Needs Google sign-in to be switched on in Supabase (Authentication → Providers → Google).
-      showMsg("authMsg", "Google sign-in is coming soon. Please use your email for now.");
+    function continueDemoFlow() {
+      try { localStorage.setItem("bazar-role", userRole); } catch (e) {}
+      var params = new URLSearchParams(window.location.search);
+      var next = params.get("next");
+      if (next && /^\//.test(next)) { window.location.href = next; return; }
+      window.location.href = userRole === "business" ? "dashboard.html" : "index.html";
+    }
+
+    async function handleGoogleAuth() {
+      var btn = document.getElementById("googleBtn");
+      var origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.style.opacity = "0.7";
+      showBanner("", false);
+
+      var params = new URLSearchParams(window.location.search);
+      var res = await api("/api/auth/google", {
+        role: userRole,
+        next: params.get("next") || ""
+      });
+
+      btn.disabled = false;
+      btn.style.opacity = "";
+      btn.innerHTML = origHtml;
+
+      if (res.ok && res.url) {
+        try { localStorage.setItem("bazar-role", userRole); } catch (e) {}
+        window.location.href = res.url;
+        return;
+      }
+      var allowDemo = res.error === "notConfigured" || res.error === "googleNotEnabled" || res.error === "network";
+      showBanner(AUTH_ERRORS[res.error] || AUTH_ERRORS.generic, allowDemo);
+    }
+
+    async function sendForgotCode() {
+      var email = document.getElementById("email").value.trim();
+      if (!email) {
+        document.getElementById("email").focus();
+        showBanner("Enter your email above first and we'll send a 6-digit recovery code via Resend.", false);
+        return;
+      }
+      authMethod = "otp";
+      syncSubmitLabel();
+      await sendOtpForEmail(email, "reset");
+    }
+
+    async function sendOtpForEmail(email, purpose) {
+      pendingPurpose = purpose || "auth";
+      var btn = document.getElementById("submitBtn");
+      busy(btn, true, "Sending via Resend…");
+      showBanner("", false);
+      var res = await api("/api/auth/send-code", { email: email, lang: currentLang() });
+      busy(btn, false);
+      syncSubmitLabel();
+
+      if (!res.ok) {
+        var allowDemo = res.error === "notConfigured" || res.error === "network";
+        showBanner(AUTH_ERRORS[res.error] || AUTH_ERRORS.generic, allowDemo);
+        return;
+      }
+      openOtpVerification(res.email, res.provider);
+    }
+
+    function openOtpVerification(email, provider) {
+      pendingEmail = email;
+      document.getElementById("otpEmail").textContent = email;
+      document.getElementById("otpMsg").textContent = provider === "resend"
+        ? "Check your email · Sent via Resend"
+        : "Check your email · 6-digit code sent";
+      document.getElementById("otpBox").classList.remove("hidden");
+      showOtpErr("");
+      document.getElementById("otpCode").value = "";
+      document.getElementById("otpCode").focus();
     }
 
     async function handleAuthSubmit(e) {
       e.preventDefault();
       var email = document.getElementById("email").value.trim();
       if (!email) return;
+
+      if (authMethod === "otp") {
+        await sendOtpForEmail(email);
+        return;
+      }
+
+      var password = document.getElementById("password").value;
       var btn = document.getElementById("submitBtn");
-      busy(btn, true, "Sending…");
-      showMsg("authMsg", "");
-      var res = await api("/api/auth/send-code", { email: email, lang: currentLang() });
-      busy(btn, false, "Send code");
-      if (!res.ok) { showMsg("authMsg", AUTH_ERRORS[res.error] || AUTH_ERRORS.generic); return; }
-      pendingEmail = res.email;
-      document.getElementById("otpEmail").textContent = res.email;
-      document.getElementById("otpBox").classList.remove("hidden");
-      showMsg("otpErr", "");
-      document.getElementById("otpCode").value = "";
-      document.getElementById("otpCode").focus();
+      var params = new URLSearchParams(window.location.search);
+      busy(btn, true, authMode === "signup" ? "Creating account…" : "Signing in…");
+      showBanner("", false);
+
+      var res = await api("/api/auth/password", {
+        email: email,
+        password: password,
+        mode: authMode,
+        role: userRole,
+        lang: currentLang(),
+        next: params.get("next") || "",
+        fullName: authMode === "signup" ? document.getElementById("fullName").value.trim() : ""
+      });
+
+      busy(btn, false);
+      syncSubmitLabel();
+
+      if (!res.ok) {
+        if (res.error === "emailUnconfirmed") {
+          await sendOtpForEmail(email);
+          return;
+        }
+        var allowDemo = res.error === "notConfigured" || res.error === "network";
+        showBanner(AUTH_ERRORS[res.error] || AUTH_ERRORS.generic, allowDemo);
+        return;
+      }
+
+      if (res.needsVerification) {
+        openOtpVerification(res.email || email, res.provider);
+        return;
+      }
+
+      try { localStorage.setItem("bazar-role", userRole); } catch (err) {}
+      window.location.href = res.next || (userRole === "business" ? "/onboarding" : "/");
     }
 
     async function resendCode() {
       if (!pendingEmail) return;
       var res = await api("/api/auth/send-code", { email: pendingEmail, lang: currentLang() });
-      showMsg("otpErr", res.ok ? "New code sent." : (AUTH_ERRORS[res.error] || AUTH_ERRORS.generic));
+      showOtpErr(res.ok ? "✓ Fresh 6-digit code sent." : (AUTH_ERRORS[res.error] || AUTH_ERRORS.generic));
     }
 
     async function finishAuth() {
       var code = document.getElementById("otpCode").value.replace(/\D/g, "");
       var btn = document.getElementById("verifyBtn");
-      busy(btn, true);
+      busy(btn, true, "Verifying…");
       var params = new URLSearchParams(window.location.search);
       var res = await api("/api/auth/verify-code", {
-        email: pendingEmail, code: code, next: params.get("next") || "",
+        email: pendingEmail,
+        code: code,
+        purpose: pendingPurpose,
+        next: params.get("next") || "",
         fullName: authMode === "signup" ? document.getElementById("fullName").value.trim() : ""
       });
-      busy(btn, false);
-      if (!res.ok) { showMsg("otpErr", AUTH_ERRORS[res.error] || AUTH_ERRORS.generic); return; }
+      busy(btn, false, "Verify →");
+      if (!res.ok) {
+        showOtpErr(AUTH_ERRORS[res.error] || AUTH_ERRORS.generic);
+        return;
+      }
+      if (res.recovery) { showNewPassword(); return; }
       try { localStorage.setItem("bazar-role", userRole); } catch (e) {}
-      // Where to go: an explicit ?next=, else sellers to their dashboard (or to create a shop), buyers to Home.
       var next = params.get("next") ? res.next
         : userRole === "business" ? (res.hasShop ? "/dashboard" : "/onboarding")
         : (res.hasShop ? "/dashboard" : "/");
       window.location.href = next;
+    }
+
+    function showNewPassword() {
+      document.getElementById("otpBox").classList.add("hidden");
+      document.getElementById("newPwBox").classList.remove("hidden");
+      document.getElementById("newPw").focus();
+    }
+
+    /* Saves the new password for the account the reset code signed in */
+    async function setNewPassword() {
+      var pw = document.getElementById("newPw").value;
+      var err = document.getElementById("newPwErr");
+      var btn = document.getElementById("setPwBtn");
+      if (pw.length < 6) { err.textContent = AUTH_ERRORS.passwordShort; err.classList.remove("hidden"); return; }
+      busy(btn, true, "Saving…");
+      var res = await api("/api/auth/update-password", { password: pw });
+      busy(btn, false, "Save →");
+      if (!res.ok) {
+        err.textContent = res.error === "notSignedIn" ? "Your code has expired. Please start again." : (AUTH_ERRORS[res.error] || AUTH_ERRORS.generic);
+        err.classList.remove("hidden");
+        return;
+      }
+      window.location.href = userRole === "business" ? "/dashboard" : "/";
     }
 
     /* ───── CIRCULAR FLAG LANGUAGE SWITCHER ───── */
@@ -592,7 +798,8 @@
       document.getElementById("langFlagSvg").innerHTML = flags[code];
       document.querySelectorAll(".lang-opt").forEach(function (b) {
         var on = b.getAttribute("data-lang") === code;
-        b.className = "lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold " + (on ? "bg-ink text-limebz" : "text-ink hover:bg-cream");
+        b.classList.toggle("on", on);
+        b.className = "lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold " + (on ? "on bg-ink text-limebz" : "");
       });
       document.getElementById("langMenu").classList.remove("open");
       try { localStorage.setItem("bazar-lang", code); } catch (e) {}
@@ -602,14 +809,19 @@
     });
     try { var sl = localStorage.getItem("bazar-lang"); if (sl && flags[sl]) setLang(sl); } catch (e) {}
 
-    // Pre-select mode & role when arriving from Landing / Customer flow (?mode=signup&role=business)
+    // Pre-select mode, role & OAuth errors from URL query params
     (function syncQueryParams() {
       try {
         var params = new URLSearchParams(window.location.search);
         if (params.get("mode") === "signup") setAuthTab("signup");
+        else syncSubmitLabel();
         if (params.get("role") === "business") {
           var bizBtn = document.querySelectorAll(".role-btn")[1];
           if (bizBtn) pickRole(bizBtn, "business");
+        }
+        var err = params.get("error");
+        if (err && AUTH_ERRORS[err]) {
+          showBanner(AUTH_ERRORS[err], err === "notConfigured" || err === "googleNotEnabled");
         }
       } catch (e) {}
     })();

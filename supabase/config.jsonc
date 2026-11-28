@@ -271,15 +271,15 @@
       // Number of seconds before the email OTP expires (defaults to 1 hour).
       "otp_expiry": 3600,
 
-      // Use a production-ready SMTP server
+      // Production SMTP via Resend (enable in production or set RESEND_API_KEY for /api/auth/* routes):
       // "smtp": {
       //   "enabled": true,
-      //   "host": "smtp.sendgrid.net",
-      //   "port": 587,
-      //   "user": "apikey",
-      //   "pass": "env(SENDGRID_API_KEY)",
-      //   "admin_email": "admin@email.com",
-      //   "sender_name": "Admin"
+      //   "host": "smtp.resend.com",
+      //   "port": 465,
+      //   "user": "resend",
+      //   "pass": "env(RESEND_API_KEY)",
+      //   "admin_email": "hello@bazar.mu",
+      //   "sender_name": "Bazar Mauritius"
       // },
 
       // Bazar: 6-digit code emails, mirroring the production dashboard templates.
@@ -383,6 +383,15 @@
     // `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin_oidc`, `notion`, `twitch`,
     // `twitter`, `x`, `slack_oidc`, `spotify`, `workos`, `zoom`.
     "external": {
+      "google": {
+        "enabled": false,
+        "client_id": "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)",
+        "secret": "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)",
+        "redirect_uri": "",
+        "url": "",
+        "skip_nonce_check": true,
+        "email_optional": false
+      },
       "apple": {
         "enabled": false,
         "client_id": "",
