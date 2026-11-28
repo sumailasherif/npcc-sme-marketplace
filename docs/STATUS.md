@@ -42,7 +42,20 @@ Shared: `brand.css`, `app.css`, `i18n.js` (EN / FR / Kreol), `doc-tools.js`
 - `auth.html` uses the Tailwind CDN; dashboard has no language button yet.
 - Kreol / French need a native-speaker check.
 
-### Next (approved 28 Nov)
-Reconnect the old backend: restore Supabase code, serve the HTML screens from
-Next.js, add web APIs (sign-in, me, categories, shops), connect `auth.html` and
-`dashboard.html`, then add tables for products, orders, resell, chat, invoices.
+### Backend (reconnected 28 Nov)
+- Screens moved from `site/` to `public/`; Next.js serves them at
+  http://localhost:3000 (`npm run dev`). Short addresses: `/`, `/map`, `/resell`,
+  `/dashboard`, `/auth`, `/onboarding`.
+- Restored from `backup/old-build-2026-11-27`: Supabase helpers, sign-in,
+  shop rules, `supabase/` migrations (profiles, categories, shops, storage), DB tests.
+- Web APIs (`src/app/api/`): `auth/send-code`, `auth/verify-code`, `auth/sign-out`,
+  `me`, `categories`, `shops` (create), `shops/[slug]`, `shops/slug-check`, `shops/logo`.
+- Connected: `auth.html` (email + 6-digit code, no password), `dashboard.html`
+  (protected, real shop name), new `onboarding.html` (create shop in 3 steps).
+- **Needs:** Supabase URL + publishable key + secret key in `.env` (template
+  in `.env.example`). Until then screens run in demo mode.
+
+### Next
+1. Fill `.env`, check the Supabase tables are still there, test real sign-in.
+2. Tables + APIs for products, orders, resell listings, chat, invoices/expenses.
+3. Design: shop page, product page, cart/checkout, order tracking.
