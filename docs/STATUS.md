@@ -1,51 +1,48 @@
 # Bazar — status
 
-_Last updated: 27 Nov 2026_
+_Last updated: 28 Nov 2026_
 
-## Fresh start (27 Nov 2026)
+## Where we are
 
-The old Next.js build was removed. Nothing is lost: it is saved on the git
-branch `backup/old-build-2026-11-27`.
+Screens are designed as **plain HTML prototypes** (one per screen), in your
+brand. On 28 Nov we started reconnecting the **old Supabase backend** (saved on
+the git branch `backup/old-build-2026-11-27`) to these screens.
 
-We now design **page by page in plain HTML** first. Each page is approved
-before we move to the next one. Code (app, database, login) comes back only
-after the pages are agreed.
+Full list of technologies and why: [tech-stack.md](tech-stack.md).
 
-### What was kept
-- Brand colours: lime `#D4F53C`, black `#0E0E0C`, cream `#F4F0E6`, card `#FBF8F1`,
+### Brand
+- Colours: lime `#D4F53C`, black `#0E0E0C`, cream `#F4F0E6`, card `#FBF8F1`,
   readable green `#496100`. No pure white.
-- Font: Inter Display for headlines (Inter with optical sizing, weight 600, tight spacing), Inter for body. Unbounded dropped 28 Nov.
-- No photos for now (removed 28 Nov; still on the backup branch). Product photo spots are empty boxes.
-- The product brief: `docs/spec.md`.
+- Font: Inter Display for headlines (Inter with optical sizing), Inter for body.
+- Bazar is a mobile-first **PWA** (installed from the browser, no app stores).
+- Screen sizes (in `brand.css`): phone 0–767px (design 390), tablet 768–1279px
+  (820), laptop 1280px+ (1440).
 
-### It's an app (PWA)
-Bazar is one mobile-first web app that people can install from the browser
-(Add to Home Screen / Install). No Play Store or App Store.
+### Screens (prototypes)
+| Screen | File | Notes |
+|---|---|---|
+| Landing / For business | `business.html` | Rotating "what Bazar does" line |
+| Sign in / Sign up | `auth.html` | To be connected to real email-code sign-in |
+| Buyer Home | `index.html` | Location picker with free mini map |
+| Map | `map.html` | MapLibre + OpenFreeMap, distance + route (OSRM) |
+| Resell + escrow | `resell.html` | Camera/upload photos, smart description, in-app chat |
+| Business dashboard | `dashboard.html` | Bill scan (camera/photo/PDF), invoices, PDF statement — sample data |
+| Preview tool | `preview.html` | Phone / tablet / laptop side by side |
 
-### Screen sizes (set in `site/brand.css`)
-| Device | Width range | Design at | Preview frame |
-|--------|-------------|-----------|---------------|
-| Phone  | 0–767px     | 390px     | 390 × 844     |
-| Tablet | 768–1279px  | 820px     | 820 × 1180    |
-| Laptop | 1280px+     | 1440px    | 1440 × 900    |
+Shared: `brand.css`, `app.css`, `i18n.js` (EN / FR / Kreol), `doc-tools.js`
+(camera, reading bills, PDFs), `edit-text.js` (draft tool only).
 
-Text sizes (phone / tablet / laptop): hero 40/60/84, h1 28/34/44, h2 22/26/30,
-h3 18/20/22, body-l 16/18/20, body 14/15/15. Phone + tablet get a bottom tab
-bar; laptop gets a top menu instead.
+### Rules from Sherif
+- Never send users out to Google Maps or other apps; keep everything in Bazar.
+- Translate every screen (EN / FR / Kreol).
 
-### How the drafts work
-- `site/brand.css` — colours, fonts, type scale. Every page uses it.
-- `site/app.css` — app top bar + bottom tab bar, shared by every app screen.
-- `site/preview.html` — shows any screen on phone, tablet and laptop side by side.
-- `site/edit-text.js` — the **Edit text** button (bottom right, or press E):
-  every text gets a lime outline with its name; click and type to change it;
-  **Save page** downloads the page with the new words.
+### Known gaps
+- Real businesses and their photos shown as if they're on Bazar — replace or
+  mark "Not on Bazar yet".
+- `auth.html` uses the Tailwind CDN; dashboard has no language button yet.
+- Kreol / French need a native-speaker check.
 
-### Pages
-| # | Page | File | State |
-|---|------|------|-------|
-| 1 | App Home — intro strip, search, categories, shops, products, business banner | `site/index.html` | Draft — waiting for feedback |
-| 2 | For business (info page) — hero only so far | `site/business.html` | Draft |
-
-### Next
-Get feedback on App Home. Buyers open straight on products; the pitch lives on /business.
+### Next (approved 28 Nov)
+Reconnect the old backend: restore Supabase code, serve the HTML screens from
+Next.js, add web APIs (sign-in, me, categories, shops), connect `auth.html` and
+`dashboard.html`, then add tables for products, orders, resell, chat, invoices.

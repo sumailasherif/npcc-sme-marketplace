@@ -30,10 +30,14 @@
     <h1>Preview on all screens</h1>
     <span class="hint">Each frame shows the real page at that device's size.</span>
     <select id="page" aria-label="Page">
-      <option value="index.html">App — Home</option>
-      <option value="business.html">Info — For business</option>
+      <option value="business.html">1. Landing — Business</option>
+      <option value="auth.html">2. Auth — Sign in / Sign up</option>
+      <option value="index.html">3. App — Customer Home</option>
+      <option value="resell.html">4. App — Resell &amp; Escrow</option>
+      <option value="dashboard.html">5. App — Business Dashboard</option>
+      <option value="map.html">6. App — Discover Map (Uber UI)</option>
     </select>
-    <a href="index.html" target="_blank">Open full page ↗</a>
+    <a href="business.html" id="openFull" target="_blank">Open full page ↗</a>
   </header>
 
   <div class="row" id="row"></div>
@@ -50,6 +54,7 @@
 
     function render() {
       row.innerHTML = "";
+      document.getElementById("openFull").href = select.value;
       devices.forEach(function (d) {
         var box = document.createElement("div");
         box.className = "device " + d.cls;

@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e6">
+  <title>Bazar — Business Dashboard</title>
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="app.css">
+  <style>
+    :focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+    main { padding-top: 12px; padding-bottom: calc(var(--tab-bar) + env(safe-area-inset-bottom) + 28px); }
+
+    /* Top App Bar Extras (Search pill + Profile) */
+    .bar-search {
+      display: none; align-items: center; gap: 8px;
+      height: 40px; padding: 0 14px; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--line); width: 260px; margin-left: 16px;
+    }
+    .bar-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; font-size: 13px; color: var(--black); }
+    .bar-search kbd {
+      font-family: ui-monospace, monospace; font-size: 10px; font-weight: 700;
+      background: var(--cream); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; color: var(--muted);
+    }
+    .profile-chip {
+      display: inline-flex; align-items: center; gap: 9px; padding: 3px 10px 3px 4px;
+      border-radius: 999px; background: var(--card); border: 1px solid var(--line);
+    }
+    .profile-av {
+      width: 32px; height: 32px; border-radius: 999px; background: var(--black); color: var(--lime);
+      display: grid; place-items: center; font-weight: 700; font-size: 12px;
+    }
+    .profile-meta { display: none; text-align: left; line-height: 1.2; }
+    .profile-meta b { display: block; font-size: 12px; font-weight: 700; }
+    .profile-meta span { font-size: 11px; color: var(--muted); }
+
+    /* Page Title Header */
+    .dash-head {
+      display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px;
+    }
+    .dash-head p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .dash-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pill-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 42px; padding: 0 18px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; white-space: nowrap; transition: transform .15s, background .15s;
+    }
+    .pill-btn:active { transform: translateY(1px); }
+    .pill-btn--primary { background: var(--black); color: var(--lime); }
+    .pill-btn--primary:hover { background: var(--black-2); }
+    .pill-btn--outline { background: var(--card); color: var(--black); border: 1px solid var(--line); }
+    .pill-btn--outline:hover { border-color: var(--black); }
+    .pill-btn--lime { background: var(--lime); color: var(--black); }
+
+    /* ───── ROW 1: 4-COLUMN EQUAL KPI ROW ───── */
+    .kpi-row {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+    }
+    .kpi {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      padding: 16px 18px; display: flex; flex-direction: column; justify-content: space-between;
+      min-height: 136px; transition: transform .2s, border-color .2s;
+    }
+    .kpi:hover { transform: translateY(-2px); border-color: rgba(14, 14, 12, 0.25); }
+    .kpi-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .kpi-top span { font-size: 13px; font-weight: 600; color: var(--black-2); }
+    .kpi-arrow {
+      width: 30px; height: 30px; border-radius: 999px; border: 1px solid var(--line);
+      background: var(--cream); color: var(--black); display: grid; place-items: center; flex: none;
+    }
+    .kpi-num { font-size: clamp(26px, 3vw, 36px); font-weight: 700; letter-spacing: -0.04em; line-height: 1.05; margin: 10px 0 8px; }
+    .kpi-foot { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+    .trend-chip {
+      display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px; border-radius: 6px;
+      background: rgba(212, 245, 60, 0.35); color: var(--lime-ink); font-weight: 700; font-size: 11px;
+    }
+
+    /* Featured Card 1 (Dark Black + Subtle Lime Glow — Donezo Card 1 anchor in Bazar colors) */
+    .kpi--featured {
+      background: linear-gradient(145deg, #0e0e0c 0%, #1d210d 100%);
+      border-color: var(--black); color: var(--card);
+    }
+    .kpi--featured .kpi-top span { color: #d6d0c2; }
+    .kpi--featured .kpi-arrow { background: var(--lime); border-color: var(--lime); color: var(--black); }
+    .kpi--featured .kpi-num { color: var(--card); }
+    .kpi--featured .kpi-foot { color: #cfc7b4; }
+    .kpi--featured .trend-chip { background: rgba(212, 245, 60, 0.18); color: var(--lime); border: 1px solid rgba(212, 245, 60, 0.35); }
+
+    /* ───── ROWS 2 & 3: ASYMMETRIC BENTO GRID (Left 75% + Right 25%) ───── */
+    .bento-main {
+      margin-top: 14px; display: grid; grid-template-columns: 1fr; gap: 14px; align-items: stretch;
+    }
+    .bento-left { display: flex; flex-direction: column; gap: 14px; }
+    .bento-upper { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .bento-lower { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .bento-right { display: flex; flex-direction: column; gap: 14px; }
+
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      padding: 18px 20px; display: flex; flex-direction: column;
+    }
+    .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+    .card-head h2 { font-size: 15px; font-weight: 700; letter-spacing: -0.015em; }
+    .mini-pill {
+      padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--cream);
+      font-size: 11px; font-weight: 600; color: var(--black); white-space: nowrap;
+    }
+    .mini-pill:hover { border-color: var(--black); }
+
+    /* Weekly Sales Capsule Bar Chart (Donezo signature 7-day pill bars) */
+    .cap-chart {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;
+      align-items: end; height: 152px; padding-top: 22px; margin-top: auto;
+    }
+    .cap-col { display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; position: relative; }
+    .cap-bar {
+      width: 100%; max-width: 34px; border-radius: 999px; position: relative;
+      transition: transform .2s ease;
+    }
+    .cap-bar:hover { transform: scaleY(1.04); transform-origin: bottom; }
+    .cap-bar--hatch {
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--cream) 0 4px,
+        #e1dac8 4px 7px
+      );
+      border: 1px solid var(--line);
+    }
+    .cap-bar--black { background: var(--black); }
+    .cap-bar--lime { background: var(--lime); border: 1px solid #c2e22a; }
+    .cap-bar--olive { background: var(--lime-ink); }
+    .cap-tip {
+      position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
+      background: var(--black); color: var(--lime); font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 6px; white-space: nowrap;
+    }
+    .cap-day { font-size: 11px; font-weight: 600; color: var(--muted); }
+
+    /* Camera Scan Card (Donezo Reminders slot) */
+    .scan-card { justify-content: space-between; gap: 14px; }
+    .scan-card h3 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
+    .scan-card p { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+    /* Recent Orders & Enquiries List (Donezo Team Collaboration slot) */
+    .order-list { display: flex; flex-direction: column; gap: 12px; }
+    .order-row { display: flex; align-items: center; gap: 12px; }
+    .order-av {
+      width: 36px; height: 36px; border-radius: 999px; background: var(--cream);
+      border: 1px solid var(--line); color: var(--black);
+      display: grid; place-items: center; font-size: 12px; font-weight: 700; flex: none;
+    }
+    .order-av--lime { background: var(--lime); border-color: var(--lime); }
+    .order-info { flex: 1; min-width: 0; }
+    .order-info b { display: block; font-size: 13px; font-weight: 600; }
+    .order-info span { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .st-pill {
+      padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+    .st-paid { background: rgba(212, 245, 60, 0.42); color: var(--lime-ink); }
+    .st-deliv { background: var(--cream); color: var(--black); border: 1px solid var(--line); }
+    .st-pend { background: var(--black); color: var(--lime); }
+
+    /* 180° Semi-Circular Profit Goal Gauge (Donezo Project Progress slot) */
+    .gauge-card { justify-content: space-between; align-items: center; text-align: center; }
+    .gauge-card .card-head { width: 100%; }
+    .gauge-wrap { position: relative; width: 176px; height: 102px; margin: 6px auto 4px; }
+    .gauge-wrap svg { width: 100%; height: 100%; display: block; }
+    .gauge-val {
+      position: absolute; left: 0; right: 0; bottom: 4px; text-align: center;
+    }
+    .gauge-val b { display: block; font-size: 30px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+    .gauge-val span { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .gauge-leg { display: flex; justify-content: center; gap: 12px; font-size: 11px; color: var(--muted); margin-top: 10px; }
+    .gauge-leg span { display: inline-flex; align-items: center; gap: 5px; }
+    .gauge-leg i { width: 8px; height: 8px; border-radius: 999px; display: inline-block; }
+
+    /* Right Top: Auto Invoices List (Donezo Project List slot) */
+    .inv-list { display: flex; flex-direction: column; gap: 12px; }
+    .inv-row { display: flex; align-items: center; gap: 10px; }
+    .inv-ico {
+      width: 30px; height: 30px; border-radius: 8px; background: var(--cream);
+      border: 1px solid var(--line); color: var(--black); display: grid; place-items: center; flex: none;
+    }
+    .inv-ico--lime { background: var(--lime); border-color: var(--lime); }
+    .inv-info { flex: 1; min-width: 0; }
+    .inv-info b { display: block; font-size: 12.5px; font-weight: 600; }
+    .inv-info span { font-size: 11px; color: var(--muted); }
+    .inv-amt { font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+
+    /* Right Bottom: Dark Bazar Assist AI Anchor Card (Donezo Time Tracker slot) */
+    .ai-anchor {
+      background: linear-gradient(150deg, #0e0e0c 0%, #1c200c 100%);
+      border: 1px solid var(--black); border-radius: 18px; padding: 18px 20px;
+      color: var(--card); display: flex; flex-direction: column; justify-content: space-between; gap: 14px;
+      position: relative; overflow: hidden; flex: 1;
+    }
+    .ai-anchor::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(circle at 85% 20%, rgba(212, 245, 60, 0.24), transparent 55%);
+    }
+    .ai-anchor > * { position: relative; z-index: 2; }
+    .ai-anchor-top { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 600; color: #d6d0c2; }
+    .ai-anchor-stat { text-align: center; padding: 6px 0; }
+    .ai-anchor-stat b { display: block; font-size: 26px; font-weight: 800; letter-spacing: -0.03em; color: var(--lime); }
+    .ai-anchor-stat span { font-size: 11.5px; color: #cfc7b4; }
+    .ai-anchor-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+    .ai-anchor-chips button {
+      padding: 5px 10px; border-radius: 999px; background: rgba(251, 248, 241, 0.1);
+      border: 1px solid rgba(251, 248, 241, 0.18); color: var(--card); font-size: 11px; font-weight: 600;
+    }
+    .ai-anchor-chips button:hover { background: var(--lime); color: var(--black); border-color: var(--lime); }
+
+    /* Native Modal Dialogs (Camera Scanner + Business AI Side Panel) */
+    dialog {
+      border: 1px solid var(--line); border-radius: 20px; padding: 0;
+      background: var(--card); color: var(--black);
+      width: min(92vw, 440px); max-height: 85svh;
+      box-shadow: 0 24px 60px rgba(14, 14, 12, 0.35);
+    }
+    dialog:modal { overscroll-behavior: contain; }
+    dialog::backdrop { overflow: hidden; overscroll-behavior: contain; background: rgba(14, 14, 12, 0.55); backdrop-filter: blur(3px); }
+    dialog.side-ai { margin: auto 12px 12px auto; height: min(84svh, 620px); display: flex; flex-direction: column; }
+    dialog.side-ai:not([open]) { display: none; }
+    .dlg-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--cream); border-bottom: 1px solid var(--line); }
+    .dlg-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+    .chat-log { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .bubble { max-width: 88%; padding: 10px 14px; border-radius: 14px; font-size: 13.5px; line-height: 1.45; }
+    .bubble--bot { background: var(--cream); color: var(--black); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .bubble--user { background: var(--black); color: var(--lime); align-self: flex-end; border-bottom-right-radius: 4px; }
+    .chat-chips { display: flex; flex-wrap: wrap; gap: 7px; padding: 0 16px 12px; }
+    .chat-chips button { padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); font-size: 12px; font-weight: 500; }
+    .chat-chips button:hover { background: var(--lime); border-color: var(--lime); }
+    .chat-form { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--line); }
+    .chat-form input { flex: 1; min-width: 0; height: 42px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); font: inherit; font-size: 14px; }
+    .chat-form button { width: 42px; height: 42px; border-radius: 999px; background: var(--lime); color: var(--black); display: grid; place-items: center; flex: none; }
+
+    /* Scan / invoice / statement dialogs */
+    dialog.wide-dlg { width: min(94vw, 600px); }
+    .dlg-body label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 600; color: var(--black-2); }
+    .dlg-body input:not([type=checkbox]), .dlg-body select {
+      height: 42px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line);
+      background: var(--cream); font: inherit; font-size: 14px; color: var(--black); width: 100%; min-width: 0;
+    }
+    .dlg-body input:focus, .dlg-body select:focus { outline: 0; border-color: var(--black); background: var(--card); }
+    .f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .f-label { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+    .muted-tag { font-size: 11px; font-weight: 600; color: var(--muted); }
+    .dlg-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+    .scan-ways { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .scan-way {
+      display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px 8px; border-radius: 16px;
+      background: var(--cream); border: 1px solid var(--line); text-align: center;
+    }
+    .scan-way:hover { border-color: var(--black); background: var(--card); }
+    .scan-way .sw-ico { font-size: 24px; }
+    .scan-way b { font-size: 13px; }
+    .scan-way small { font-size: 11px; color: var(--muted); }
+    .scan-note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+    .scan-preview { border-radius: 14px; overflow: hidden; background: #0e0e0c; min-height: 140px; display: grid; place-items: center; color: var(--lime); font-weight: 700; font-size: 13px; }
+    .scan-preview img { width: 100%; max-height: 240px; object-fit: contain; display: block; }
+    .scan-prog { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; margin-top: 12px; }
+    .scan-prog i { display: block; height: 100%; width: 0; background: var(--black); transition: width .2s; }
+    .scan-found { font-size: 12.5px; font-weight: 600; padding: 10px 12px; border-radius: 12px; background: rgba(212, 245, 60, 0.25); border: 1px solid var(--lime-ink); }
+    .scan-found.warn { background: #fdf1d6; border-color: #f6b93b; }
+    .scan-raw summary { font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; }
+    .scan-raw pre { white-space: pre-wrap; font-size: 11px; max-height: 140px; overflow: auto; background: var(--cream); padding: 10px; border-radius: 10px; margin: 8px 0 0; }
+    .prod-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .prod-chips .mini-pill.on { background: var(--black); color: var(--lime); border-color: var(--black); }
+    .items { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+    .item-row { display: grid; grid-template-columns: 1fr 64px 100px 36px; gap: 6px; align-items: center; }
+    .item-row button { width: 36px; height: 36px; border-radius: 999px; color: var(--muted); }
+    .item-row button:hover { background: var(--line); color: var(--black); }
+    .vat-toggle { flex-direction: row !important; align-items: center; gap: 8px !important; }
+    .totals { background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; }
+    .totals div { display: flex; justify-content: space-between; font-size: 13px; }
+    .totals .grand { font-size: 16px; padding-top: 6px; border-top: 1px solid var(--line); margin-top: 2px; }
+    .st-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .st-tile { background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+    .st-tile.key { background: var(--lime); border-color: var(--lime); }
+    .st-tile small { display: block; font-size: 11px; font-weight: 600; color: var(--muted); }
+    .st-tile.key small { color: var(--black-2); }
+    .st-tile b { display: block; font-size: 16px; margin-top: 2px; }
+    @media (max-width: 480px) {
+      .scan-ways { grid-template-columns: 1fr; }
+      .scan-way { flex-direction: row; justify-content: flex-start; text-align: left; gap: 10px; padding: 12px 14px; }
+      .scan-way small { margin-left: auto; }
+      .item-row { grid-template-columns: 1fr 52px 84px 32px; }
+    }
+
+    /* ───── TABLET (768px+) ───── */
+    @media (min-width: 768px) {
+      .dash-head { flex-direction: row; align-items: center; justify-content: space-between; }
+      .bar-search { display: flex; }
+      .profile-meta { display: block; }
+      .kpi-row { grid-template-columns: repeat(4, 1fr); }
+      .bento-upper { grid-template-columns: 2fr 1fr; }
+      .bento-lower { grid-template-columns: 1.75fr 1fr; }
+      dialog.side-ai { margin: 16px 16px 16px auto; height: calc(100svh - 32px); max-height: none; width: 400px; }
+    }
+
+    /* ───── LAPTOP (1280px+) ───── */
+    @media (min-width: 1280px) {
+      .bento-main { grid-template-columns: 3fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP APP BAR (Same horizontal shell, NO vertical sidebar) -->
+  <header class="app-bar">
+    <div class="wrap">
+      <a href="business.html" class="logo" data-text="bar.logo">bazar</a>
+      <nav class="top-nav">
+        <a href="dashboard.html" class="on">Dashboard</a>
+        <a href="#invoices">Invoices</a>
+        <a href="#" onclick="openScan(); return false;">Scan</a>
+        <a href="#orders">Orders</a>
+      </nav>
+
+      <label class="bar-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" placeholder="Search orders, invoices..." aria-label="Search dashboard">
+        <kbd>⌘F</kbd>
+      </label>
+
+      <div class="right">
+        <button class="icon-btn" aria-label="Bazar Assist Business AI" onclick="openBizAI()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="Notifications"><span class="dot"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        </button>
+        <a href="auth.html" class="profile-chip" aria-label="Merchant profile">
+          <span class="profile-av">CC</span>
+          <span class="profile-meta"><b>Chelsea's Cake</b><span>Curepipe · Verified</span></span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- PAGE HEADER -->
+    <div class="dash-head">
+      <div>
+        <h1 class="t-h1" data-text="dash.title">Dashboard</h1>
+        <p data-text="dash.sub">Track revenue, auto-invoices, scanned bills, and live orders in one place.</p>
+      </div>
+      <div class="dash-actions">
+        <button type="button" class="pill-btn pill-btn--primary" onclick="openScan()">+ Scan Invoice</button>
+        <button type="button" class="pill-btn pill-btn--lime" onclick="openInvoice()">+ New Invoice</button>
+        <button type="button" class="pill-btn pill-btn--outline" onclick="openStatement()">PDF Statement</button>
+        <button type="button" class="pill-btn pill-btn--outline" onclick="openBizAI()">Ask Business AI</button>
+      </div>
+    </div>
+
+    <!-- ROW 1: 4 EQUAL KPI CARDS -->
+    <section class="kpi-row" aria-label="Business KPIs">
+      <article class="kpi kpi--featured">
+        <div class="kpi-top">
+          <span>Total Revenue</span>
+          <span class="kpi-arrow" aria-hidden="true">↗</span>
+        </div>
+        <div class="kpi-num">Rs 142k</div>
+        <div class="kpi-foot"><span class="trend-chip">+18% ▲</span> Increased from last month</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-top">
+          <span>Net Profit</span>
+          <span class="kpi-arrow" aria-hidden="true">↗</span>
+        </div>
+        <div class="kpi-num">Rs 84.2k</div>
+        <div class="kpi-foot"><span class="trend-chip">59% ▲</span> Healthy monthly margin</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-top">
+          <span>VAT Due (15%)</span>
+          <span class="kpi-arrow" aria-hidden="true">↗</span>
+        </div>
+        <div class="kpi-num">Rs 12.4k</div>
+        <div class="kpi-foot"><span class="trend-chip">48 inv</span> Next filing 20 Dec</div>
+      </article>
+
+      <article class="kpi">
+        <div class="kpi-top">
+          <span>Pending Orders</span>
+          <span class="kpi-arrow" aria-hidden="true">↗</span>
+        </div>
+        <div class="kpi-num">7</div>
+        <div class="kpi-foot">3 awaiting Grabbit pickup</div>
+      </article>
+    </section>
+
+    <!-- ROWS 2 & 3: ASYMMETRIC BENTO GRID (Left 75% + Right 25%) -->
+    <section class="bento-main">
+      <!-- LEFT 75% -->
+      <div class="bento-left">
+        <!-- Upper Row: 2fr : 1fr -->
+        <div class="bento-upper">
+          <!-- Weekly Sales Analytics (Capsule Bar Chart) -->
+          <article class="card">
+            <div class="card-head">
+              <h2>Weekly Sales Analytics</h2>
+              <span class="mini-pill">This week</span>
+            </div>
+            <div class="cap-chart" aria-label="Weekly sales bar chart">
+              <div class="cap-col"><div class="cap-bar cap-bar--hatch" style="height:52%"></div><span class="cap-day">S</span></div>
+              <div class="cap-col"><div class="cap-bar cap-bar--olive" style="height:68%"></div><span class="cap-day">M</span></div>
+              <div class="cap-col"><div class="cap-bar cap-bar--lime" style="height:62%"></div><span class="cap-day">T</span></div>
+              <div class="cap-col"><div class="cap-bar cap-bar--black" style="height:92%"><span class="cap-tip">74%</span></div><span class="cap-day">W</span></div>
+              <div class="cap-col"><div class="cap-bar cap-bar--hatch" style="height:76%"></div><span class="cap-day">T</span></div>
+              <div class="cap-col"><div class="cap-bar cap-bar--hatch" style="height:58%"></div><span class="cap-day">F</span></div>
+              <div class="cap-col"><div class="cap-bar cap-bar--hatch" style="height:64%"></div><span class="cap-day">S</span></div>
+            </div>
+          </article>
+
+          <!-- Camera Scan Shortcut Card (Reminders slot) -->
+          <article class="card scan-card">
+            <div class="card-head" style="margin-bottom:0">
+              <h2>Camera AI Scan</h2>
+            </div>
+            <div>
+              <h3>Record supplier bills in 1 tap</h3>
+              <p>Snap any paper receipt to extract items, totals &amp; VAT automatically.</p>
+            </div>
+            <button type="button" class="pill-btn pill-btn--lime" style="width:100%" onclick="openScan()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg>
+              Scan Invoice
+            </button>
+          </article>
+        </div>
+
+        <!-- Lower Row: 1.75fr : 1fr -->
+        <div class="bento-lower">
+          <!-- Recent Orders & Enquiries (Team Collaboration slot) -->
+          <article class="card" id="orders">
+            <div class="card-head">
+              <h2>Orders &amp; Customer Enquiries</h2>
+              <button type="button" class="mini-pill" onclick="openBizAI()">Draft AI Replies</button>
+            </div>
+            <div class="order-list">
+              <div class="order-row">
+                <span class="order-av order-av--lime">AN</span>
+                <div class="order-info"><b>Anoushka N.</b><span>Ordered <b>Signature Fudge Cake</b> · Rs 950</span></div>
+                <span class="st-pill st-paid">Paid</span>
+              </div>
+              <div class="order-row">
+                <span class="order-av">KR</span>
+                <div class="order-info"><b>Kevin R.</b><span>Delivery to Quatre Bornes · <b>Gato Box × 3</b></span></div>
+                <span class="st-pill st-deliv">In Delivery</span>
+              </div>
+              <div class="order-row">
+                <span class="order-av">SM</span>
+                <div class="order-info"><b>Sarah M.</b><span>Enquiry: <b>“Custom birthday cake for Friday?”</b></span></div>
+                <span class="st-pill st-pend">AI Draft Ready</span>
+              </div>
+              <div class="order-row">
+                <span class="order-av">DP</span>
+                <div class="order-info"><b>Dev P.</b><span>Ordered <b>Artisan Croissants Box</b> · Rs 560</span></div>
+                <span class="st-pill st-paid">Paid</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Monthly Profit Goal Semi-Circular Gauge (Project Progress slot) -->
+          <article class="card gauge-card">
+            <div class="card-head">
+              <h2>Monthly Goal</h2>
+            </div>
+            <div class="gauge-wrap">
+              <svg viewBox="0 0 200 112" aria-label="74 percent of monthly goal reached">
+                <!-- Background hatched track -->
+                <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#e8e2d3" stroke-width="18" stroke-linecap="round"/>
+                <!-- Lime segment -->
+                <path d="M 20 100 A 80 80 0 0 1 162 50" fill="none" stroke="#d4f53c" stroke-width="18" stroke-linecap="round"/>
+                <!-- Solid black completed segment -->
+                <path d="M 20 100 A 80 80 0 0 1 122 23" fill="none" stroke="#0e0e0c" stroke-width="18" stroke-linecap="round"/>
+              </svg>
+              <div class="gauge-val">
+                <b>74%</b>
+                <span>Target Reached</span>
+              </div>
+            </div>
+            <div class="gauge-leg">
+              <span><i style="background:var(--black)"></i>Paid</span>
+              <span><i style="background:var(--lime)"></i>Escrow</span>
+              <span><i style="background:var(--line)"></i>Left</span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- RIGHT 25% -->
+      <div class="bento-right">
+        <!-- Auto Invoices & Receipts List -->
+        <article class="card" id="invoices">
+          <div class="card-head">
+            <h2>Auto Invoices</h2>
+            <button type="button" class="mini-pill" onclick="openInvoice()">+ New</button>
+          </div>
+          <div class="inv-list" id="invList">
+            <div class="inv-row">
+              <span class="inv-ico inv-ico--lime"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/></svg></span>
+              <div class="inv-info"><b>#BZ-1048 · Paid</b><span>Today · Juice</span></div>
+              <span class="inv-amt">Rs 2,450</span>
+            </div>
+            <div class="inv-row">
+              <span class="inv-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/></svg></span>
+              <div class="inv-info"><b>#SUP-882 · Scanned</b><span>Flour &amp; Boxes</span></div>
+              <span class="inv-amt">Rs 4,150</span>
+            </div>
+            <div class="inv-row">
+              <span class="inv-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/></svg></span>
+              <div class="inv-info"><b>#BZ-1047 · Paid</b><span>Yesterday · Cash</span></div>
+              <span class="inv-amt">Rs 950</span>
+            </div>
+            <div class="inv-row">
+              <span class="inv-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+              <div class="inv-info"><b>#BZ-1042 · Overdue</b><span>Hotel Le Palm</span></div>
+              <span class="inv-amt">Rs 4,500</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dark Bazar Assist AI Anchor Card (Time Tracker slot) -->
+        <article class="ai-anchor">
+          <div class="ai-anchor-top">
+            <span>Bazar Assist AI</span>
+            <span style="color:var(--lime);font-size:11px;">● Live</span>
+          </div>
+          <div class="ai-anchor-stat">
+            <b>2 Overdue</b>
+            <span>Rs 6,800 ready to follow up</span>
+          </div>
+          <div class="ai-anchor-chips">
+            <button type="button" onclick="openBizAI('VAT due?')">VAT due?</button>
+            <button type="button" onclick="openBizAI('My profit')">My profit</button>
+            <button type="button" onclick="openBizAI('Overdue invoices')">Overdue</button>
+          </div>
+          <button type="button" class="pill-btn pill-btn--lime" style="width:100%" onclick="openBizAI()">Open Business AI</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- ROW 4: SERVICE BOOKINGS & APPOINTMENT CALENDAR (For Salons, Spas & Service SMEs) -->
+    <section class="card" style="margin-top:14px;" id="bookings">
+      <div class="card-head">
+        <div>
+          <h2>Service Calendar &amp; Bookings</h2>
+          <span style="font-size:12px;color:var(--muted);">Manage salon, spa &amp; appointment slots</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button type="button" class="mini-pill" style="background:var(--black);color:var(--lime);border-color:var(--black);" onclick="filterAppts(this,'Sat 28')">Sat 28</button>
+          <button type="button" class="mini-pill" onclick="filterAppts(this,'Sun 29')">Sun 29</button>
+          <button type="button" class="mini-pill" onclick="filterAppts(this,'Mon 30')">Mon 30</button>
+        </div>
+      </div>
+      <div class="order-list" id="apptList">
+        <div class="order-row">
+          <span class="order-av order-av--lime">10:00</span>
+          <div class="order-info"><b>Priya S. · Hair Styling &amp; Blowout</b><span>Sat 28 Nov · 45 min · Rs 850</span></div>
+          <span class="st-pill st-paid">Confirmed</span>
+        </div>
+        <div class="order-row">
+          <span class="order-av">11:30</span>
+          <div class="order-info"><b>Maya R. · Gel Manicure &amp; Nail Art</b><span>Sat 28 Nov · 60 min · Rs 900</span></div>
+          <button type="button" class="st-pill st-pend" onclick="this.className='st-pill st-paid';this.textContent='Confirmed'">Approve Slot</button>
+        </div>
+        <div class="order-row">
+          <span class="order-av">14:30</span>
+          <div class="order-info"><b>Chloé L. · Keratin Treatment</b><span>Sat 28 Nov · 90 min · Rs 2,200</span></div>
+          <span class="st-pill st-paid">Confirmed</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SAME BOTTOM TAB BAR AS THE REST OF THE APP (No vertical sidebar) -->
+  <nav class="tab-bar t-caption" aria-label="Business navigation">
+    <a href="dashboard.html" class="on"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg></span><span>Dashboard</span></a>
+    <a href="#invoices"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 10h8M8 14h5"/></svg></span><span>Invoices</span></a>
+    <a href="#" onclick="openScan(); return false;"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/><path d="M7 12h10"/></svg></span><span>Scan</span></a>
+    <a href="#orders"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><span>Orders</span></a>
+  </nav>
+
+  <!-- SCAN A BILL: camera, photo or PDF → reads supplier, invoice no, date, total & VAT -->
+  <dialog id="scanDialog" closedby="any" aria-labelledby="scanTitle">
+    <div class="dlg-head">
+      <b id="scanTitle">Scan a bill or invoice</b>
+      <button type="button" onclick="closeScan()" aria-label="Close">✕</button>
+    </div>
+    <div class="dlg-body">
+      <!-- Step 1: choose how -->
+      <div id="scanPick">
+        <div class="scan-ways">
+          <button type="button" class="scan-way" onclick="scanFromCamera()">
+            <span class="sw-ico">📷</span><b>Take photo</b><small>Use your camera</small>
+          </button>
+          <button type="button" class="scan-way" onclick="scanFromPhoto()">
+            <span class="sw-ico">🖼️</span><b>Upload photo</b><small>JPG or PNG</small>
+          </button>
+          <button type="button" class="scan-way" onclick="scanFromPDF()">
+            <span class="sw-ico">📄</span><b>Upload PDF</b><small>Digital or scanned</small>
+          </button>
+        </div>
+        <p class="scan-note">Reads the supplier, invoice number, date, total and VAT. Everything is read on this device — nothing is uploaded.</p>
+      </div>
+
+      <!-- Step 2: reading -->
+      <div id="scanWork" hidden>
+        <div class="scan-preview" id="scanPreviewBox"></div>
+        <div class="scan-prog"><i id="scanBar"></i></div>
+        <p class="scan-note" id="scanStatus">Reading…</p>
+      </div>
+
+      <!-- Step 3: check and save -->
+      <form id="scanResult" hidden onsubmit="saveScanned(event)">
+        <p class="scan-found" id="scanFound"></p>
+        <div class="f-grid">
+          <label>Supplier<input id="sSupplier" required placeholder="e.g. Moulin Supplies Ltd"></label>
+          <label>Invoice no<input id="sNo" placeholder="e.g. INV-0882"></label>
+          <label>Date<input id="sDate" type="date" required></label>
+          <label>Category
+            <select id="sCat"><option>Ingredients</option><option>Packaging</option><option>Rent</option><option>Utilities</option><option>Transport</option><option>Equipment</option><option>Other</option></select>
+          </label>
+          <label>Total (Rs)<input id="sTotal" type="number" step="0.01" min="0" required></label>
+          <label>VAT (Rs) <small id="sVatNote"></small><input id="sVat" type="number" step="0.01" min="0"></label>
+        </div>
+        <details class="scan-raw"><summary>Show the text that was read</summary><pre id="scanText"></pre></details>
+        <div class="dlg-actions">
+          <button type="button" class="pill-btn pill-btn--outline" onclick="resetScan()">Scan another</button>
+          <button type="submit" class="pill-btn pill-btn--primary">Save to expenses</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- NEW INVOICE: fill in or let Business AI draft it, then download a PDF -->
+  <dialog id="invDialog" class="wide-dlg" closedby="any" aria-labelledby="invTitle">
+    <div class="dlg-head">
+      <b id="invTitle">New invoice <span id="invNoLabel" class="muted-tag"></span></b>
+      <button type="button" onclick="document.getElementById('invDialog').close()" aria-label="Close">✕</button>
+    </div>
+    <form class="dlg-body" onsubmit="saveInvoice(event)">
+      <div class="f-grid">
+        <label>Customer<input id="iCustomer" required placeholder="e.g. Hotel Le Palm"></label>
+        <label>Phone or email (optional)<input id="iContact" placeholder="e.g. 5 123 4567"></label>
+        <label>Date<input id="iDate" type="date" required></label>
+        <label>Due date<input id="iDue" type="date"></label>
+        <label>Payment
+          <select id="iMethod"><option>Cash</option><option>Juice</option><option>Card</option><option>Bank transfer</option></select>
+        </label>
+        <label>Status
+          <select id="iStatus"><option value="paid">Paid</option><option value="unpaid">Not paid yet</option></select>
+        </label>
+      </div>
+      <div>
+        <div class="f-label">Items <span class="muted-tag">tap a product to add it</span></div>
+        <div class="prod-chips" id="prodChips"></div>
+        <div class="items" id="iItems"></div>
+        <button type="button" class="mini-pill" onclick="addItemRow()">+ Add item</button>
+      </div>
+      <label class="vat-toggle"><input type="checkbox" id="iVat" checked onchange="calcInvoice()"> Add VAT 15%</label>
+      <div class="totals">
+        <div><span>Subtotal</span><b id="iSub">Rs 0.00</b></div>
+        <div><span>VAT</span><b id="iVatAmt">Rs 0.00</b></div>
+        <div class="grand"><span>Total</span><b id="iTotal">Rs 0.00</b></div>
+      </div>
+      <label>Note on invoice (optional)<input id="iNotes" placeholder="e.g. Thank you for your order!"></label>
+      <div class="dlg-actions">
+        <button type="button" class="pill-btn pill-btn--outline" onclick="document.getElementById('invDialog').close()">Cancel</button>
+        <button type="submit" class="pill-btn pill-btn--primary">Save &amp; download PDF</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- BUSINESS STATEMENT: full breakdown from a chosen date, as a PDF -->
+  <dialog id="stmtDialog" closedby="any" aria-labelledby="stmtTitle">
+    <div class="dlg-head">
+      <b id="stmtTitle">Business statement (PDF)</b>
+      <button type="button" onclick="document.getElementById('stmtDialog').close()" aria-label="Close">✕</button>
+    </div>
+    <form class="dlg-body" onsubmit="downloadStatement(event)">
+      <div class="prod-chips" id="rangeChips">
+        <button type="button" class="mini-pill" onclick="setRange('month', this)">This month</button>
+        <button type="button" class="mini-pill" onclick="setRange('last', this)">Last month</button>
+        <button type="button" class="mini-pill" onclick="setRange('30', this)">Last 30 days</button>
+        <button type="button" class="mini-pill" onclick="setRange('quarter', this)">Last 3 months</button>
+        <button type="button" class="mini-pill" onclick="setRange('year', this)">This year</button>
+      </div>
+      <div class="f-grid">
+        <label>From<input id="stFrom" type="date" required onchange="previewStatement()"></label>
+        <label>To<input id="stTo" type="date" required onchange="previewStatement()"></label>
+      </div>
+      <div class="st-preview" id="stPreview"></div>
+      <p class="scan-note">The PDF includes: summary, VAT, sales by category and payment method, top items, expenses by category, unpaid invoices and every transaction.</p>
+      <div class="dlg-actions">
+        <button type="button" class="pill-btn pill-btn--outline" onclick="document.getElementById('stmtDialog').close()">Cancel</button>
+        <button type="submit" class="pill-btn pill-btn--primary">Download PDF statement</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- BUSINESS AI SIDE PANEL (Strictly Business Owner Persona) -->
+  <dialog id="bizAiDialog" class="side-ai" closedby="any" aria-labelledby="bizAiTitle">
+    <div class="dlg-head">
+      <div>
+        <b id="bizAiTitle">Bazar Assist · Business AI</b>
+        <div style="font-size:11px;color:var(--muted);">Numbers, VAT &amp; Customer Support</div>
+      </div>
+      <button type="button" onclick="document.getElementById('bizAiDialog').close()" aria-label="Close">✕</button>
+    </div>
+    <div class="chat-log" id="bizLog" aria-live="polite">
+      <div class="bubble bubble--bot">Hi! I'm Bazar Assist. Ask me anything about your shop's numbers, VAT due, or customer enquiries.</div>
+    </div>
+    <div class="chat-chips">
+      <button type="button" onclick="askBiz('VAT due?')">VAT due?</button>
+      <button type="button" onclick="askBiz('My profit')">My profit</button>
+      <button type="button" onclick="askBiz('Overdue invoices')">Overdue invoices</button>
+      <button type="button" onclick="askBiz('Unanswered enquiries')">Enquiries</button>
+      <button type="button" onclick="askBiz('Create an invoice for Hotel Le Palm: 2 x Signature fudge cake at 950')">Create invoice</button>
+      <button type="button" onclick="askBiz('PDF statement since 1 ' + new Date().toLocaleString('en', { month: 'short' }))">PDF statement</button>
+    </div>
+    <form class="chat-form" onsubmit="submitBiz(event)">
+      <input type="text" id="bizInput" placeholder="Ask about your business..." aria-label="Ask Business AI">
+      <button type="submit" aria-label="Send">→</button>
+    </form>
+  </dialog>
+
+  <script>
+    var bizAnswers = {
+      "VAT due?": "Estimated VAT due for November is Rs 12,450 (15% across 48 invoices). Filing deadline: 20 Dec.",
+      "My profit": "Net profit this month is Rs 84,200 (59% margin, +18% vs October). Top item: Signature Fudge Cake.",
+      "Overdue invoices": "2 overdue invoices totalling Rs 6,800 (Hotel Le Palm Rs 4,500 · Café Nord Rs 2,300).",
+      "Unanswered enquiries": "1 buyer enquiry waiting (Sarah M. asking about a custom birthday cake). Draft reply ready in EN & Kreol."
+    };
+
+    function filterAppts(btn, day) {
+      btn.parentNode.querySelectorAll("button").forEach(function (b) {
+        b.style.background = ""; b.style.color = ""; b.style.borderColor = "";
+      });
+      btn.style.background = "var(--black)"; btn.style.color = "var(--lime)"; btn.style.borderColor = "var(--black)";
+      document.querySelectorAll("#apptList .order-info span").forEach(function (s) {
+        s.textContent = s.textContent.replace(/^(Sat 28|Sun 29|Mon 30)/, day);
+      });
+    }
+
+    /* ═════════ Business records (sample data for the prototype; the real app reads the database) ═════════ */
+    var BUSINESS = { name: "Chelsea's Cake", place: "Curepipe, Mauritius", brn: "C12345678", vatNo: "VAT27012345" };
+    var PRODUCTS = [
+      { name: "Signature fudge cake", cat: "Cakes", price: 950 },
+      { name: "Cupcakes (box of 6)", cat: "Cupcakes", price: 480 },
+      { name: "Custom birthday cake", cat: "Custom orders", price: 2500 },
+      { name: "Gato coco (box of 6)", cat: "Pastries", price: 120 },
+      { name: "Croissants (box of 4)", cat: "Pastries", price: 280 },
+      { name: "Coffee", cat: "Drinks", price: 90 }
+    ];
+    var ledger = [];
+    var invSeq = 1100;
+    function iso(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+    function vatOf(amountInclVat, rate) { return Math.round(amountInclVat * rate / (100 + rate) * 100) / 100; }
+    (function buildSampleLedger() {
+      var seed = 7; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+      var people = ["Walk-in", "Walk-in", "Sarah M.", "Priya S.", "Kevin R.", "Online order", "Online order", "Maya R."];
+      var methods = ["Cash", "Juice", "Juice", "Card"];
+      var today = new Date(), d = new Date(today.getFullYear(), today.getMonth() - 3, 1), n = 900;
+      for (; d <= today; d.setDate(d.getDate() + 1)) {
+        var count = 1 + Math.floor(rnd() * 3);
+        for (var k = 0; k < count; k++) {
+          var p = PRODUCTS[Math.floor(rnd() * PRODUCTS.length)], qty = 1 + Math.floor(rnd() * (p.price < 300 ? 4 : 2));
+          var amt = p.price * qty;
+          ledger.push({ date: iso(d), ref: "BZ-" + (++n), type: "sale", party: people[Math.floor(rnd() * people.length)], category: p.cat,
+            item: p.name, qty: qty, amount: amt, vat: vatOf(amt, 15), method: methods[Math.floor(rnd() * methods.length)], status: "paid" });
+        }
+        if (d.getDay() === 1) ledger.push({ date: iso(d), ref: "SUP-" + (++n), type: "expense", party: "Moulin Supplies Ltd", category: "Ingredients",
+          amount: 3000 + Math.round(rnd() * 2000), vat: 0, method: "Bank transfer" });
+        if (d.getDate() === 1) {
+          ledger.push({ date: iso(d), ref: "RENT-" + (d.getMonth() + 1), type: "expense", party: "Landlord", category: "Rent", amount: 15000, vat: 0, method: "Bank transfer" });
+          ledger.push({ date: iso(d), ref: "PKG-" + (++n), type: "expense", party: "Island Packaging", category: "Packaging", amount: 2300, vat: vatOf(2300, 15), method: "Juice" });
+        }
+        if (d.getDate() === 10) ledger.push({ date: iso(d), ref: "ELEC-" + (d.getMonth() + 1), type: "expense", party: "Electricity bill", category: "Utilities", amount: 3400, vat: vatOf(3400, 15), method: "Juice" });
+      }
+      ledger.forEach(function (e) { if (e.type === "expense" && !e.vat && e.category === "Ingredients") e.vat = vatOf(e.amount, 15); });
+      var t = new Date();
+      ledger.push({ date: iso(new Date(t.getFullYear(), t.getMonth(), Math.max(1, t.getDate() - 20))), ref: "BZ-1042", type: "sale", party: "Hotel Le Palm", category: "Custom orders",
+        item: "Wedding cake order", qty: 1, amount: 4500, vat: vatOf(4500, 15), method: "Bank transfer", status: "overdue" });
+      ledger.push({ date: iso(new Date(t.getFullYear(), t.getMonth(), Math.max(1, t.getDate() - 12))), ref: "BZ-1045", type: "sale", party: "Café Nord", category: "Pastries",
+        item: "Pastry platter", qty: 1, amount: 2300, vat: vatOf(2300, 15), method: "Bank transfer", status: "overdue" });
+    })();
+
+    function addInvRow(icon, title, sub, amount, lime) {
+      var row = document.createElement("div");
+      row.className = "inv-row";
+      row.innerHTML = '<span class="inv-ico' + (lime ? ' inv-ico--lime' : '') + '"></span><div class="inv-info"><b></b><span></span></div><span class="inv-amt"></span>';
+      row.querySelector(".inv-ico").textContent = icon;
+      row.querySelector("b").textContent = title;
+      row.querySelector(".inv-info span").textContent = sub;
+      row.querySelector(".inv-amt").textContent = BazarDocs.rs(amount).replace(".00", "");
+      document.getElementById("invList").prepend(row);
+    }
+
+    /* ═════════ 1. Scan a bill: camera / photo / PDF → read → check → save ═════════ */
+    var scanText = "";
+    function show(id, on) { document.getElementById(id).hidden = !on; }
+    function openScan() { resetScan(); document.getElementById("scanDialog").showModal(); }
+    function closeScan() { document.getElementById("scanDialog").close(); }
+    function resetScan() { show("scanPick", true); show("scanWork", false); show("scanResult", false); }
+    function progress(p, label) {
+      document.getElementById("scanBar").style.width = Math.round(Math.max(0.03, p) * 100) + "%";
+      if (label) document.getElementById("scanStatus").textContent = label;
+    }
+    function startReading(previewHtml) {
+      show("scanPick", false); show("scanResult", false); show("scanWork", true);
+      document.getElementById("scanPreviewBox").innerHTML = previewHtml;
+      progress(0.03, "Getting ready…");
+    }
+    function scanFromCamera() {
+      closeScan();
+      BazarDocs.openCamera({ title: "Photograph the bill" }).then(function (img) {
+        document.getElementById("scanDialog").showModal();
+        if (!img) { resetScan(); return; }
+        readImageNow(img);
+      });
+    }
+    function scanFromPhoto() {
+      BazarDocs.pickFiles({ accept: "image/*" }).then(function (files) {
+        if (!files.length) return;
+        BazarDocs.fileToDataURL(files[0]).then(readImageNow);
+      });
+    }
+    function readImageNow(src) {
+      startReading('<img src="' + src + '" alt="Bill">');
+      BazarDocs.readImage(src, progress).then(showResult).catch(readFailed);
+    }
+    function scanFromPDF() {
+      BazarDocs.pickFiles({ accept: "application/pdf,.pdf" }).then(function (files) {
+        if (!files.length) return;
+        var f = files[0];
+        var safe = f.name.replace(/[<>&"]/g, "");
+        startReading('<div style="padding:24px;text-align:center">📄<br>' + safe + '</div>');
+        BazarDocs.readPDF(f, progress).then(showResult).catch(readFailed);
+      });
+    }
+    function readFailed() {
+      showResult("");
+      var f = document.getElementById("scanFound");
+      f.className = "scan-found warn";
+      f.textContent = "Couldn't read this file. Please type the details below.";
+    }
+    function showResult(text) {
+      scanText = text || "";
+      var r = BazarDocs.parseInvoice(scanText);
+      show("scanWork", false); show("scanResult", true);
+      document.getElementById("sSupplier").value = r.supplier;
+      document.getElementById("sNo").value = r.invoiceNo;
+      document.getElementById("sDate").value = r.date || iso(new Date());
+      document.getElementById("sTotal").value = r.total != null ? r.total.toFixed(2) : "";
+      document.getElementById("sVat").value = r.vat != null ? r.vat.toFixed(2) : "";
+      document.getElementById("sVatNote").textContent = r.vatEstimated ? "(estimated at 15%)" : "";
+      document.getElementById("scanText").textContent = scanText || "(no text found)";
+      var f = document.getElementById("scanFound");
+      f.className = "scan-found" + (r.found < 3 ? " warn" : "");
+      f.textContent = r.found >= 3 ? "✓ Read " + r.found + " of 4 details. Check them, then save."
+        : "Read " + r.found + " of 4 details. Please check and fill in the rest.";
+    }
+    function saveScanned(e) {
+      e.preventDefault();
+      var total = Number(document.getElementById("sTotal").value) || 0;
+      var vat = Number(document.getElementById("sVat").value) || 0;
+      var entry = { date: document.getElementById("sDate").value, ref: document.getElementById("sNo").value.trim() || ("SUP-" + Date.now().toString().slice(-4)),
+        type: "expense", party: document.getElementById("sSupplier").value.trim(), category: document.getElementById("sCat").value,
+        amount: total, vat: vat, method: "Bank transfer" };
+      ledger.push(entry);
+      addInvRow("✓", "#" + entry.ref + " · Scanned", entry.party + " · " + entry.category, total, true);
+      closeScan();
+    }
+
+    /* ═════════ 2. New invoice (form or Business AI) → PDF ═════════ */
+    function openInvoice(prefill) {
+      prefill = prefill || {};
+      invSeq++;
+      document.getElementById("invNoLabel").textContent = "#BZ-" + invSeq;
+      var t = new Date(), due = new Date(); due.setDate(due.getDate() + 14);
+      document.getElementById("iCustomer").value = prefill.customer || "";
+      document.getElementById("iContact").value = "";
+      document.getElementById("iDate").value = iso(t);
+      document.getElementById("iDue").value = iso(due);
+      document.getElementById("iMethod").value = "Cash";
+      document.getElementById("iStatus").value = prefill.status || "paid";
+      document.getElementById("iNotes").value = "Thank you for your order!";
+      document.getElementById("iVat").checked = true;
+      document.getElementById("iItems").innerHTML = "";
+      (prefill.items && prefill.items.length ? prefill.items : [{ desc: "", qty: 1, price: "" }]).forEach(function (it) { addItemRow(it); });
+      var chips = document.getElementById("prodChips");
+      chips.innerHTML = "";
+      PRODUCTS.forEach(function (p) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "mini-pill";
+        b.textContent = p.name + " · Rs " + p.price;
+        b.onclick = function () { addProduct(p); };
+        chips.appendChild(b);
+      });
+      calcInvoice();
+      document.getElementById("invDialog").showModal();
+    }
+    function addItemRow(it) {
+      it = it || { desc: "", qty: 1, price: "" };
+      var row = document.createElement("div");
+      row.className = "item-row";
+      row.innerHTML = '<input placeholder="Item" class="i-desc" required><input type="number" min="1" class="i-qty" aria-label="Quantity">' +
+        '<input type="number" min="0" step="0.01" class="i-price" placeholder="Price" aria-label="Unit price" required><button type="button" aria-label="Remove item">✕</button>';
+      row.querySelector(".i-desc").value = it.desc;
+      row.querySelector(".i-qty").value = it.qty;
+      row.querySelector(".i-price").value = it.price;
+      row.querySelectorAll("input").forEach(function (i) { i.oninput = calcInvoice; });
+      row.querySelector("button").onclick = function () { row.remove(); calcInvoice(); };
+      document.getElementById("iItems").appendChild(row);
+      calcInvoice();
+    }
+    function addProduct(p) {
+      var rows = document.querySelectorAll("#iItems .item-row");
+      var empty = Array.prototype.find.call(rows, function (r) { return !r.querySelector(".i-desc").value; });
+      if (empty) { empty.querySelector(".i-desc").value = p.name; empty.querySelector(".i-price").value = p.price; calcInvoice(); }
+      else addItemRow({ desc: p.name, qty: 1, price: p.price });
+    }
+    function readItems() {
+      return Array.prototype.map.call(document.querySelectorAll("#iItems .item-row"), function (r) {
+        return { desc: r.querySelector(".i-desc").value.trim(), qty: Number(r.querySelector(".i-qty").value) || 1, price: Number(r.querySelector(".i-price").value) || 0 };
+      }).filter(function (i) { return i.desc; });
+    }
+    function calcInvoice() {
+      var items = readItems(), sub = items.reduce(function (s, i) { return s + i.qty * i.price; }, 0);
+      var vat = document.getElementById("iVat").checked ? Math.round(sub * 15) / 100 : 0;
+      document.getElementById("iSub").textContent = BazarDocs.rs(sub);
+      document.getElementById("iVatAmt").textContent = BazarDocs.rs(vat);
+      document.getElementById("iTotal").textContent = BazarDocs.rs(sub + vat);
+      return { items: items, sub: sub, vat: vat };
+    }
+    function saveInvoice(e) {
+      e.preventDefault();
+      var c = calcInvoice();
+      if (!c.items.length) return;
+      var inv = {
+        business: BUSINESS, number: "BZ-" + invSeq, customer: document.getElementById("iCustomer").value.trim(),
+        customerContact: document.getElementById("iContact").value.trim(), date: document.getElementById("iDate").value,
+        due: document.getElementById("iDue").value, method: document.getElementById("iMethod").value,
+        items: c.items, subtotal: c.sub, vatRate: document.getElementById("iVat").checked ? 15 : 0, vat: c.vat, total: c.sub + c.vat,
+        notes: document.getElementById("iNotes").value.trim()
+      };
+      var status = document.getElementById("iStatus").value;
+      c.items.forEach(function (it) {
+        var p = PRODUCTS.find(function (x) { return x.name === it.desc; });
+        var amt = it.qty * it.price * (inv.vatRate ? 1.15 : 1);
+        ledger.push({ date: inv.date, ref: inv.number, type: "sale", party: inv.customer, category: p ? p.cat : "Other", item: it.desc, qty: it.qty,
+          amount: Math.round(amt * 100) / 100, vat: inv.vatRate ? Math.round(it.qty * it.price * 15) / 100 : 0, method: inv.method, status: status });
+      });
+      addInvRow(status === "paid" ? "✓" : "⏱", "#" + inv.number + " · " + (status === "paid" ? "Paid" : "Sent"), inv.customer + " · " + inv.method, inv.total, status === "paid");
+      BazarDocs.invoicePDF(inv).then(function () { document.getElementById("invDialog").close(); });
+    }
+
+    /* ═════════ 3. Business statement from a chosen date → PDF ═════════ */
+    function openStatement(from, to) {
+      if (from) { document.getElementById("stFrom").value = from; document.getElementById("stTo").value = to || iso(new Date()); }
+      else setRange("month");
+      previewStatement();
+      document.getElementById("stmtDialog").showModal();
+    }
+    function setRange(kind, btn) {
+      var t = new Date(), f = new Date(t.getFullYear(), t.getMonth(), 1), to = new Date(t);
+      if (kind === "last") { f = new Date(t.getFullYear(), t.getMonth() - 1, 1); to = new Date(t.getFullYear(), t.getMonth(), 0); }
+      if (kind === "30") { f = new Date(t); f.setDate(f.getDate() - 29); }
+      if (kind === "quarter") { f = new Date(t.getFullYear(), t.getMonth() - 2, 1); }
+      if (kind === "year") { f = new Date(t.getFullYear(), 0, 1); }
+      document.getElementById("stFrom").value = iso(f);
+      document.getElementById("stTo").value = iso(to);
+      document.querySelectorAll("#rangeChips .mini-pill").forEach(function (b) { b.classList.toggle("on", b === btn); });
+      previewStatement();
+    }
+    function totalsFor(from, to) {
+      var E = ledger.filter(function (e) { return e.date >= from && e.date <= to; });
+      var s = E.filter(function (e) { return e.type === "sale"; }), x = E.filter(function (e) { return e.type === "expense"; });
+      function sum(l, k) { return l.reduce(function (a, e) { return a + (e[k] || 0); }, 0); }
+      var rev = sum(s, "amount"), vo = sum(s, "vat"), sp = sum(x, "amount"), vi = sum(x, "vat");
+      return { count: E.length, sales: s.length, revenue: rev, spend: sp, profit: (rev - vo) - (sp - vi), vatDue: vo - vi };
+    }
+    function previewStatement() {
+      var f = document.getElementById("stFrom").value, t = document.getElementById("stTo").value;
+      if (!f || !t) return;
+      var r = totalsFor(f, t), R = BazarDocs.rs;
+      document.getElementById("stPreview").innerHTML =
+        '<div class="st-tile"><small>Revenue</small><b>' + R(r.revenue) + '</b></div>' +
+        '<div class="st-tile"><small>Expenses</small><b>' + R(r.spend) + '</b></div>' +
+        '<div class="st-tile key"><small>Net profit (excl. VAT)</small><b>' + R(r.profit) + '</b></div>' +
+        '<div class="st-tile"><small>Net VAT due</small><b>' + R(r.vatDue) + '</b></div>' +
+        '<div class="st-tile"><small>Sales</small><b>' + r.sales + '</b></div>' +
+        '<div class="st-tile"><small>Transactions</small><b>' + r.count + '</b></div>';
+    }
+    function downloadStatement(e) {
+      e.preventDefault();
+      var f = document.getElementById("stFrom").value, t = document.getElementById("stTo").value;
+      if (f > t) { var x = f; f = t; t = x; }
+      BazarDocs.statementPDF({ business: BUSINESS, from: f, to: t, entries: ledger }).then(function () {
+        document.getElementById("stmtDialog").close();
+      });
+    }
+
+    /* ═════════ Business AI can do it for you: "invoice for …" / "statement since …" ═════════ */
+    var MONTHS = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+    function dateFromWords(s) {
+      var m = s.match(/(\d{4})-(\d{2})-(\d{2})/); if (m) return m[0];
+      m = s.match(/(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})/); if (m) return iso(new Date(+m[3] < 100 ? 2000 + +m[3] : +m[3], +m[2] - 1, +m[1]));
+      m = s.match(/(\d{1,2})(?:st|nd|rd|th)?\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?(?:\s+(\d{4}))?/i);
+      if (m) return iso(new Date(m[3] ? +m[3] : new Date().getFullYear(), MONTHS[m[2].toLowerCase().slice(0, 3)], +m[1]));
+      m = s.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b/i);
+      if (m) return iso(new Date(new Date().getFullYear(), MONTHS[m[1].toLowerCase().slice(0, 3)], 1));
+      return null;
+    }
+    function agentAction(q) {
+      var t = q.toLowerCase();
+      if (/statement|breakdown|report/.test(t)) {
+        var now = new Date(), from = null, to = iso(now);
+        if (/last month/.test(t)) { from = iso(new Date(now.getFullYear(), now.getMonth() - 1, 1)); to = iso(new Date(now.getFullYear(), now.getMonth(), 0)); }
+        else if (/this year/.test(t)) from = iso(new Date(now.getFullYear(), 0, 1));
+        else {
+          var parts = q.split(/\b(?:to|until|till|-)\b/i);
+          from = dateFromWords(parts[0]) || iso(new Date(now.getFullYear(), now.getMonth(), 1));
+          if (parts[1] && dateFromWords(parts[1])) to = dateFromWords(parts[1]);
+        }
+        var r = totalsFor(from, to);
+        setTimeout(function () { openStatement(from, to); }, 500);
+        return "Statement ready for " + BazarDocs.fmtDate(from) + " to " + BazarDocs.fmtDate(to) + ": revenue " + BazarDocs.rs(r.revenue) +
+          ", expenses " + BazarDocs.rs(r.spend) + ", net profit " + BazarDocs.rs(r.profit) + ". I've opened it — tap Download PDF statement.";
+      }
+      if (/invoice/.test(t) && !/overdue/.test(t)) {
+        var cm = q.match(/\b(?:for|to)\s+([A-Z][\w'’&.\- ]*?)(?=\s*(?:,|:|\bfor\b|\bwith\b|\d|$))/);
+        var items = [], re = /(\d+)\s*x?\s*([a-z][a-z'’\- ()]+?)\s*(?:at|@|for)\s*(?:rs\.?\s*)?(\d+(?:\.\d+)?)/gi, m;
+        while ((m = re.exec(q))) items.push({ desc: m[2].trim(), qty: +m[1], price: +m[3] });
+        if (!items.length) {
+          PRODUCTS.forEach(function (p) {
+            var k = p.name.toLowerCase().split(" (")[0];
+            var mm = t.match(new RegExp("(\\d+)\\s*x?\\s*" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+            if (mm || t.indexOf(k) > -1) items.push({ desc: p.name, qty: mm ? +mm[1] : 1, price: p.price });
+          });
+        }
+        var customer = cm ? cm[1].trim() : "";
+        setTimeout(function () { openInvoice({ customer: customer, items: items, status: /unpaid|not paid|credit/.test(t) ? "unpaid" : "paid" }); }, 500);
+        var tot = items.reduce(function (s, i) { return s + i.qty * i.price; }, 0) * 1.15;
+        return "I've drafted invoice #BZ-" + (invSeq + 1) + (customer ? " for " + customer : "") +
+          (items.length ? " with " + items.length + " item" + (items.length > 1 ? "s" : "") + " (" + BazarDocs.rs(tot) + " incl. VAT)" : "") +
+          ". Check it, then tap Save & download PDF.";
+      }
+      return null;
+    }
+
+    function openBizAI(prompt) {
+      document.getElementById("bizAiDialog").showModal();
+      if (prompt) askBiz(prompt);
+    }
+    function askBiz(q) {
+      var log = document.getElementById("bizLog");
+      var u = document.createElement("div"); u.className = "bubble bubble--user"; u.textContent = q;
+      var b = document.createElement("div"); b.className = "bubble bubble--bot";
+      b.textContent = agentAction(q) || bizAnswers[q] || ("Checking your live ledger for \"" + q + "\" — everything is up to date.");
+      log.appendChild(u); log.appendChild(b);
+      log.scrollTop = log.scrollHeight;
+    }
+    function submitBiz(e) {
+      e.preventDefault();
+      var inp = document.getElementById("bizInput");
+      var v = inp.value.trim();
+      if (!v) return;
+      askBiz(v);
+      inp.value = "";
+    }
+
+    if (!("closedBy" in HTMLDialogElement.prototype)) {
+      document.querySelectorAll("dialog[closedby='any']").forEach(function (d) {
+        d.addEventListener("click", function (ev) {
+          if (ev.target !== d) return;
+          var r = d.getBoundingClientRect();
+          if (!(r.top <= ev.clientY && ev.clientY <= r.top + r.height && r.left <= ev.clientX && ev.clientX <= r.left + r.width)) d.close();
+        });
+      });
+    }
+  </script>
+  <script src="doc-tools.js"></script>
+  <script src="edit-text.js"></script>
+</body>
+</html>

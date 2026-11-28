@@ -5,12 +5,41 @@
    - "Save page" downloads this page with your new words baked in.
    Unsaved edits are also kept in this browser so a reload doesn't lose them. */
 (function () {
-  var KEY = "bazar-text:" + location.pathname;
+  // Global Dark / Light Mode Toggle (persisted in localStorage)
+  var THEME_KEY = "bazar-theme";
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    var btn = document.getElementById("themeToggleBtn");
+    if (btn) {
+      btn.setAttribute("aria-label", t === "dark" ? "Switch to light mode" : "Switch to dark mode");
+      btn.innerHTML = t === "dark"
+        ? '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>'
+        : '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+    }
+  }
+  var savedTheme = "light";
+  try { savedTheme = localStorage.getItem(THEME_KEY) || "light"; } catch (e) {}
+  var tBtn = document.createElement("button");
+  tBtn.id = "themeToggleBtn";
+  tBtn.type = "button";
+  tBtn.onclick = function () {
+    var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  };
+  document.body.appendChild(tBtn);
+  applyTheme(savedTheme);
+  // Edits are kept per language, so a French edit never shows up in English.
+  function KEY() {
+    var l = "en";
+    try { l = localStorage.getItem("bazar-lang") || "en"; } catch (e) {}
+    return "bazar-text:" + location.pathname + (l === "en" ? "" : ":" + l);
+  }
   var nodes = Array.prototype.slice.call(document.querySelectorAll("[data-text]"));
 
   // Bring back edits from an earlier visit.
   var saved = {};
-  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+  try { saved = JSON.parse(localStorage.getItem(KEY()) || "{}"); } catch (e) {}
   nodes.forEach(function (n) {
     var k = n.getAttribute("data-text");
     if (saved[k] != null) n.innerHTML = saved[k];
@@ -22,7 +51,7 @@
     "body.editing [data-text]:focus{outline-style:solid;background:rgb(212 245 60/.15)}" +
     "body.editing [data-text]::after{content:attr(data-text);position:absolute;left:-2px;top:-22px;font:600 10px/14px Inter,sans-serif;" +
     "background:#d4f53c;color:#0e0e0c;padding:2px 6px;border-radius:4px;white-space:nowrap;pointer-events:none;z-index:50;letter-spacing:0;text-transform:none}" +
-    "#edit-bar{position:fixed;right:16px;bottom:calc(var(--tab-bar,0px) + env(safe-area-inset-bottom) + 12px);z-index:100;display:flex;gap:8px;font:600 13px/16px Inter,sans-serif}" +
+    "#edit-bar{position:fixed;left:16px;bottom:calc(var(--tab-bar,0px) + env(safe-area-inset-bottom) + 12px);z-index:100;display:flex;gap:8px;font:600 13px/16px Inter,sans-serif}" +
     "#edit-bar button{border:0;border-radius:999px;padding:12px 16px;cursor:pointer;box-shadow:0 4px 12px rgb(14 14 12/.25)}" +
     "#edit-bar .on{background:#d4f53c;color:#0e0e0c}#edit-bar .off{background:#0e0e0c;color:#d4f53c}" +
     "#edit-bar .ghost{background:#fbf8f1;color:#0e0e0c}#edit-bar .hide{display:none}";
@@ -53,7 +82,7 @@
   function remember() {
     var out = {};
     nodes.forEach(function (n) { out[n.getAttribute("data-text")] = n.innerHTML; });
-    try { localStorage.setItem(KEY, JSON.stringify(out)); } catch (e) {}
+    try { localStorage.setItem(KEY(), JSON.stringify(out)); } catch (e) {}
   }
 
   // While editing, links and buttons must not navigate or submit.
@@ -73,7 +102,7 @@
     var act = e.target.getAttribute("data-act");
     if (act === "toggle") setMode(!on);
     if (act === "reset" && confirm("Put back the original words on this page?")) {
-      try { localStorage.removeItem(KEY); } catch (err) {}
+      try { localStorage.removeItem(KEY()); } catch (err) {}
       location.reload();
     }
     if (act === "save") {

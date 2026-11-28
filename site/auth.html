@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e6">
+  <title>Bazar — Sign in or Sign up</title>
+  <link rel="stylesheet" href="brand.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            limebz: '#d4f53c',
+            ink: '#0e0e0c',
+            ink2: '#1c1c19',
+            cream: '#f4f0e6',
+            card: '#fbf8f1',
+            muted: '#8d8779'
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { background: var(--cream); color: var(--black); min-height: 100svh; position: relative; overflow-x: hidden; }
+    :focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+    /* ───── FULL-PAGE ACTIVE SWIPING & ZOOMING GRADIENT-FOLD BACKGROUND ───── */
+    .auth-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+      background: var(--cream);
+    }
+    .bg-zoom-stage {
+      position: absolute; inset: -12%;
+      display: grid; grid-template-columns: 18% 46% 36%;
+      transform-origin: center center;
+      animation: bgZoom 5.6s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    @keyframes bgZoom {
+      0%   { transform: scale(0.96) translate3d(-2%, -1.5%, 0); }
+      50%  { transform: scale(1.20) translate3d(2.5%, 1.5%, 0); }
+      100% { transform: scale(1.02) translate3d(-1.5%, 2%, 0); }
+    }
+    /* Clipped vertical refraction panels: sharp seams + sweeping volumetric blooms */
+    .bg-strip {
+      position: relative; overflow: hidden; height: 100%;
+      border-right: 1px solid rgba(14, 14, 12, 0.1);
+    }
+    .bg-strip:last-child { border-right: 0; }
+    .bg-bloom {
+      position: absolute; border-radius: 999px; filter: blur(48px);
+      will-change: transform;
+    }
+    .b-lime-1 {
+      width: 90vw; height: 70vh; top: -15%; left: -45%;
+      background: radial-gradient(circle, rgba(212, 245, 60, 0.96) 0%, rgba(212, 245, 60, 0.42) 45%, transparent 72%);
+      animation: swipeRight 4.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+    }
+    .b-ink-1 {
+      width: 72vw; height: 60vh; bottom: -20%; right: -40%;
+      background: radial-gradient(circle, rgba(73, 97, 0, 0.52) 0%, rgba(14, 14, 12, 0.30) 50%, transparent 74%);
+      animation: swipeLeft 5.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+    }
+    .b-lime-2 {
+      width: 96vw; height: 76vh; top: 5%; left: -38%;
+      background: radial-gradient(circle, rgba(212, 245, 60, 0.98) 0%, rgba(182, 218, 28, 0.45) 45%, transparent 70%);
+      animation: swipeUpDown 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) -1.2s infinite alternate;
+    }
+    .b-ink-2 {
+      width: 68vw; height: 58vh; bottom: -12%; left: -10%;
+      background: radial-gradient(circle, rgba(14, 14, 12, 0.30) 0%, rgba(73, 97, 0, 0.30) 48%, transparent 72%);
+      animation: swipeRight 5.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) -2.2s infinite alternate;
+    }
+    .b-lime-3 {
+      width: 84vw; height: 72vh; top: -20%; right: -42%;
+      background: radial-gradient(circle, rgba(212, 245, 60, 0.94) 0%, rgba(73, 97, 0, 0.38) 50%, transparent 74%);
+      animation: swipeLeft 4.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) -1.8s infinite alternate;
+    }
+    /* Sweeping diagonal razor-edge curved silk fold */
+    .bg-fold {
+      position: absolute; inset: -18%;
+      clip-path: ellipse(72% 52% at 24% 82%);
+      background: linear-gradient(120deg, rgba(212, 245, 60, 0.58) 0%, rgba(73, 97, 0, 0.24) 38%, transparent 68%);
+      animation: foldSwipe 6.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+      will-change: transform;
+    }
+    @keyframes swipeRight {
+      0%   { transform: translate3d(-28%, -18%, 0) scale(0.9); }
+      100% { transform: translate3d(34%, 22%, 0) scale(1.22); }
+    }
+    @keyframes swipeLeft {
+      0%   { transform: translate3d(30%, 20%, 0) scale(1.18); }
+      100% { transform: translate3d(-32%, -20%, 0) scale(0.92); }
+    }
+    @keyframes swipeUpDown {
+      0%   { transform: translate3d(-18%, -26%, 0) scale(0.92); }
+      100% { transform: translate3d(26%, 24%, 0) scale(1.24); }
+    }
+    @keyframes foldSwipe {
+      0%   { transform: translate3d(-14%, 10%, 0) scale(0.95) rotate(-5deg); }
+      100% { transform: translate3d(16%, -12%, 0) scale(1.18) rotate(6deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bg-zoom-stage, .bg-bloom, .bg-fold { animation: none !important; }
+    }
+
+    header, main { position: relative; z-index: 2; }
+
+    /* ───── 3D CUBE SWIPE TEXT ROTATOR (Plain transparent over background, no card, no photos) ───── */
+    .cube-scene {
+      position: relative;
+      width: 100%;
+      height: 126px;
+      perspective: 1100px;
+      overflow: hidden;
+      background: transparent;
+      touch-action: pan-y;
+      user-select: none;
+    }
+    @media (min-width: 768px) {
+      .cube-scene { height: 136px; }
+    }
+    .cube {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.85s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cube { transition: none; }
+    }
+    .cube-face {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4px 12px 24px;
+      opacity: 0;
+      transition: opacity 0.65s ease;
+    }
+    .cube-face.active {
+      opacity: 1;
+    }
+    .cube-face > * {
+      transform: translateY(10px);
+      opacity: 0;
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.55s ease;
+    }
+    .cube-face.active > * {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .cube-face.active > :nth-child(2) { transition-delay: 0.08s; }
+    .cube-face.active > :nth-child(3) { transition-delay: 0.16s; }
+
+    /* Underline inputs inside the dark curved card (matching reference mockup) */
+    .u-input {
+      width: 100%;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid rgba(251, 248, 241, 0.22);
+      padding: 10px 0;
+      font-size: 15px;
+      color: #fbf8f1;
+      transition: border-color 0.2s ease;
+    }
+    .u-input::placeholder { color: rgba(251, 248, 241, 0.4); }
+    .u-input:focus { outline: 0; border-bottom-color: #d4f53c; }
+
+    /* Remember me pill switch */
+    .sw-track {
+      width: 44px; height: 24px; border-radius: 999px;
+      background: #cfc9bc; position: relative; transition: background 0.2s;
+    }
+    .sw-track::after {
+      content: ""; position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; border-radius: 999px;
+      background: #0e0e0c; transition: transform 0.2s;
+    }
+    input:checked + .sw-track { background: #0e0e0c; }
+    input:checked + .sw-track::after { transform: translateX(20px); background: #d4f53c; }
+
+    /* Circular Flag Language Switcher */
+    .lang-menu { display: none; }
+    .lang-menu.open { display: flex; }
+  </style>
+</head>
+<body class="flex flex-col">
+
+  <!-- FULL-SCREEN ZOOMING GRADIENT-FOLD BACKGROUND -->
+  <div class="auth-bg" aria-hidden="true">
+    <div class="bg-zoom-stage">
+      <div class="bg-strip">
+        <div class="bg-bloom b-lime-1"></div>
+        <div class="bg-bloom b-ink-1"></div>
+      </div>
+      <div class="bg-strip">
+        <div class="bg-bloom b-lime-2"></div>
+        <div class="bg-bloom b-ink-2"></div>
+      </div>
+      <div class="bg-strip">
+        <div class="bg-bloom b-lime-3"></div>
+        <div class="bg-bloom b-ink-1"></div>
+      </div>
+    </div>
+    <div class="bg-fold"></div>
+  </div>
+
+  <!-- TOP BAR -->
+  <header class="w-full max-w-[460px] md:max-w-[500px] mx-auto px-4 pt-4 pb-2 flex items-center justify-between">
+    <a href="business.html" class="inline-flex items-center gap-2">
+      <span class="bg-limebz text-ink font-bold text-lg tracking-tight px-2.5 py-1 rounded-lg leading-none" data-text="bar.logo">bazar</span>
+    </a>
+
+    <div class="flex items-center gap-3">
+      <!-- Circular Flag Language Switcher -->
+      <div class="relative" id="langWrap">
+        <button type="button" id="langBtn" aria-label="Change language" aria-expanded="false" onclick="toggleLangMenu()"
+          class="w-9 h-9 rounded-full bg-limebz border-2 border-ink grid place-items-center shadow-sm hover:scale-105 transition">
+          <svg viewBox="0 0 60 60" id="langFlagSvg" class="w-5 h-5 rounded-full"><clipPath id="a-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#a-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+        </button>
+        <div id="langMenu" role="menu"
+          class="lang-menu absolute right-0 top-11 z-50 min-w-[160px] bg-card border border-[#e8e2d3] rounded-2xl p-1.5 shadow-xl flex-col gap-0.5">
+          <button type="button" data-lang="en" onclick="setLang('en')" class="lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold bg-ink text-limebz">
+            <svg viewBox="0 0 60 60" class="w-5 h-5 rounded-full shrink-0"><clipPath id="am-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+            English
+          </button>
+          <button type="button" data-lang="fr" onclick="setLang('fr')" class="lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-ink hover:bg-cream">
+            <svg viewBox="0 0 60 60" class="w-5 h-5 rounded-full shrink-0"><clipPath id="am-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg>
+            Français
+          </button>
+          <button type="button" data-lang="mfe" onclick="setLang('mfe')" class="lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-ink hover:bg-cream">
+            <svg viewBox="0 0 60 60" class="w-5 h-5 rounded-full shrink-0"><clipPath id="am-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg>
+            Kreol Morisien
+          </button>
+        </div>
+      </div>
+      <a href="business.html" class="text-xs font-semibold text-[#6b665a] hover:text-ink" data-text="bar.back">← Back</a>
+    </div>
+  </header>
+
+  <!-- MAIN AUTH SHELL -->
+  <main class="flex-1 w-full max-w-[460px] md:max-w-[500px] mx-auto px-4 pb-8 flex flex-col justify-center gap-4">
+
+    <!-- 1. TOP 3D CUBE SWIPE TEXT ROTATOR (Plain background, no pictures, no card) -->
+    <section aria-label="What Bazar offers" class="relative">
+      <div class="cube-scene" id="cubeScene">
+        <div class="cube" id="cube">
+          <!-- Face 0: Customers — Discover nearby -->
+          <div class="cube-face" data-face="0">
+            <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#496100] mb-1">For Customers</span>
+            <h2 class="text-xl md:text-2xl font-bold tracking-tight text-ink leading-tight">Discover businesses around you</h2>
+            <p class="text-xs md:text-sm text-[#6b665a] mt-1 max-w-[360px]">Explore verified local shops, food, and services nearby across Mauritius.</p>
+          </div>
+          <!-- Face 1: Customers — Secondhand -->
+          <div class="cube-face" data-face="1">
+            <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#496100] mb-1">For Customers</span>
+            <h2 class="text-xl md:text-2xl font-bold tracking-tight text-ink leading-tight">Get quality secondhand finds</h2>
+            <p class="text-xs md:text-sm text-[#6b665a] mt-1 max-w-[360px]">Buy and resell pre-loved items easily with people in your area.</p>
+          </div>
+          <!-- Face 2: Business Owners — Dashboard & Visibility -->
+          <div class="cube-face" data-face="2">
+            <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#496100] mb-1">For Business Owners</span>
+            <h2 class="text-xl md:text-2xl font-bold tracking-tight text-ink leading-tight">One dashboard to control your business</h2>
+            <p class="text-xs md:text-sm text-[#6b665a] mt-1 max-w-[360px]">Manage orders, boost visibility among nearby customers, and grow sales.</p>
+          </div>
+          <!-- Face 3: Business Owners — Invoicing, Scan & Analytics -->
+          <div class="cube-face" data-face="3">
+            <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#496100] mb-1">For Business Owners</span>
+            <h2 class="text-xl md:text-2xl font-bold tracking-tight text-ink leading-tight">Smart invoicing, scan &amp; analytics</h2>
+            <p class="text-xs md:text-sm text-[#6b665a] mt-1 max-w-[360px]">Auto-generate invoices, scan receipts with your camera, and track live performance.</p>
+          </div>
+        </div>
+
+        <!-- Cube Indicator Dots -->
+        <div class="absolute bottom-1 left-0 right-0 z-10 flex items-center justify-center gap-1.5" id="cubeDots">
+          <button type="button" aria-label="Slide 1" onclick="goSlide(0)" class="w-5 h-1.5 rounded-full bg-ink transition-all"></button>
+          <button type="button" aria-label="Slide 2" onclick="goSlide(1)" class="w-1.5 h-1.5 rounded-full bg-ink/25 transition-all"></button>
+          <button type="button" aria-label="Slide 3" onclick="goSlide(2)" class="w-1.5 h-1.5 rounded-full bg-ink/25 transition-all"></button>
+          <button type="button" aria-label="Slide 4" onclick="goSlide(3)" class="w-1.5 h-1.5 rounded-full bg-ink/25 transition-all"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. DARK CURVED AUTH CARD (Inspired by uploaded Login/Signup mockup) -->
+    <section class="bg-ink text-card rounded-[34px] px-6 py-7 md:px-8 md:py-8 shadow-2xl border border-white/10">
+
+      <!-- Segmented Pill Toggle: Login / Sign up -->
+      <div class="grid grid-cols-2 p-1 rounded-full bg-white/15 mb-6" role="tablist">
+        <button type="button" role="tab" id="t-login" aria-selected="true" onclick="setAuthTab('login')"
+          class="py-2.5 rounded-full text-sm font-semibold bg-card text-ink transition">Login</button>
+        <button type="button" role="tab" id="t-signup" aria-selected="false" onclick="setAuthTab('signup')"
+          class="py-2.5 rounded-full text-sm font-semibold text-card/75 hover:text-card transition">Sign up</button>
+      </div>
+
+      <!-- Role Switcher (Customer vs Business / SME) -->
+      <div class="grid grid-cols-2 gap-2 mb-5">
+        <button type="button" onclick="pickRole(this, 'customer')"
+          class="role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-limebz text-ink transition">Customer</button>
+        <button type="button" onclick="pickRole(this, 'business')"
+          class="role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 text-card/80 hover:bg-white/15 transition">Business / SME</button>
+      </div>
+
+      <!-- Form -->
+      <form id="authForm" onsubmit="handleAuthSubmit(event)" class="flex flex-col gap-5">
+        <!-- Sign-up only: Name -->
+        <div id="f-name" class="hidden">
+          <label for="fullName" class="block text-xs font-semibold text-card/80 mb-1">Full name or Business name</label>
+          <input type="text" id="fullName" autocomplete="name" placeholder="e.g. Chelsea's Cup N Cake" class="u-input">
+        </div>
+
+        <div>
+          <label for="email" class="block text-xs font-semibold text-card/80 mb-1">Email</label>
+          <input type="email" id="email" required autocomplete="email" placeholder="you@business.mu" class="u-input">
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label for="password" class="block text-xs font-semibold text-card/80">Password</label>
+            <a href="#" id="forgotLink" onclick="return false" class="text-[11px] font-semibold text-limebz hover:underline">Forgot?</a>
+          </div>
+          <div class="relative">
+            <input type="password" id="password" required minlength="6" autocomplete="current-password" placeholder="••••••••" class="u-input pr-10">
+            <button type="button" aria-label="Toggle password visibility" onclick="togglePw()"
+              class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center text-card/60 hover:text-limebz">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Primary Submit Button -->
+        <button type="submit" id="submitBtn"
+          class="mt-2 w-full min-h-[48px] rounded-2xl bg-card text-ink font-bold text-sm hover:bg-limebz transition">
+          Login
+        </button>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-3 text-[11px] text-card/45">
+          <span class="flex-1 h-px bg-white/15"></span>
+          <span>or</span>
+          <span class="flex-1 h-px bg-white/15"></span>
+        </div>
+
+        <!-- Continue with Google -->
+        <button type="button" onclick="handleGoogleAuth()"
+          class="w-full min-h-[46px] rounded-2xl bg-white/10 border border-white/15 text-card font-semibold text-sm flex items-center justify-center gap-2.5 hover:bg-white/15 transition">
+          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.7 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.6c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.6-5.2 3.6-8.8Z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.1C3.3 21.3 7.3 24 12 24Z"/><path fill="#FBBC05" d="M5.3 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3V6.6H1.3C.5 8.2 0 10.1 0 12s.5 3.8 1.3 5.4l4-3.1Z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.4.6 4.6 1.8l3.5-3.5C18 1.1 15.2 0 12 0 7.3 0 3.3 2.7 1.3 6.6l4 3.1c.9-2.9 3.6-4.9 6.7-4.9Z"/></svg>
+          Continue with Google
+        </button>
+      </form>
+
+      <!-- Resend Verification Box (shown on Sign up) -->
+      <div id="otpBox" class="hidden mt-5 p-4 rounded-2xl bg-limebz/15 border border-limebz/40 text-card" aria-live="polite">
+        <b id="otpMsg" class="text-xs font-bold text-limebz">Verification code sent via Resend!</b>
+        <p class="text-xs text-card/80 mt-1">Enter the 6-digit code sent to your email.</p>
+        <div class="flex gap-2 mt-3">
+          <input type="text" id="otpCode" inputmode="numeric" maxlength="6" placeholder="000000" aria-label="6-digit code"
+            class="flex-1 min-w-0 h-11 text-center font-bold tracking-[0.2em] rounded-xl bg-ink border border-limebz text-limebz">
+          <button type="button" onclick="finishAuth()" class="px-4 rounded-xl bg-limebz text-ink font-bold text-xs">Verify →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. REMEMBER ME FOOTER SWITCH (Matching uploaded mockup) -->
+    <div class="flex items-center justify-end gap-3 px-2 pt-1">
+      <label for="rememberMe" class="text-xs font-bold text-ink cursor-pointer">Remember me</label>
+      <label class="inline-flex items-center cursor-pointer">
+        <input type="checkbox" id="rememberMe" checked class="sr-only">
+        <span class="sw-track"></span>
+      </label>
+    </div>
+
+  </main>
+
+  <script>
+    /* ───── 3D CUBE SWIPE ENGINE (Responsive translateZ + Auto-swipe + Touch drag) ───── */
+    var cubeScene = document.getElementById("cubeScene");
+    var cube = document.getElementById("cube");
+    var faces = document.querySelectorAll(".cube-face");
+    var dots = document.querySelectorAll("#cubeDots button");
+    var slideIndex = 0;
+    var timer = null;
+    var radius = 200;
+
+    function layoutCube() {
+      var w = cubeScene.clientWidth || 360;
+      radius = w / 2;
+      faces.forEach(function (face, i) {
+        face.style.transform = "rotateY(" + (i * 90) + "deg) translateZ(" + radius + "px)";
+      });
+      applyCubeTransform();
+    }
+
+    function applyCubeTransform() {
+      cube.style.transform = "translateZ(-" + radius + "px) rotateY(" + (-slideIndex * 90) + "deg)";
+      var active = ((slideIndex % 4) + 4) % 4;
+      faces.forEach(function (f, i) { f.classList.toggle("active", i === active); });
+      dots.forEach(function (d, i) {
+        if (i === active) {
+          d.classList.remove("w-1.5", "bg-ink/25");
+          d.classList.add("w-5", "bg-ink");
+        } else {
+          d.classList.remove("w-5", "bg-ink");
+          d.classList.add("w-1.5", "bg-ink/25");
+        }
+      });
+    }
+
+    function goSlide(idx) {
+      slideIndex = idx;
+      applyCubeTransform();
+      resetAutoSwipe();
+    }
+
+    function resetAutoSwipe() {
+      clearInterval(timer);
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      timer = setInterval(function () {
+        slideIndex += 1;
+        applyCubeTransform();
+      }, 3800);
+    }
+
+    // Touch & pointer swipe support on the 3D cube
+    var startX = null;
+    cubeScene.addEventListener("pointerdown", function (e) { startX = e.clientX; });
+    cubeScene.addEventListener("pointerup", function (e) {
+      if (startX === null) return;
+      var dx = e.clientX - startX;
+      startX = null;
+      if (Math.abs(dx) > 36) {
+        slideIndex += dx < 0 ? 1 : -1;
+        applyCubeTransform();
+        resetAutoSwipe();
+      }
+    });
+
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(layoutCube).observe(cubeScene);
+    } else {
+      window.addEventListener("resize", layoutCube);
+    }
+    layoutCube();
+    resetAutoSwipe();
+
+    /* ───── AUTH LOGIC (Login / Sign up + Google + Resend Hook) ───── */
+    var authMode = "login";
+    var userRole = "customer";
+
+    function setAuthTab(mode) {
+      authMode = mode;
+      var isSignup = mode === "signup";
+      var tLogin = document.getElementById("t-login");
+      var tSignup = document.getElementById("t-signup");
+      tLogin.className = "py-2.5 rounded-full text-sm font-semibold transition " + (!isSignup ? "bg-card text-ink" : "text-card/75 hover:text-card");
+      tSignup.className = "py-2.5 rounded-full text-sm font-semibold transition " + (isSignup ? "bg-card text-ink" : "text-card/75 hover:text-card");
+      tLogin.setAttribute("aria-selected", !isSignup);
+      tSignup.setAttribute("aria-selected", isSignup);
+
+      document.getElementById("f-name").classList.toggle("hidden", !isSignup);
+      document.getElementById("forgotLink").classList.toggle("hidden", isSignup);
+      document.getElementById("password").setAttribute("autocomplete", isSignup ? "new-password" : "current-password");
+      document.getElementById("submitBtn").textContent = isSignup ? "Sign up" : "Login";
+      document.getElementById("otpBox").classList.add("hidden");
+    }
+
+    function pickRole(btn, role) {
+      userRole = role;
+      document.querySelectorAll(".role-btn").forEach(function (b) {
+        b.className = "role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 text-card/80 hover:bg-white/15 transition";
+      });
+      btn.className = "role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-limebz text-ink transition";
+    }
+
+    function togglePw() {
+      var inp = document.getElementById("password");
+      inp.type = inp.type === "password" ? "text" : "password";
+    }
+
+    function handleGoogleAuth() {
+      /* GOOGLE OAUTH HOOK: Redirect to your Google OAuth endpoint with selected role */
+      finishAuth();
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      var email = document.getElementById("email").value.trim();
+      var password = document.getElementById("password").value;
+      if (!email || !password) return;
+
+      /* RESEND API + PASSWORD AUTH HOOK:
+         POST /api/auth/login or /api/auth/signup with { email, password, name, role: userRole }.
+         On sign-up, send 6-digit verification code via Resend API. */
+      if (authMode === "signup") {
+        document.getElementById("otpMsg").textContent = "Code sent to " + email + " via Resend";
+        document.getElementById("otpBox").classList.remove("hidden");
+        document.getElementById("otpCode").focus();
+      } else {
+        finishAuth();
+      }
+    }
+
+    function finishAuth() {
+      try {
+        localStorage.setItem("bazar-role", userRole);
+        localStorage.setItem("bazar-remember", document.getElementById("rememberMe").checked ? "1" : "0");
+      } catch (e) {}
+      window.location.href = userRole === "business" ? "dashboard.html" : "index.html";
+    }
+
+    /* ───── CIRCULAR FLAG LANGUAGE SWITCHER ───── */
+    var flags = {
+      en: '<clipPath id="a-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#a-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g>',
+      fr: '<clipPath id="a-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#a-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g>',
+      mfe: '<clipPath id="a-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#a-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g>'
+    };
+    function toggleLangMenu() {
+      var m = document.getElementById("langMenu");
+      var open = m.classList.toggle("open");
+      document.getElementById("langBtn").setAttribute("aria-expanded", open);
+    }
+    function setLang(code) {
+      if (!flags[code]) return;
+      document.getElementById("langFlagSvg").innerHTML = flags[code];
+      document.querySelectorAll(".lang-opt").forEach(function (b) {
+        var on = b.getAttribute("data-lang") === code;
+        b.className = "lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold " + (on ? "bg-ink text-limebz" : "text-ink hover:bg-cream");
+      });
+      document.getElementById("langMenu").classList.remove("open");
+      try { localStorage.setItem("bazar-lang", code); } catch (e) {}
+    }
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest("#langWrap")) document.getElementById("langMenu").classList.remove("open");
+    });
+    try { var sl = localStorage.getItem("bazar-lang"); if (sl && flags[sl]) setLang(sl); } catch (e) {}
+
+    // Pre-select mode & role when arriving from Landing / Customer flow (?mode=signup&role=business)
+    (function syncQueryParams() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get("mode") === "signup") setAuthTab("signup");
+        if (params.get("role") === "business") {
+          var bizBtn = document.querySelectorAll(".role-btn")[1];
+          if (bizBtn) pickRole(bizBtn, "business");
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <script src="i18n.js"></script>
+  <script src="edit-text.js"></script>
+</body>
+</html>

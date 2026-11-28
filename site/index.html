@@ -7,60 +7,214 @@
   <title>Bazar — Home</title>
   <link rel="stylesheet" href="brand.css">
   <link rel="stylesheet" href="app.css">
+  <!-- Mini map in the location picker: MapLibre + OpenFreeMap (free, no API key), same as map.html -->
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <style>
     main section { margin-top: 28px; }
+    :focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+
+    /* Location bar (Sleek lime-bordered pill matching reference) */
+    .loc-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      margin-top: 8px;
+    }
+    .loc-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      min-height: 40px; padding: 5px 14px 5px 10px; border-radius: 999px;
+      background: rgba(212, 245, 60, 0.24); border: 1.5px solid var(--lime-ink);
+      font-size: var(--label); font-weight: 600; color: var(--black);
+      transition: background .15s, transform .15s;
+    }
+    .loc-btn:hover { background: rgba(212, 245, 60, 0.42); }
+    .loc-btn .pin {
+      width: 22px; height: 22px; border-radius: 999px; background: var(--lime); color: var(--black);
+      display: grid; place-items: center; flex: none;
+    }
+    .loc-btn .chev { color: var(--lime-ink); display: grid; place-items: center; }
+    .loc-btn .rad { color: var(--lime-ink); font-weight: 600; font-size: 12px; }
+    .assist-pill-top {
+      display: inline-flex; align-items: center; gap: 7px;
+      min-height: 40px; padding: 0 14px; border-radius: 999px;
+      background: var(--black); color: var(--lime);
+      font-size: var(--label); font-weight: 600; white-space: nowrap;
+    }
+    .assist-pill-top:hover { background: var(--black-2); }
 
     /* 1. Intro strip */
-    .intro { margin-top: 8px; position: relative; background: var(--black); color: var(--card);
+    .intro { margin-top: 12px; position: relative; background: var(--black); color: var(--card);
              border-radius: 20px; padding: 18px 48px 18px 18px; }
     .intro b { display: block; font-size: var(--h3); line-height: 1.25; font-weight: 600; letter-spacing: -0.02em; }
     .intro b em { font-style: normal; color: var(--lime); }
     .intro p { margin-top: 6px; color: #cfc7b4; }
-    .intro .close { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; border-radius: 999px;
+    .intro .close { position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; border-radius: 999px;
                     display: grid; place-items: center; color: #a8a294; }
     .intro .close:hover { background: var(--black-2); color: var(--card); }
     .intro.hidden { display: none; }
 
-    /* 2. Search */
-    .search { margin-top: 16px; display: flex; gap: 8px; }
+    /* 2. Search + Quick filter chips */
+    .search-stack { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .search { display: flex; gap: 8px; }
     .search label { flex: 1; display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px;
                     background: var(--card); border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
+    .search label:focus-within { border-color: var(--black); }
     .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; font-size: 16px; color: var(--black); }
     .search input::placeholder { color: var(--muted); }
     .search .filter { width: 52px; height: 52px; border-radius: 999px; background: var(--black); color: var(--lime); display: grid; place-items: center; flex: none; }
     .search svg { width: 20px; height: 20px; flex: none; }
 
-    /* 3. Categories (text pills) */
-    .cat { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 999px;
-           background: var(--card); border: 1px solid var(--line); font-size: var(--label); font-weight: 600; white-space: nowrap; }
-    .cat:hover { border-color: var(--black); }
-    .cat.on { background: var(--black); color: var(--card); border-color: var(--black); }
-    .cats-row { gap: 8px; }
+    .chips-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .chips-row::-webkit-scrollbar { display: none; }
+    .chip {
+      flex: none; min-height: 36px; padding: 0 14px; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--line);
+      font-size: var(--label); font-weight: 600; color: var(--black-2); white-space: nowrap;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .chip:hover { border-color: var(--black); }
+    .chip.on { background: var(--black); border-color: var(--black); color: var(--lime); }
 
-    /* 4. Shops */
-    .shop { width: 260px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
-    .shop { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
-    .shop .badge { align-self: flex-start; background: var(--lime); color: var(--black);
-                   padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-    .shop .info { display: flex; gap: 12px; align-items: center; }
-    .shop .mono { width: 48px; height: 48px; font-size: 18px; border-radius: 12px; background: var(--black); color: var(--lime);
+    /* 3. Categories — Fabrid-inspired studio cards (consistent across all pages) */
+    .cat {
+      position: relative; width: 146px; min-height: 176px; padding: 14px 12px 14px;
+      border-radius: 22px; background: var(--card); border: 1px solid var(--line);
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      text-align: center; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .cat:hover { transform: translateY(-3px); border-color: var(--black); box-shadow: 0 12px 26px rgba(14, 14, 12, 0.07); }
+    .cat .cat-go {
+      position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 999px;
+      background: var(--cream); color: var(--black); display: grid; place-items: center;
+      font-size: 13px; font-weight: 700; transition: background .18s, color .18s;
+    }
+    .cat:hover .cat-go { background: var(--black); color: var(--lime); }
+    .cat .ph { width: 92px; height: 92px; margin-top: 12px; border-radius: 18px; overflow: hidden; background: var(--cream); }
+    .cat img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
+    .cat:hover img { transform: scale(1.08); }
+    .cat span.cat-name { margin-top: 10px; font-size: 13.5px; line-height: 1.2; font-weight: 700; color: var(--black); }
+    .cat small { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* Service Booking Cards (Salons, Spas & Local Pros) */
+    .srv-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 768px) { .srv-row { grid-template-columns: repeat(3, 1fr); } }
+    .srv-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+      padding: 14px; display: flex; flex-direction: column; gap: 12px;
+      transition: transform .2s, border-color .2s;
+    }
+    .srv-card:hover { transform: translateY(-2px); border-color: var(--black); }
+    .srv-top { display: flex; align-items: center; gap: 12px; }
+    .srv-top img { width: 58px; height: 58px; border-radius: 14px; object-fit: cover; flex: none; }
+    .srv-top b { display: block; font-size: 15px; font-weight: 700; }
+    .srv-top span { font-size: 12px; color: var(--muted); }
+    .srv-slots { display: flex; flex-wrap: wrap; gap: 6px; }
+    .srv-slots span {
+      padding: 4px 9px; border-radius: 999px; background: var(--cream); border: 1px solid var(--line);
+      font-size: 11px; font-weight: 600; color: var(--black-2);
+    }
+    .srv-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 8px; border-top: 1px solid var(--line); }
+    .srv-foot b { font-size: 15px; }
+    .book-btn {
+      min-height: 36px; padding: 0 14px; border-radius: 999px;
+      background: var(--black); color: var(--lime); font-size: 12px; font-weight: 700;
+    }
+    .book-btn:hover { background: var(--black-2); }
+
+    /* Calendar Booking Dialog */
+    .cal-days { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .cal-day {
+      padding: 8px 4px; border-radius: 12px; border: 1px solid var(--line); background: var(--cream);
+      text-align: center; font-size: 11px; font-weight: 600; color: var(--muted);
+    }
+    .cal-day b { display: block; font-size: 15px; color: var(--black); margin-top: 2px; }
+    .cal-day.on { background: var(--black); border-color: var(--black); color: #cfc7b4; }
+    .cal-day.on b { color: var(--lime); }
+    .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .time-opt {
+      min-height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--cream);
+      font-size: 12.5px; font-weight: 600; color: var(--black);
+    }
+    .time-opt.on { background: var(--lime); border-color: var(--lime-ink); color: var(--black); }
+    .book-ok {
+      display: none; padding: 12px; border-radius: 12px;
+      background: rgba(212, 245, 60, 0.3); border: 1px solid var(--lime-ink);
+      font-size: 13px; font-weight: 600; color: var(--black);
+    }
+    .book-ok.show { display: block; }
+
+    /* 4. Shops (Near You + Star Ratings + Quick Message) */
+    .shop { width: 272px; background: var(--card); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; transition: transform .22s cubic-bezier(0.22,1,0.36,1), border-color .2s, box-shadow .22s; display: flex; flex-direction: column; }
+    .shop:hover { transform: translateY(-4px); border-color: rgba(14, 14, 12, 0.28); box-shadow: 0 14px 30px rgba(14, 14, 12, 0.08); }
+    .shop .cover { position: relative; aspect-ratio: 16/10; overflow: hidden; }
+    .shop .cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
+    .shop:hover .cover img { transform: scale(1.06); }
+    .shop .badge { position: absolute; top: 10px; left: 10px; background: var(--lime); color: var(--black);
+                   padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .shop .dist { position: absolute; top: 10px; right: 10px; background: rgba(14, 14, 12, 0.82); color: var(--card);
+                  padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; backdrop-filter: blur(4px); }
+    .shop .info { display: flex; gap: 10px; align-items: center; padding: 12px 12px 8px; }
+    .shop .mono { width: 40px; height: 40px; border-radius: 12px; background: var(--black); color: var(--lime);
                   display: grid; place-items: center; font-weight: 700; flex: none; }
-    .shop .name { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
+    .shop .name { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; }
     .shop .meta { color: var(--muted); font-size: var(--caption); margin-top: 2px; }
+    .shop-foot {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 8px 12px 12px; margin-top: auto;
+    }
+    .rate-pill {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 999px;
+      background: #fff3d1; border: 1px solid #f5d98e; color: #784905;
+      font-size: 11.5px; font-weight: 700; transition: transform .15s, background .15s;
+    }
+    .rate-pill:hover { transform: scale(1.04); background: #ffe9a8; }
+    .rate-pill .star { color: #e58e00; font-size: 12px; }
+    [data-theme="dark"] .rate-pill { background: rgba(245, 158, 11, 0.16); border-color: rgba(245, 158, 11, 0.35); color: #fcd34d; }
+    .shop-msg-btn {
+      display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px;
+      background: var(--cream); border: 1px solid var(--line); font-size: 11.5px; font-weight: 600; color: var(--black);
+    }
+    .shop-msg-btn:hover { background: var(--black); color: var(--lime); border-color: var(--black); }
 
-    /* 5. Products */
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 12px; }
-    .prod .ph { position: relative; aspect-ratio: 1; border-radius: 16px; overflow: hidden; background: var(--line); }
-    .prod .empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: var(--caption); font-weight: 500; }
-    .prod:hover .ph { outline: 1px solid var(--black); }
-    .prod .save { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 999px;
-                  background: var(--card); display: grid; place-items: center; }
-    .prod .save svg { width: 18px; height: 18px; }
-    .prod .name { margin-top: 8px; font-weight: 500; font-size: var(--body); line-height: 1.3;
+    /* 5. Products (With Star Ratings + 1-Tap Add to Delivery/Cart) */
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 12px; }
+    .prod { display: flex; flex-direction: column; }
+    .prod .ph { position: relative; aspect-ratio: 1; border-radius: 18px; overflow: hidden; background: var(--line); }
+    .prod img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s cubic-bezier(0.22,1,0.36,1); }
+    .prod:hover img { transform: scale(1.05); }
+    .prod .tag {
+      position: absolute; bottom: 8px; left: 8px;
+      background: rgba(14, 14, 12, 0.82); color: var(--card); backdrop-filter: blur(4px);
+      padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    }
+    .prod .save {
+      position: absolute; top: 8px; right: 8px; width: 38px; height: 38px; border-radius: 999px;
+      background: var(--card); display: grid; place-items: center; box-shadow: 0 2px 8px rgba(14, 14, 12, 0.14);
+      transition: transform .15s;
+    }
+    .prod .save:active { transform: scale(0.9); }
+    .prod .save svg { width: 17px; height: 17px; }
+    .prod .save.saved { background: #ef4444; color: #fff; }
+    .prod .save.saved svg { fill: currentColor; }
+    .prod .name { margin-top: 9px; font-weight: 600; font-size: var(--body); line-height: 1.3;
                   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .prod .shopname { color: var(--muted); font-size: var(--caption); margin-top: 2px; }
-    .prod .price { display: inline-block; margin-top: 6px; background: var(--black); color: var(--lime);
-                   padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: 13px; }
+    .prod-rating {
+      margin-top: 4px; display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11.5px; font-weight: 600; color: var(--muted); width: fit-content;
+    }
+    .prod-rating:hover { color: var(--black); }
+    .prod-rating i { font-style: normal; color: #e58e00; }
+    .prod .price-row { margin-top: 7px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .prod .price { font-weight: 800; font-size: 15px; color: var(--black); letter-spacing: -0.01em; }
+    .prod .deal { background: #dcfce7; color: #166534; padding: 2px 7px; border-radius: 999px; font-weight: 700; font-size: 10.5px; }
+    [data-theme="dark"] .prod .deal { background: rgba(22, 163, 74, 0.22); color: #86efac; }
+    .add-deliv-btn {
+      display: inline-flex; align-items: center; gap: 4px; padding: 5px 11px; border-radius: 999px;
+      background: var(--black); color: var(--lime); font-size: 11.5px; font-weight: 700;
+      transition: transform .15s, background .15s;
+    }
+    .add-deliv-btn:hover { transform: translateY(-1px); background: var(--black-2); }
+    .add-deliv-btn.added { background: var(--lime); color: #0e0e0c; }
 
     /* 6. Business banner */
     .biz { display: flex; align-items: center; gap: 16px; background: var(--lime); border-radius: 20px; padding: 20px; margin-bottom: 32px; }
@@ -69,26 +223,355 @@
     .biz .go { margin-left: auto; flex: none; width: 48px; height: 48px; border-radius: 999px; background: var(--black); color: var(--lime);
                display: grid; place-items: center; }
 
+    /* Floating Bazar Assist launcher (bottom-right; the draft Edit text bar sits bottom-left) */
+    .assist-fab {
+      position: fixed; right: 16px; bottom: calc(var(--tab-bar) + env(safe-area-inset-bottom) + 12px);
+      z-index: 30; display: inline-flex; align-items: center; gap: 8px;
+      min-height: 44px; padding: 0 16px 0 10px; border-radius: 999px;
+      background: var(--black); color: var(--lime); font-size: 13px; font-weight: 700;
+      box-shadow: 0 8px 24px rgba(14, 14, 12, 0.28);
+    }
+    .assist-fab .dot-ai {
+      width: 26px; height: 26px; border-radius: 999px; background: var(--lime); color: var(--black);
+      display: grid; place-items: center;
+    }
+
+    /* Circular Flag Language Switcher + Profile Account Dropdown */
+    .pop-wrap { position: relative; }
+    .lang-btn {
+      width: 36px; height: 36px; border-radius: 999px;
+      background: var(--lime); border: 2px solid var(--black);
+      display: grid; place-items: center; padding: 0; margin-right: 4px;
+    }
+    .lang-btn svg { width: 22px; height: 22px; border-radius: 999px; display: block; }
+    .profile-btn {
+      width: 38px; height: 38px; border-radius: 999px;
+      background: var(--black); color: var(--lime);
+      display: grid; place-items: center; font-weight: 700; font-size: 13px;
+    }
+    .pop-menu {
+      position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+      min-width: 196px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 6px; box-shadow: 0 14px 32px rgba(14, 14, 12, 0.18);
+      display: none; flex-direction: column; gap: 2px;
+    }
+    .pop-menu.open { display: flex; }
+    .pop-menu a, .pop-menu button {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--black); text-align: left; width: 100%;
+    }
+    .pop-menu a:hover, .pop-menu button:hover { background: var(--cream); }
+    .pop-menu button.on { background: var(--black); color: var(--lime); }
+    .pop-menu svg { width: 18px; height: 18px; flex: none; }
+    .pop-sep { height: 1px; background: var(--line); margin: 4px 6px; }
+
+    /* ───── NATIVE MODAL DIALOGS + SMOOTH ANIMATIONS ───── */
+    dialog {
+      border: 1px solid var(--line); border-radius: 20px; padding: 0;
+      background: var(--card); color: var(--black);
+      width: min(92vw, 460px); max-height: 86svh;
+      box-shadow: 0 24px 60px rgba(14, 14, 12, 0.35);
+      animation: modalPop 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    dialog.side-ai[open] {
+      animation: drawerSlideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes drawerSlideIn {
+      from { opacity: 0; transform: translateX(48px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Scroll-Reveal Stagger Animation */
+    .reveal-up {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal-up.in-view { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      dialog, dialog.side-ai[open], .reveal-up { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+    }
+
+    /* Top Bar Counter Badges + Side Delivery Dock Tab */
+    .cnt-badge {
+      position: absolute; top: 5px; right: 4px; min-width: 17px; height: 17px; padding: 0 4px;
+      border-radius: 999px; background: var(--lime); color: #0e0e0c; border: 1.5px solid var(--cream);
+      font-size: 10px; font-weight: 800; display: grid; place-items: center; line-height: 1;
+    }
+    .cnt-badge--coral { background: #f97316; color: #fff; }
+    @keyframes badgePop { 0% { transform: scale(1); } 45% { transform: scale(1.32); } 100% { transform: scale(1); } }
+    .pop-anim { animation: badgePop 0.35s ease; }
+
+    /* Side-Edge Opt-In Delivery Tab */
+    .deliv-side-tab {
+      position: fixed; right: 0; top: 52%; transform: translateY(-50%); z-index: 28;
+      background: linear-gradient(135deg, #0e0e0c 0%, #1e240c 100%);
+      color: var(--card); border: 1px solid rgba(212, 245, 60, 0.4); border-right: 0;
+      border-radius: 18px 0 0 18px; padding: 10px 12px 10px 11px;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: -6px 10px 28px rgba(14, 14, 12, 0.22);
+      transition: padding-right .2s ease, transform .2s ease;
+    }
+    .deliv-side-tab:hover { padding-right: 18px; }
+    .deliv-side-ico {
+      width: 30px; height: 30px; border-radius: 10px; background: var(--lime); color: #0e0e0c;
+      display: grid; place-items: center; flex: none;
+    }
+    .deliv-side-txt { text-align: left; line-height: 1.15; }
+    .deliv-side-txt b { display: block; font-size: 11.5px; font-weight: 700; color: var(--lime); }
+    .deliv-side-txt span { font-size: 10.5px; color: #d6d0c2; }
+
+    /* Notifications Drawer Styles */
+    .notif-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .notif-card {
+      display: flex; gap: 11px; padding: 12px; border-radius: 16px;
+      background: var(--cream); border: 1px solid var(--line); transition: transform .15s, border-color .15s;
+    }
+    .notif-card.unread { background: rgba(212, 245, 60, 0.16); border-color: rgba(73, 97, 0, 0.35); }
+    .notif-ico {
+      width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; flex: none; font-weight: 700;
+    }
+    .ni-deliv { background: #fff0e5; color: #ea580c; }
+    .ni-book  { background: #dcfce7; color: #15803d; }
+    .ni-deal  { background: #fff3d1; color: #b45309; }
+    [data-theme="dark"] .ni-deliv { background: rgba(234,88,12,0.2); color: #fb923c; }
+    [data-theme="dark"] .ni-book  { background: rgba(22,163,74,0.2); color: #86efac; }
+    [data-theme="dark"] .ni-deal  { background: rgba(245,158,11,0.2); color: #fcd34d; }
+    .notif-body { flex: 1; min-width: 0; }
+    .notif-body b { display: block; font-size: 13px; font-weight: 700; }
+    .notif-body p { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+    .notif-body small { display: inline-block; font-size: 10.5px; color: var(--lime-ink); font-weight: 600; margin-top: 4px; }
+
+    /* Delivery Side Drawer Styles */
+    .deliv-body { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; }
+    .deliv-switch {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px;
+      background: var(--cream); border: 1px solid var(--line); border-radius: 14px;
+    }
+    .deliv-switch button {
+      min-height: 40px; border-radius: 10px; font-size: 12.5px; font-weight: 700; color: var(--muted);
+      transition: background .18s, color .18s;
+    }
+    .deliv-switch button.on { background: var(--black); color: var(--lime); }
+    .free-bar-box {
+      background: linear-gradient(135deg, rgba(212,245,60,0.24), rgba(22,163,74,0.12));
+      border: 1px solid rgba(73, 97, 0, 0.28); border-radius: 14px; padding: 11px 13px;
+    }
+    .free-bar-box small { display: block; font-size: 11.5px; font-weight: 700; color: var(--black); }
+    .free-track { height: 7px; border-radius: 999px; background: var(--card); overflow: hidden; margin-top: 7px; }
+    .free-fill { height: 100%; background: linear-gradient(90deg, #496100, #16a34a); border-radius: 999px; transition: width 0.45s cubic-bezier(0.22,1,0.36,1); }
+    .tier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .tier-card {
+      padding: 10px 11px; border-radius: 13px; border: 1.5px solid var(--line); background: var(--cream);
+      text-align: left; transition: border-color .15s, background .15s;
+    }
+    .tier-card.on { border-color: var(--black); background: rgba(212, 245, 60, 0.2); }
+    .tier-card b { display: block; font-size: 12.5px; font-weight: 700; }
+    .tier-card span { font-size: 11px; color: var(--muted); }
+    .cart-items { display: flex; flex-direction: column; gap: 8px; }
+    .cart-row {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: 13px; background: var(--cream); border: 1px solid var(--line);
+    }
+    .cart-row img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; flex: none; }
+    .cart-row-info { flex: 1; min-width: 0; }
+    .cart-row-info b { display: block; font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cart-row-info span { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+    .qty-box { display: inline-flex; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 2px 6px; font-size: 12px; font-weight: 700; }
+    .qty-box button { width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; }
+    .qty-box button:hover { background: var(--line); }
+    .deliv-foot { padding: 14px 16px; border-top: 1px solid var(--line); background: var(--card); display: flex; flex-direction: column; gap: 8px; }
+    .sum-line { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); }
+    .sum-total { display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; color: var(--black); padding-top: 4px; border-top: 1px dashed var(--line); }
+
+    /* Interactive Star Rating Modal */
+    .star-picker { display: flex; justify-content: center; gap: 8px; padding: 8px 0; }
+    .star-btn {
+      font-size: 30px; line-height: 1; color: #d6d0c2;
+      transition: transform .18s cubic-bezier(0.34, 1.56, 0.64, 1), color .15s;
+    }
+    .star-btn.lit { color: #f59e0b; transform: scale(1.12); }
+    .rev-list { display: flex; flex-direction: column; gap: 8px; max-height: 190px; overflow-y: auto; }
+    .rev-item { padding: 10px 12px; border-radius: 12px; background: var(--cream); border: 1px solid var(--line); font-size: 12.5px; }
+    .rev-item-head { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 3px; }
+    .rev-item-head span { color: #e58e00; }
+    /* Dock Bazar Assist as a pop-up side panel on the right */
+    dialog.side-ai {
+      margin: auto 12px 12px auto;
+      height: min(84svh, 640px);
+      display: flex; flex-direction: column;
+    }
+    dialog.side-ai:not([open]) { display: none; }
+    dialog.side-ai .chat-log { flex: 1; max-height: none; }
+    @media (min-width: 768px) {
+      dialog.side-ai {
+        margin: 16px 16px 16px auto;
+        height: calc(100svh - 32px);
+        max-height: none;
+        width: 400px;
+        border-radius: 22px;
+      }
+    }
+    dialog:modal {
+      overscroll-behavior: contain;
+    }
+    dialog::backdrop {
+      overflow: hidden;
+      overscroll-behavior: contain;
+      background: rgba(14, 14, 12, 0.55);
+      backdrop-filter: blur(3px);
+    }
+    .dlg-head {
+      display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+      background: var(--cream); border-bottom: 1px solid var(--line);
+    }
+    .dlg-avatar {
+      width: 34px; height: 34px; border-radius: 999px; background: var(--black); color: var(--lime);
+      display: grid; place-items: center; flex: none;
+    }
+    .dlg-title { font-weight: 700; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .dlg-close {
+      margin-left: auto; width: 38px; height: 38px; border-radius: 999px;
+      display: grid; place-items: center; color: var(--black);
+    }
+    .dlg-close:hover { background: var(--line); }
+
+    /* Assist dialog body */
+    .mode-bar { display: flex; gap: 6px; padding: 12px 16px 0; }
+    .mode-bar button {
+      flex: 1; min-height: 36px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      background: var(--cream); color: var(--muted); border: 1px solid var(--line);
+    }
+    .mode-bar button.on { background: var(--black); color: var(--lime); border-color: var(--black); }
+    .chat-log {
+      padding: 16px; max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+    }
+    .bubble { max-width: 88%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.45; }
+    .bubble--bot { background: var(--cream); color: var(--black); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .bubble--user { background: var(--black); color: var(--lime); align-self: flex-end; border-bottom-right-radius: 4px; }
+    .chat-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px 12px; }
+    .chat-chips button {
+      padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line);
+      background: var(--cream); font-size: 12px; font-weight: 500;
+    }
+    .chat-chips button:hover { background: var(--lime); border-color: var(--lime); }
+    .chat-form {
+      display: flex; align-items: center; gap: 8px; padding: 12px 14px;
+      border-top: 1px solid var(--line); background: var(--card);
+    }
+    .chat-form input {
+      flex: 1; min-width: 0; height: 44px; padding: 0 16px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--cream); font: inherit; font-size: 15px;
+    }
+    .chat-form button {
+      width: 44px; height: 44px; border-radius: 999px; background: var(--lime); color: var(--black);
+      display: grid; place-items: center; flex: none;
+    }
+
+    /* Location dialog body (Interactive Mini-Map Selector) */
+    .loc-modal { border-radius: 28px; width: min(92vw, 400px); padding: 20px; }
+    .loc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .loc-top b { font-size: 15px; font-weight: 700; color: var(--black); }
+    .loc-search-pill {
+      display: flex; align-items: center; gap: 8px;
+      height: 46px; padding: 0 10px 0 16px; border-radius: 999px;
+      background: var(--cream); border: 1px solid var(--line);
+    }
+    .loc-search-pill:focus-within { border-color: var(--black); background: var(--card); }
+    .loc-search-pill input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; font-size: 14px; color: var(--black); }
+    .loc-search-pill button { width: 32px; height: 32px; border-radius: 999px; display: grid; place-items: center; color: var(--muted); }
+    .loc-search-pill button:hover { background: var(--line); color: var(--black); }
+
+    .loc-quick { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-top: 10px; padding-bottom: 2px; }
+    .loc-quick::-webkit-scrollbar { display: none; }
+    .loc-chip {
+      flex: none; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      background: var(--cream); border: 1px solid var(--line); color: var(--black-2);
+    }
+    .loc-chip.on { background: var(--black); color: var(--lime); border-color: var(--black); }
+
+    .mini-map-wrap {
+      margin-top: 12px; position: relative; border-radius: 20px; overflow: hidden;
+      height: 210px; border: 1px solid var(--line); background: #e8e2d3;
+      box-shadow: inset 0 0 0 1px rgba(14, 14, 12, 0.05);
+    }
+    #miniLocMap { width: 100%; height: 100%; }
+    #miniLocMap .maplibregl-ctrl-attrib { font-size: 8px; }
+    .loc-pin-wrap { width: 30px; height: 36px; display: grid; place-items: center; cursor: grab; }
+    .loc-pin-badge {
+      width: 30px; height: 30px; border-radius: 999px 999px 999px 0;
+      background: var(--black); border: 3px solid var(--lime);
+      transform: rotate(-45deg); box-shadow: 0 6px 14px rgba(14, 14, 12, 0.35);
+      display: grid; place-items: center;
+    }
+    .loc-pin-badge::after { content: ""; width: 8px; height: 8px; border-radius: 999px; background: var(--lime); }
+
+    .rad-row { display: flex; gap: 6px; margin-top: 12px; }
+    .rad-opt {
+      flex: 1; min-height: 34px; border-radius: 999px; border: 1px solid var(--line);
+      background: var(--cream); font-size: 12px; font-weight: 600; color: var(--black-2);
+    }
+    .rad-opt.on { background: var(--lime); border-color: var(--lime-ink); color: var(--black); }
+    .loc-foot { margin-top: 14px; display: flex; gap: 8px; }
+    .loc-foot .btn { flex: 1; min-height: 44px; font-size: 14px; }
+
+    /* Direct Shop Messages Drawer (#msgDialog) */
+    .msg-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .msg-item {
+      display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+      padding: 11px 12px; border-radius: 14px; background: transparent; transition: background .15s;
+    }
+    .msg-item:hover { background: var(--cream); }
+    .msg-item img { width: 46px; height: 46px; border-radius: 12px; object-fit: cover; flex: none; background: var(--line); }
+    .msg-meta { flex: 1; min-width: 0; }
+    .msg-meta-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .msg-meta-top b { font-size: 14px; font-weight: 700; color: var(--black); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .msg-meta-top small { font-size: 11px; color: var(--muted); flex: none; }
+    .msg-prev { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+    .msg-unread {
+      width: 20px; height: 20px; border-radius: 999px; background: var(--black); color: var(--lime);
+      font-size: 11px; font-weight: 700; display: grid; place-items: center; flex: none;
+    }
+    .thread-view { display: none; flex-direction: column; flex: 1; min-height: 0; }
+    .thread-view.active { display: flex; }
+    .msg-list.hidden { display: none; }
+    .thread-subbar {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      background: var(--cream); border-bottom: 1px solid var(--line);
+    }
+    .thread-back {
+      width: 32px; height: 32px; border-radius: 999px; background: var(--card); border: 1px solid var(--line);
+      display: grid; place-items: center; flex: none;
+    }
+    .thread-back:hover { border-color: var(--black); }
+    .thread-shop { flex: 1; min-width: 0; }
+    .thread-shop b { display: block; font-size: 13.5px; font-weight: 700; }
+    .thread-shop span { font-size: 11px; color: var(--lime-ink); font-weight: 600; }
+
     /* ───── TABLET ───── */
     @media (min-width: 768px) {
       main section { margin-top: 36px; }
       .intro { padding: 24px 56px 24px 24px; }
+      .cat { width: 158px; }
       .shop { width: 300px; }
-      .grid { grid-template-columns: repeat(3, 1fr); gap: 20px 16px; }
+      .grid { grid-template-columns: repeat(3, 1fr); gap: 22px 16px; }
     }
 
     /* ───── LAPTOP ───── */
     @media (min-width: 1280px) {
       main section { margin-top: 48px; }
-      .top-area { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; align-items: stretch; margin-top: 16px; }
+      .top-area { display: grid; grid-template-columns: 1.05fr 1fr; gap: 24px; align-items: stretch; margin-top: 14px; }
       .intro { margin-top: 0; display: flex; flex-direction: column; justify-content: center; padding: 28px 64px 28px 28px; }
-      .search { margin-top: 0; align-self: center; }
-      .search label { height: 60px; }
-      .search .filter { width: 60px; height: 60px; }
-      .intro.hidden + .search { grid-column: 1 / -1; }
-      .cats-row { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; }
-      .shops-row { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; margin: 0; padding: 0; }
-      .shops-row .shop:nth-child(n+4) { display: none; }
+      .search-stack { margin-top: 0; align-self: center; }
+      .search label { height: 58px; }
+      .search .filter { width: 58px; height: 58px; }
+      .intro.hidden + .search-stack { grid-column: 1 / -1; }
+      .cats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; overflow: visible; margin: 0; padding: 0; }
+      .cat { width: auto; }
+      .shops-row { display: grid; grid-template-columns: repeat(4, 1fr); overflow: visible; margin: 0; padding: 0; }
       .shop { width: auto; }
       .grid { grid-template-columns: repeat(5, 1fr); gap: 28px 20px; }
       .biz { padding: 28px 32px; }
@@ -97,96 +580,186 @@
 </head>
 <body>
 
-  <!-- APP BAR -->
+  <!-- APP BAR (Customer View: Home, Map, Resell, Orders + Messages, Cart, Language, Profile Dropdown) -->
   <header class="app-bar">
     <div class="wrap">
-      <a href="index.html" class="logo" data-text="bar.logo">bazar</a>
+      <a href="business.html" class="logo" data-text="bar.logo">bazar</a>
       <nav class="top-nav">
         <a href="index.html" class="on" data-text="nav.home">Home</a>
-        <a href="#" data-text="nav.search">Search</a>
-        <a href="#" data-text="nav.sell">Sell</a>
-        <a href="#" data-text="nav.orders">Orders</a>
-        <a href="business.html" data-text="nav.business">For business</a>
+        <a href="map.html" data-text="nav.map">Map</a>
+        <a href="resell.html" data-text="nav.resell">Resell</a>
+        <a href="#" onclick="openDeliveryDrawer(); return false;" data-text="nav.orders">Orders</a>
       </nav>
       <div class="right">
-        <button class="icon-btn" aria-label="Notifications"><span class="dot"></span>
+        <!-- Language Flag Switcher -->
+        <div class="pop-wrap">
+          <button type="button" class="lang-btn" id="langBtn" aria-label="Change language" onclick="togglePop('langMenu')">
+            <svg viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="i-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#i-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+          </button>
+          <div class="pop-menu" id="langMenu" role="menu">
+            <button type="button" class="on" data-lang="en" onclick="setLang('en')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="im-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#im-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg> English</button>
+            <button type="button" data-lang="fr" onclick="setLang('fr')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="im-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#im-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg> Français</button>
+            <button type="button" data-lang="mfe" onclick="setLang('mfe')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="im-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#im-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg> Kreol Morisien</button>
+          </div>
+        </div>
+        <!-- Notifications Bell Icon -->
+        <button class="icon-btn" aria-label="Notifications" onclick="openNotifications()">
+          <span class="cnt-badge cnt-badge--coral" id="notifBadge">3</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
         </button>
-        <button class="icon-btn" aria-label="Cart">
+        <!-- Messages Icon (Direct Customer ↔ Shop / Business Owner Inbox) -->
+        <button class="icon-btn" aria-label="Messages" onclick="openMessages()"><span class="dot" id="msgUnreadDot"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+        </button>
+        <!-- Cart & Delivery Icon -->
+        <button class="icon-btn" aria-label="Cart and Delivery" onclick="openDeliveryDrawer()">
+          <span class="cnt-badge" id="cartBadge">2</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         </button>
-        <a href="#" class="btn btn-black" data-text="bar.signin">Sign in</a>
+        <!-- Profile Icon with Account Dropdown -->
+        <div class="pop-wrap">
+          <button type="button" class="profile-btn" aria-label="Account menu" onclick="togglePop('profileMenu')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          </button>
+          <div class="pop-menu" id="profileMenu" role="menu">
+            <a href="auth.html">My Profile</a>
+            <a href="#">Saved Items</a>
+            <a href="#">My Orders &amp; Cart</a>
+            <a href="#">My Resell Listings</a>
+            <div class="pop-sep"></div>
+            <a href="auth.html">Sign in / Switch Account</a>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 
   <main class="wrap">
 
+    <!-- NEAR ME LOCATION BAR (Sleek lime-bordered pill matching reference) -->
+    <div class="loc-bar">
+      <button type="button" class="loc-btn" onclick="openLoc()" aria-label="Select your location">
+        <span class="pin" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.5-6-10a6 6 0 1 1 12 0c0 4.5-6 10-6 10Z"/><circle cx="12" cy="11" r="2"/></svg>
+        </span>
+        <span id="loc-city">Port Louis, Mauritius</span>
+        <span class="rad" id="loc-rad">· 5 km</span>
+        <span class="chev" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </span>
+      </button>
+    </div>
+
     <div class="top-area">
       <!-- 1. INTRO STRIP (first-time visitors; can be closed) -->
       <div class="intro" id="intro">
         <b data-text="intro.title">Every Mauritian business, <em>one app.</em></b>
-        <p class="t-body" data-text="intro.text">Shop local brands, sell what you don't need, and get delivery island-wide.</p>
+        <p class="t-body" data-text="intro.text">Discover local shops near you, book services, and buy or resell safely with island-wide delivery.</p>
         <button class="close" aria-label="Close" onclick="hideIntro()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
       </div>
 
-      <!-- 2. SEARCH -->
-      <form class="search" onsubmit="return false">
-        <label>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input type="search" placeholder="Search shops and products" aria-label="Search">
-        </label>
-        <button class="filter" type="button" aria-label="Filters">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
-        </button>
-      </form>
+      <!-- 2. SEARCH + QUICK CHIPS -->
+      <div class="search-stack">
+        <form class="search" onsubmit="return false">
+          <label>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" placeholder="Search shops, products, or services..." aria-label="Search">
+          </label>
+          <button class="filter" type="button" aria-label="Filters" onclick="openLoc()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+          </button>
+        </form>
+        <div class="chips-row" role="group" aria-label="Quick filters">
+          <button type="button" class="chip on" onclick="setChip(this)">All</button>
+          <button type="button" class="chip" onclick="setChip(this)">Near me</button>
+          <button type="button" class="chip" onclick="setChip(this)">Open now</button>
+          <button type="button" class="chip" onclick="setChip(this)">Under Rs 500</button>
+          <button type="button" class="chip" onclick="setChip(this)">Made in MU</button>
+          <button type="button" class="chip" onclick="setChip(this)">Pre-loved</button>
+        </div>
+      </div>
     </div>
 
-    <!-- 3. CATEGORIES -->
+    <!-- 3. FEATURED CATEGORIES (Fabrid-style studio cards) -->
     <section>
       <div class="row-head">
-        <h2 class="t-h2" data-text="cats.title">Categories</h2>
-        <a href="#" class="more" data-text="cats.more">See all</a>
+        <div>
+          <h2 class="t-h2" data-text="cats.title">Featured categories</h2>
+          <p class="t-caption" style="color:var(--muted);margin-top:2px;">Shop or book your favourite category in seconds.</p>
+        </div>
+        <a href="resell.html" class="more" data-text="cats.more">Check all ↗</a>
       </div>
       <div class="scroller cats-row">
-        <a href="#" class="cat on"><span data-text="cats.all">All</span></a>
-        <a href="#" class="cat"><span data-text="cats.1">Food</span></a>
-        <a href="#" class="cat"><span data-text="cats.2">Groceries</span></a>
-        <a href="#" class="cat"><span data-text="cats.3">Fashion</span></a>
-        <a href="#" class="cat"><span data-text="cats.4">Phones</span></a>
-        <a href="#" class="cat"><span data-text="cats.5">Beauty</span></a>
-        <a href="#" class="cat"><span data-text="cats.6">Cakes</span></a>
-        <a href="#" class="cat"><span data-text="cats.7">Home</span></a>
-        <a href="#" class="cat"><span data-text="cats.8">Car rental</span></a>
-        <a href="#" class="cat"><span data-text="cats.9">Made in MU</span></a>
-        <a href="#" class="cat"><span data-text="cats.10">Kids</span></a>
+        <a href="resell.html" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-electronics.jpg" alt="Phones"></div><div><span class="cat-name" data-text="cats.4">Phones</span><small>34 listings</small></div></a>
+        <a href="resell.html" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-fashion.jpg" alt="Fashion"></div><div><span class="cat-name" data-text="cats.3">Fashion</span><small>29 listings</small></div></a>
+        <a href="#services" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-beauty.jpg" alt="Salons & Beauty"></div><div><span class="cat-name" data-text="cats.5">Salons &amp; Spa</span><small>Book slots</small></div></a>
+        <a href="resell.html" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-home-living.jpg" alt="Home"></div><div><span class="cat-name" data-text="cats.7">Home</span><small>22 listings</small></div></a>
+        <a href="resell.html" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-car-rental.jpg" alt="Vehicles"></div><div><span class="cat-name" data-text="cats.8">Vehicles</span><small>15 listings</small></div></a>
+        <a href="resell.html" class="cat"><span class="cat-go" aria-hidden="true">↗</span><div class="ph"><img src="photos/cat-kids.jpg" alt="Kids"></div><div><span class="cat-name" data-text="cats.10">Kids</span><small>12 listings</small></div></a>
       </div>
     </section>
 
-    <!-- 4. SHOPS -->
-    <section>
+    <!-- 3B. BOOK LOCAL SERVICES (Salons, Spas & Appointments Calendar) -->
+    <section id="services">
       <div class="row-head">
-        <h2 class="t-h2" data-text="shops.title">Popular shops</h2>
-        <a href="#" class="more" data-text="shops.more">See all</a>
+        <div>
+          <h2 class="t-h2">Book Salons &amp; Services</h2>
+          <p class="t-caption" style="color:var(--muted);margin-top:2px;">Pick a date &amp; time slot — instant confirmation.</p>
+        </div>
+        <a href="map.html" class="more">See on map ↗</a>
+      </div>
+      <div class="srv-row">
+        <article class="srv-card">
+          <div class="srv-top">
+            <img src="photos/cat-beauty.jpg" alt="Lagon Beauty & Hair Salon">
+            <div><b>Lagon Beauty &amp; Hair</b><span>Grand Baie · Hair &amp; Nails · 4.9★</span></div>
+          </div>
+          <div class="srv-slots"><span>Today 11:30</span><span>14:00</span><span>16:30</span></div>
+          <div class="srv-foot"><b>From Rs 650</b><button type="button" class="book-btn" onclick="openBooking('Lagon Beauty & Hair', 'Hair Styling & Blowout', 'Rs 650')">Book slot</button></div>
+        </article>
+        <article class="srv-card">
+          <div class="srv-top">
+            <img src="photos/shop-dodo-cafe.jpg" alt="Atelier Cut Barber Studio">
+            <div><b>Atelier Cut Studio</b><span>Port Louis · Barber &amp; Grooming · 4.8★</span></div>
+          </div>
+          <div class="srv-slots"><span>Today 10:00</span><span>13:00</span><span>17:00</span></div>
+          <div class="srv-foot"><b>From Rs 350</b><button type="button" class="book-btn" onclick="openBooking('Atelier Cut Studio', 'Fade & Beard Trim', 'Rs 350')">Book slot</button></div>
+        </article>
+        <article class="srv-card">
+          <div class="srv-top">
+            <img src="photos/cat-home-living.jpg" alt="Zen Wellness Spa">
+            <div><b>Zen Wellness Spa</b><span>Curepipe · Massage &amp; Facials · 5.0★</span></div>
+          </div>
+          <div class="srv-slots"><span>Today 12:00</span><span>15:00</span><span>18:00</span></div>
+          <div class="srv-foot"><b>From Rs 1,400</b><button type="button" class="book-btn" onclick="openBooking('Zen Wellness Spa', '60-Min Relaxing Massage', 'Rs 1,400')">Book slot</button></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 4. SHOPS NEAR YOU -->
+    <section id="nearby">
+      <div class="row-head">
+        <h2 class="t-h2" data-text="shops.title">Businesses near you</h2>
+        <button type="button" class="more" onclick="openLoc()" data-text="shops.more">Change area</button>
       </div>
       <div class="scroller shops-row">
         <a href="#" class="shop">
-          <div class="info"><span class="mono">R</span><div><div class="name" data-text="shops.1-name">Rosie's Cakes</div><div class="meta" data-text="shops.1-meta">Cakes · Curepipe</div></div></div>
-          <span class="badge" data-text="shops.1-badge">Delivers today</span>
+          <div class="cover"><img src="photos/shop-bookcourt.jpg" alt="Bookcourt Caudan Waterfront"><span class="badge" data-text="shops.1-badge">Caudan · Open</span><span class="dist">0.5 km</span></div>
+          <div class="info"><span class="mono">B</span><div><div class="name" data-text="shops.1-name">Bookcourt Caudan</div><div class="meta" data-text="shops.1-meta">Books &amp; Gifts · Port Louis</div></div></div>
         </a>
         <a href="#" class="shop">
-          <div class="info"><span class="mono">T</span><div><div class="name" data-text="shops.2-name">Ti Kaz Crafts</div><div class="meta" data-text="shops.2-meta">Crafts · Mahébourg</div></div></div>
-          <span class="badge" data-text="shops.2-badge">Made in Mauritius</span>
+          <div class="cover"><img src="photos/shop-dodo-cafe.jpg" alt="Dodo Café Boutique"><span class="badge" data-text="shops.2-badge">Local Roastery</span><span class="dist">0.8 km</span></div>
+          <div class="info"><span class="mono">D</span><div><div class="name" data-text="shops.2-name">Dodo Café Boutique</div><div class="meta" data-text="shops.2-meta">Coffee &amp; Lifestyle · Pereybere</div></div></div>
         </a>
         <a href="#" class="shop">
-          <div class="info"><span class="mono">V</span><div><div class="name" data-text="shops.3-name">Vik Phone Corner</div><div class="meta" data-text="shops.3-meta">Phones · Port Louis</div></div></div>
-          <span class="badge" data-text="shops.3-badge">Pay on delivery</span>
+          <div class="cover"><img src="photos/shop-chelseas.jpg" alt="Chelsea's Cup N Cake"><span class="badge" data-text="shops.3-badge">Delivers today</span><span class="dist">1.1 km</span></div>
+          <div class="info"><span class="mono">C</span><div><div class="name" data-text="shops.3-name">Chelsea's Cup N Cake</div><div class="meta" data-text="shops.3-meta">Patisserie · Curepipe</div></div></div>
         </a>
         <a href="#" class="shop">
-          <div class="info"><span class="mono">L</span><div><div class="name" data-text="shops.4-name">Lagon Boutique</div><div class="meta" data-text="shops.4-meta">Fashion · Grand Baie</div></div></div>
-          <span class="badge" data-text="shops.4-badge">New</span>
+          <div class="cover"><img src="photos/shop-le-fournil.jpg" alt="Le Fournil Bakery"><span class="badge" data-text="shops.4-badge">Fresh daily</span><span class="dist">1.4 km</span></div>
+          <div class="info"><span class="mono">L</span><div><div class="name" data-text="shops.4-name">Le Fournil Bakery</div><div class="meta" data-text="shops.4-meta">Bakery · Grand Baie</div></div></div>
         </a>
       </div>
     </section>
@@ -198,26 +771,22 @@
         <a href="#" class="more" data-text="products.more">See all</a>
       </div>
       <div class="grid">
-        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
-          <div class="name" data-text="p.1-name">Chocolate fudge cake</div><div class="shopname" data-text="p.1-shop">Rosie's Cakes</div><span class="price" data-text="p.1-price">Rs 950</span></a>
-        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
-          <div class="name" data-text="p.2-name">Handwoven raffia bag</div><div class="shopname" data-text="p.2-shop">Ti Kaz Crafts</div><span class="price" data-text="p.2-price">Rs 1,200</span></a>
-        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
-          <div class="name" data-text="p.3-name">iPhone 11, 128GB, red</div><div class="shopname" data-text="p.3-shop">Vik Phone Corner</div><span class="price" data-text="p.3-price">Rs 14,500</span></a>
-        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
-          <div class="name" data-text="p.4-name">Shell drop earrings</div><div class="shopname" data-text="p.4-shop">Lagon Boutique</div><span class="price" data-text="p.4-price">Rs 450</span></a>
-        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
-          <div class="name" data-text="p.5-name">Homemade achard, 500g</div><div class="shopname" data-text="p.5-shop">Lakwizinn Mama</div><span class="price" data-text="p.5-price">Rs 180</span></a>
-        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
-          <div class="name" data-text="p.6-name">Coconut &amp; vanilla soap</div><div class="shopname" data-text="p.6-shop">Ile Savon</div><span class="price" data-text="p.6-price">Rs 150</span></a>
-        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
-          <div class="name" data-text="p.7-name">Vacoas straw hat</div><div class="shopname" data-text="p.7-shop">Ti Kaz Crafts</div><span class="price" data-text="p.7-price">Rs 650</span></a>
-        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
-          <div class="name" data-text="p.8-name">Gato coco, box of 6</div><div class="shopname" data-text="p.8-shop">Rosie's Cakes</div><span class="price" data-text="p.8-price">Rs 120</span></a>
-        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
-          <div class="name" data-text="p.9-name">Potted monstera</div><div class="shopname" data-text="p.9-shop">Jardin Vert</div><span class="price" data-text="p.9-price">Rs 800</span></a>
-        <a href="#" class="prod"><div class="ph"><span class="empty">Photo</span><span class="save" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></span></div>
-          <div class="name" data-text="p.10-name">Fresh pineapple juice</div><div class="shopname" data-text="p.10-shop">Lakwizinn Mama</div><span class="price" data-text="p.10-price">Rs 90</span></a>
+        <div class="prod"><div class="ph"><img src="photos/prod-cake.jpg" alt="Signature Chocolate Fudge Cake"><span class="tag">Same-day</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.1-name">Signature chocolate fudge cake</div><div class="shopname" data-text="p.1-shop">Chelsea's Cup N Cake · Curepipe</div><div class="price-row"><span class="price" data-text="p.1-price">Rs 950</span><span class="deal">Popular</span></div></div>
+        <div class="prod"><div class="ph"><img src="photos/prod-coffee.jpg" alt="Single-Origin Mauritian Roast"><span class="tag">Made in MU</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.2-name">Single-origin roasted beans, 250g</div><div class="shopname" data-text="p.2-shop">Dodo Café Boutique · Pereybere</div><div class="price-row"><span class="price" data-text="p.2-price">Rs 420</span></div></div>
+        <div class="prod"><div class="ph"><img src="photos/prod-croissant.jpg" alt="Artisan Butter Croissants Box"><span class="tag">Fresh</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.3-name">Artisan butter croissants (box of 4)</div><div class="shopname" data-text="p.3-shop">Le Fournil · Grand Baie</div><div class="price-row"><span class="price" data-text="p.3-price">Rs 280</span></div></div>
+        <div class="prod"><div class="ph"><img src="photos/prod-iphone.jpg" alt="Refurbished Smartphone 128GB"><span class="tag">Warranty</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.4-name">iPhone 13, 128GB (Certified)</div><div class="shopname" data-text="p.4-shop">St Jean Tech Hub · Quatre Bornes</div><div class="price-row"><span class="price" data-text="p.4-price">Rs 18,500</span></div></div>
+        <div class="prod"><div class="ph"><img src="photos/prod-bag.jpg" alt="Handwoven Raffia Tote Bag"><span class="tag">Made in MU</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.5-name">Handwoven raffia beach tote</div><div class="shopname" data-text="p.5-shop">Caudan Craft Market · Port Louis</div><div class="price-row"><span class="price" data-text="p.5-price">Rs 1,200</span></div></div>
+        <div class="prod"><div class="ph"><img src="photos/prod-earrings.jpg" alt="Island Gold Drop Earrings"><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.6-name">Island gold drop earrings</div><div class="shopname" data-text="p.6-shop">Goyco Boutique · Pereybere</div><div class="price-row"><span class="price" data-text="p.6-price">Rs 650</span></div></div>
+        <div class="prod"><div class="ph"><img src="photos/prod-samosa.jpg" alt="Fresh Mauritian Samoussas"><span class="tag">Fresh</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.7-name">Mauritian samoussas (box of 12)</div><div class="shopname" data-text="p.7-shop">La Flore Boodhoo · Port Louis</div><div class="price-row"><span class="price" data-text="p.7-price">Rs 180</span><span class="deal">Under Rs 200</span></div></div>
+        <div class="prod"><div class="ph"><img src="photos/prod-soap.jpg" alt="Natural Artisan Soap Bar"><span class="tag">Made in MU</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.8-name">Botanical handmade soap bar</div><div class="shopname" data-text="p.8-shop">Caudan Craft Market · Port Louis</div><div class="price-row"><span class="price" data-text="p.8-price">Rs 165</span></div></div>
       </div>
     </section>
 
@@ -226,7 +795,7 @@
       <a href="business.html" class="biz">
         <div>
           <b data-text="biz.title">Own a business?</b>
-          <p class="t-body" data-text="biz.text">Open your shop on Bazar in 10 minutes. Free to start.</p>
+          <p class="t-body" data-text="biz.text">Open your shop on Bazar with smart invoicing, camera scan &amp; live insights. Free to start.</p>
         </div>
         <span class="go" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
@@ -234,23 +803,852 @@
 
   </main>
 
-  <!-- BOTTOM TAB BAR -->
+  <!-- FLOATING BAZAR ASSIST LAUNCHER (bottom-right) -->
+  <button type="button" class="assist-fab" onclick="openAssist('cust')" aria-label="Open Bazar Assist AI">
+    <span class="dot-ai" aria-hidden="true">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>
+    </span>
+    Bazar Assist
+  </button>
+
+  <!-- SIDE-EDGE OPT-IN DELIVERY TAB -->
+  <button type="button" class="deliv-side-tab" onclick="openDeliveryDrawer()" aria-label="Opt for Delivery options">
+    <span class="deliv-side-ico" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+    </span>
+    <span class="deliv-side-txt">
+      <b id="sideDelivTitle">Delivery · On</b>
+      <span id="sideDelivSub">35–45 min</span>
+    </span>
+  </button>
+
+  <!-- NOTIFICATIONS SLIDE-OVER DRAWER -->
+  <dialog id="notifDialog" class="side-ai" closedby="any" aria-labelledby="notifDialogTitle">
+    <div class="dlg-head">
+      <span class="dlg-avatar" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </span>
+      <div>
+        <div class="dlg-title" id="notifDialogTitle">Notifications</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:500;">Orders, bookings &amp; local alerts</div>
+      </div>
+      <button type="button" style="margin-left:auto;font-size:11.5px;font-weight:700;color:var(--lime-ink);margin-right:8px;" onclick="markAllNotifsRead()">Mark read</button>
+      <button type="button" class="dlg-close" style="margin-left:0" aria-label="Close Notifications" onclick="document.getElementById('notifDialog').close()">✕</button>
+    </div>
+    <div class="notif-list" id="notifList">
+      <div class="notif-card unread">
+        <span class="notif-ico ni-deliv" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+        </span>
+        <div class="notif-body">
+          <b>Rider on the way · Grabbit Express</b>
+          <p>Your order from Chelsea's Cup N Cake is 8 mins away.</p>
+          <small>Just now</small>
+        </div>
+      </div>
+      <div class="notif-card unread">
+        <span class="notif-ico ni-book" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </span>
+        <div class="notif-body">
+          <b>Appointment Confirmed</b>
+          <p>Lagon Beauty &amp; Hair confirmed your slot for Saturday at 11:30.</p>
+          <small>24m ago</small>
+        </div>
+      </div>
+      <div class="notif-card unread">
+        <span class="notif-ico ni-deal" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+        <div class="notif-body">
+          <b>Price Drop + Escrow Ready</b>
+          <p>Saved iPhone 13 Pro dropped by Rs 1,500 at St Jean Tech Hub.</p>
+          <small>2h ago</small>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- DELIVERY OPT-IN & CART SIDE DRAWER -->
+  <dialog id="deliveryDialog" class="side-ai" closedby="any" aria-labelledby="delivDialogTitle">
+    <div class="dlg-head">
+      <span class="dlg-avatar" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+      </span>
+      <div>
+        <div class="dlg-title" id="delivDialogTitle">Delivery &amp; Cart</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:500;" id="delivDestLabel">To Port Louis, Mauritius</div>
+      </div>
+      <button type="button" class="dlg-close" aria-label="Close Delivery Drawer" onclick="document.getElementById('deliveryDialog').close()">✕</button>
+    </div>
+
+    <div class="deliv-body">
+      <!-- Opt for Delivery vs Store Pickup -->
+      <div class="deliv-switch" role="tablist" aria-label="Fulfillment method">
+        <button type="button" id="optDelivBtn" class="on" onclick="setFulfillment('delivery')">Opt for Delivery</button>
+        <button type="button" id="optPickupBtn" onclick="setFulfillment('pickup')">Store Pickup (Free)</button>
+      </div>
+
+      <!-- Free Delivery Progress Bar -->
+      <div class="free-bar-box" id="freeDelivBox">
+        <small id="freeDelivText">Add Rs 130 more for FREE island-wide delivery!</small>
+        <div class="free-track"><div class="free-fill" id="freeDelivFill" style="width:82%"></div></div>
+      </div>
+
+      <!-- Speed Tiers (Shown when opted in for delivery) -->
+      <div id="delivTiersWrap">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:6px;">Delivery Speed</div>
+        <div class="tier-grid">
+          <button type="button" class="tier-card on" id="tierExpress" onclick="setDelivTier('express', 95)">
+            <b>Express · 35m</b>
+            <span>Grabbit Rider · Rs 95</span>
+          </button>
+          <button type="button" class="tier-card" id="tierStd" onclick="setDelivTier('standard', 60)">
+            <b>Same-Day</b>
+            <span>Island-wide · Rs 60</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cart Items -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:6px;">Your Items</div>
+        <div class="cart-items" id="cartItemsList"></div>
+      </div>
+
+      <!-- Payment Method -->
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:6px;">Payment</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;" id="payPills">
+          <button type="button" class="chip on" style="min-height:32px;font-size:12px;" onclick="setChip(this)">Cash on Delivery</button>
+          <button type="button" class="chip" style="min-height:32px;font-size:12px;" onclick="setChip(this)">MCB Juice</button>
+          <button type="button" class="chip" style="min-height:32px;font-size:12px;" onclick="setChip(this)">Card</button>
+        </div>
+      </div>
+      <div class="book-ok" id="orderPlacedMsg"></div>
+    </div>
+
+    <div class="deliv-foot">
+      <div class="sum-line"><span>Subtotal</span><span id="sumSub">Rs 1,370</span></div>
+      <div class="sum-line"><span id="sumFeeLabel">Delivery (Grabbit Express)</span><span id="sumFee">Rs 95</span></div>
+      <div class="sum-total"><span>Total</span><span id="sumTotal">Rs 1,465</span></div>
+      <button type="button" class="btn btn-black" style="width:100%" onclick="placeCustomerOrder()">Confirm Order</button>
+    </div>
+  </dialog>
+
+  <!-- SHOP & PRODUCT RATINGS MODAL -->
+  <dialog id="rateDialog" class="loc-modal" closedby="any" aria-labelledby="rateTitle">
+    <div class="loc-top">
+      <div>
+        <b id="rateTitle">Ratings &amp; Reviews</b>
+        <div id="rateSummary" style="font-size:12px;color:#b45309;font-weight:700;">★ 4.9 · Verified Reviews</div>
+      </div>
+      <button type="button" class="dlg-close" style="width:32px;height:32px" aria-label="Close ratings" onclick="document.getElementById('rateDialog').close()">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="rev-list" id="revList"></div>
+      <form onsubmit="submitReview(event)" style="border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:12px;font-weight:700;text-align:center;">Tap to rate your experience</div>
+        <div class="star-picker" id="starPicker">
+          <button type="button" class="star-btn lit" onclick="pickStars(1)">★</button>
+          <button type="button" class="star-btn lit" onclick="pickStars(2)">★</button>
+          <button type="button" class="star-btn lit" onclick="pickStars(3)">★</button>
+          <button type="button" class="star-btn lit" onclick="pickStars(4)">★</button>
+          <button type="button" class="star-btn lit" onclick="pickStars(5)">★</button>
+        </div>
+        <input type="text" id="revInput" required placeholder="Share what you liked (quality, speed, packaging)..." style="height:42px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--cream);font:inherit;font-size:13px;color:var(--black);">
+        <button type="submit" class="btn btn-black" style="min-height:42px;font-size:13px;">Post Verified Review</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- DIRECT MESSAGES DRAWER (Customers contacting Shops & Business Owners) -->
+  <dialog id="msgDialog" class="side-ai" closedby="any" aria-labelledby="msgDialogTitle">
+    <div class="dlg-head">
+      <span class="dlg-avatar" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+      </span>
+      <div>
+        <div class="dlg-title" id="msgDialogTitle">Messages</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:500;">Direct chat with shops &amp; sellers</div>
+      </div>
+      <button type="button" class="dlg-close" aria-label="Close Messages" onclick="document.getElementById('msgDialog').close()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <!-- Inbox list of shops & business owners -->
+    <div class="msg-list" id="msgList"></div>
+
+    <!-- Active 1-to-1 shop chat thread -->
+    <div class="thread-view" id="threadView">
+      <div class="thread-subbar">
+        <button type="button" class="thread-back" aria-label="Back to messages" onclick="closeShopThread()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div class="thread-shop">
+          <b id="threadShopName">Shop</b>
+          <span id="threadShopMeta">Verified Mauritian Business</span>
+        </div>
+      </div>
+      <div class="chat-log" id="shopChatLog" aria-live="polite"></div>
+      <form class="chat-form" onsubmit="sendShopMsg(event)">
+        <input type="text" id="shopChatInput" placeholder="Write a message to the shop..." aria-label="Message shop">
+        <button type="submit" aria-label="Send message">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4Z"/></svg>
+        </button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- BAZAR ASSIST POP-UP SIDE AI ASSISTANT (Single retained AI launcher) -->
+  <dialog id="assistDialog" class="side-ai" closedby="any" aria-labelledby="assistDialogTitle">
+    <div class="dlg-head">
+      <span class="dlg-avatar" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>
+      </span>
+      <div>
+        <div class="dlg-title" id="assistDialogTitle">Bazar Assist</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:500;">Shopping &amp; Enquiries · EN · FR · Kreol</div>
+      </div>
+      <button type="button" class="dlg-close" aria-label="Close Bazar Assist" onclick="document.getElementById('assistDialog').close()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="chat-log" id="chatLog" aria-live="polite"></div>
+    <div class="chat-chips" id="chatChips"></div>
+
+    <form class="chat-form" onsubmit="submitChat(event)">
+      <input type="text" id="chatInput" placeholder="Ask about shops, prices, or secondhand finds..." aria-label="Message Bazar Assist">
+      <button type="submit" aria-label="Send message">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4Z"/></svg>
+      </button>
+    </form>
+  </dialog>
+
+  <!-- SELECT YOUR LOCATION DIALOG (Reference UI + Real Interactive Mauritius Mini-Map) -->
+  <dialog id="locDialog" class="loc-modal" closedby="any" aria-labelledby="locDialogTitle">
+    <div class="loc-top">
+      <b id="locDialogTitle">Select Your Location</b>
+      <button type="button" class="dlg-close" style="width:32px;height:32px" aria-label="Close location picker" onclick="document.getElementById('locDialog').close()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <form class="loc-search-pill" onsubmit="searchTown(event)">
+      <input type="text" id="locSearchInput" value="Port Louis, Mauritius" placeholder="Search town or district..." aria-label="Search location">
+      <button type="button" title="Use my GPS location" aria-label="Use GPS" onclick="useMiniGps()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      </button>
+      <button type="submit" aria-label="Find town">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+    </form>
+
+    <div class="loc-quick" id="cityGrid">
+      <button type="button" class="loc-chip on" onclick="pickCity(this, 'Port Louis, Mauritius', -20.1609, 57.5012)">Port Louis</button>
+      <button type="button" class="loc-chip" onclick="pickCity(this, 'Grand Baie, Mauritius', -20.0089, 57.5816)">Grand Baie</button>
+      <button type="button" class="loc-chip" onclick="pickCity(this, 'Curepipe, Mauritius', -20.3167, 57.5261)">Curepipe</button>
+      <button type="button" class="loc-chip" onclick="pickCity(this, 'Quatre Bornes, Mauritius', -20.2638, 57.4791)">Quatre Bornes</button>
+      <button type="button" class="loc-chip" onclick="pickCity(this, 'Rose Hill, Mauritius', -20.2449, 57.4694)">Rose Hill</button>
+      <button type="button" class="loc-chip" onclick="pickCity(this, 'Mahébourg, Mauritius', -20.4081, 57.7000)">Mahébourg</button>
+    </div>
+
+    <div class="mini-map-wrap">
+      <div id="miniLocMap" aria-label="Interactive Mauritius location map"></div>
+    </div>
+
+    <div class="rad-row" id="radRow">
+      <button type="button" class="rad-opt" onclick="pickRad(this, '2 km')">2 km</button>
+      <button type="button" class="rad-opt on" onclick="pickRad(this, '5 km')">5 km</button>
+      <button type="button" class="rad-opt" onclick="pickRad(this, '10 km')">10 km</button>
+      <button type="button" class="rad-opt" onclick="pickRad(this, 'All MU')">All MU</button>
+    </div>
+
+    <div class="loc-foot">
+      <button type="button" class="btn btn-black" onclick="applyLocation()">Set Location</button>
+      <a href="map.html" class="btn btn-lime" style="flex:0 0 auto;padding:0 16px;">Full Map ↗</a>
+    </div>
+  </dialog>
+
+  <!-- SERVICE BOOKING & CALENDAR MODAL (For Salons, Spas & Local Pros) -->
+  <dialog id="bookingDialog" class="loc-modal" closedby="any" aria-labelledby="bookTitle">
+    <div class="loc-top">
+      <div>
+        <b id="bookTitle">Book Appointment</b>
+        <div id="bookSub" style="font-size:12px;color:var(--muted);">Select date &amp; time</div>
+      </div>
+      <button type="button" class="dlg-close" style="width:32px;height:32px" aria-label="Close booking" onclick="document.getElementById('bookingDialog').close()">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">Select Date · Nov / Dec</div>
+        <div class="cal-days" id="calDays">
+          <button type="button" class="cal-day on" onclick="pickDay(this, 'Sat 28 Nov')">Sat<b>28</b></button>
+          <button type="button" class="cal-day" onclick="pickDay(this, 'Sun 29 Nov')">Sun<b>29</b></button>
+          <button type="button" class="cal-day" onclick="pickDay(this, 'Mon 30 Nov')">Mon<b>30</b></button>
+          <button type="button" class="cal-day" onclick="pickDay(this, 'Tue 1 Dec')">Tue<b>1</b></button>
+          <button type="button" class="cal-day" onclick="pickDay(this, 'Wed 2 Dec')">Wed<b>2</b></button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">Available Time Slots</div>
+        <div class="time-grid" id="timeGrid">
+          <button type="button" class="time-opt" onclick="pickTime(this, '10:00')">10:00</button>
+          <button type="button" class="time-opt on" onclick="pickTime(this, '11:30')">11:30</button>
+          <button type="button" class="time-opt" onclick="pickTime(this, '13:00')">13:00</button>
+          <button type="button" class="time-opt" onclick="pickTime(this, '14:30')">14:30</button>
+          <button type="button" class="time-opt" onclick="pickTime(this, '16:00')">16:00</button>
+          <button type="button" class="time-opt" onclick="pickTime(this, '17:30')">17:30</button>
+        </div>
+      </div>
+      <div class="book-ok" id="bookOk"></div>
+      <button type="button" class="btn btn-black" onclick="confirmBooking()">Confirm Appointment</button>
+    </div>
+  </dialog>
+
+  <!-- BOTTOM TAB BAR (Customer View: Home, Map, Resell, Orders) -->
   <nav class="tab-bar t-caption" aria-label="Main">
     <a href="index.html" class="on"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg></span><span data-text="tab.home">Home</span></a>
-    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><span data-text="tab.search">Search</span></a>
-    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg></span><span data-text="tab.sell">Sell</span></a>
-    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><span data-text="tab.orders">Orders</span></a>
-    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span data-text="tab.account">Account</span></a>
+    <a href="map.html"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20Z"/><path d="M9 4v13.5M15 6.5V20"/></svg></span><span data-text="tab.map">Map</span></a>
+    <a href="resell.html"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg></span><span data-text="tab.resell">Resell</span></a>
+    <a href="#" onclick="openDeliveryDrawer(); return false;"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><span data-text="tab.orders">Orders</span></a>
   </nav>
 
   <script>
-    // The intro strip is for first-time visitors: once closed, it stays closed.
+    // Intro persistence
     function hideIntro() {
       document.getElementById("intro").classList.add("hidden");
       try { localStorage.setItem("bazar-intro-closed", "1"); } catch (e) {}
     }
     try { if (localStorage.getItem("bazar-intro-closed")) document.getElementById("intro").classList.add("hidden"); } catch (e) {}
+
+    // Quick filter chips & save heart
+    function setChip(btn) {
+      btn.parentNode.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("on"); });
+      btn.classList.add("on");
+    }
+    function toggleSave(btn) { btn.classList.toggle("saved"); }
+
+    // Interactive Mini-Map Location Picker (MapLibre + OpenFreeMap: free, no API key)
+    var miniMap = null;
+    var miniPin = null;
+    var pendingCity = "Port Louis, Mauritius";
+    var pendingLngLat = [57.5012, -20.1609];   // [lng, lat] of the pin; the map reopens here
+    var townCoords = {
+      "port louis": [-20.1609, 57.5012, "Port Louis, Mauritius"],
+      "grand baie": [-20.0089, 57.5816, "Grand Baie, Mauritius"],
+      "curepipe": [-20.3167, 57.5261, "Curepipe, Mauritius"],
+      "quatre bornes": [-20.2638, 57.4791, "Quatre Bornes, Mauritius"],
+      "rose hill": [-20.2449, 57.4694, "Rose Hill, Mauritius"],
+      "mahebourg": [-20.4081, 57.7000, "Mahébourg, Mauritius"],
+      "mahébourg": [-20.4081, 57.7000, "Mahébourg, Mauritius"],
+      "moka": [-20.2248, 57.4976, "Moka, Mauritius"],
+      "flic en flac": [-20.2742, 57.3631, "Flic en Flac, Mauritius"]
+    };
+
+    function openLoc() {
+      document.getElementById("locDialog").showModal();
+      setTimeout(function () {
+        if (!miniMap && typeof maplibregl !== "undefined") {
+          miniMap = new maplibregl.Map({
+            container: "miniLocMap",
+            style: "https://tiles.openfreemap.org/styles/positron",
+            center: pendingLngLat, zoom: 12.5, minZoom: 8,
+            maxBounds: [[56.9, -20.75], [58.1, -19.6]],
+            attributionControl: { compact: true }
+          });
+          // Wrapper keeps the pin's rotated teardrop shape (MapLibre moves the outer element).
+          var wrap = document.createElement("div");
+          wrap.className = "loc-pin-wrap";
+          wrap.innerHTML = '<div class="loc-pin-badge"></div>';
+          miniPin = new maplibregl.Marker({ element: wrap, anchor: "bottom", draggable: true })
+            .setLngLat(pendingLngLat).addTo(miniMap);
+          function pinned(ll) {
+            pendingLngLat = [ll.lng, ll.lat];
+            pendingCity = "Pinned (" + ll.lat.toFixed(3) + ", " + ll.lng.toFixed(3) + ")";
+            document.getElementById("locSearchInput").value = pendingCity;
+          }
+          miniMap.on("click", function (ev) { miniPin.setLngLat(ev.lngLat); pinned(ev.lngLat); });
+          miniPin.on("dragend", function () { pinned(miniPin.getLngLat()); });
+        } else if (miniMap) {
+          miniMap.resize();
+          miniMap.jumpTo({ center: pendingLngLat });
+          miniPin.setLngLat(pendingLngLat);
+        }
+      }, 60);
+    }
+
+    function pickCity(btn, city, lat, lng) {
+      document.querySelectorAll("#cityGrid .loc-chip").forEach(function (b) { b.classList.remove("on"); });
+      if (btn) btn.classList.add("on");
+      pendingCity = city;
+      pendingLngLat = [lng, lat];
+      document.getElementById("locSearchInput").value = city;
+      if (miniMap && miniPin) {
+        miniMap.flyTo({ center: [lng, lat], zoom: 12.5, duration: 700 });
+        miniPin.setLngLat([lng, lat]);
+      }
+    }
+
+    function searchTown(e) {
+      e.preventDefault();
+      var q = document.getElementById("locSearchInput").value.trim().toLowerCase();
+      for (var k in townCoords) {
+        if (q.includes(k)) {
+          pickCity(null, townCoords[k][2], townCoords[k][0], townCoords[k][1]);
+          return;
+        }
+      }
+      pendingCity = document.getElementById("locSearchInput").value.trim() || "Port Louis, Mauritius";
+    }
+
+    function useMiniGps() {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        var lat = pos.coords.latitude, lng = pos.coords.longitude;
+        pendingCity = "My GPS Location";
+        pendingLngLat = [lng, lat];
+        document.getElementById("locSearchInput").value = pendingCity;
+        if (miniMap && miniPin) {
+          miniMap.flyTo({ center: [lng, lat], zoom: 14, duration: 800 });
+          miniPin.setLngLat([lng, lat]);
+        }
+      });
+    }
+
+    function pickRad(btn, rad) {
+      document.querySelectorAll("#radRow .rad-opt").forEach(function (b) { b.classList.remove("on"); });
+      btn.classList.add("on");
+      document.getElementById("loc-rad").textContent = "· " + rad;
+    }
+
+    function applyLocation() {
+      var val = document.getElementById("locSearchInput").value.trim();
+      var finalLoc = val || pendingCity;
+      document.getElementById("loc-city").textContent = finalLoc;
+      var dest = document.getElementById("delivDestLabel");
+      if (dest) dest.textContent = "To " + finalLoc;
+      document.getElementById("locDialog").close();
+    }
+
+    // Notifications Drawer
+    function openNotifications() {
+      document.getElementById("notifDialog").showModal();
+    }
+    function markAllNotifsRead() {
+      document.querySelectorAll("#notifList .notif-card").forEach(function (c) { c.classList.remove("unread"); });
+      var b = document.getElementById("notifBadge");
+      if (b) b.style.display = "none";
+    }
+
+    // Side Option to Opt for Delivery + Cart Logic
+    var cart = [
+      { title: "Signature chocolate fudge cake", price: 950, qty: 1, img: "photos/prod-cake.jpg" },
+      { title: "Single-origin roasted beans", price: 420, qty: 1, img: "photos/prod-coffee.jpg" }
+    ];
+    var fulfillment = "delivery";
+    var delivFee = 95;
+    var delivTierName = "Grabbit Express";
+
+    function renderCart() {
+      var wrap = document.getElementById("cartItemsList");
+      if (!wrap) return;
+      wrap.innerHTML = "";
+      var sub = 0, count = 0;
+      cart.forEach(function (it, idx) {
+        sub += it.price * it.qty;
+        count += it.qty;
+        var row = document.createElement("div");
+        row.className = "cart-row";
+        row.innerHTML =
+          '<img src="' + it.img + '" alt="">' +
+          '<div class="cart-row-info"><b>' + it.title + '</b><span>Rs ' + (it.price * it.qty).toLocaleString() + '</span></div>' +
+          '<div class="qty-box">' +
+            '<button type="button" aria-label="Decrease" onclick="stepQty(' + idx + ', -1)">−</button>' +
+            '<span>' + it.qty + '</span>' +
+            '<button type="button" aria-label="Increase" onclick="stepQty(' + idx + ', 1)">+</button>' +
+          '</div>';
+        wrap.appendChild(row);
+      });
+      var badge = document.getElementById("cartBadge");
+      if (badge) {
+        badge.textContent = count;
+        badge.style.display = count ? "grid" : "none";
+      }
+      var freeGoal = 1500;
+      var pct = Math.min(100, Math.round((sub / freeGoal) * 100));
+      document.getElementById("freeDelivFill").style.width = pct + "%";
+      var isFree = sub >= freeGoal;
+      document.getElementById("freeDelivText").textContent = isFree
+        ? "✓ Free island-wide delivery unlocked!"
+        : "Add Rs " + (freeGoal - sub).toLocaleString() + " more for FREE island-wide delivery!";
+
+      var appliedFee = fulfillment === "pickup" ? 0 : (isFree ? 0 : delivFee);
+      document.getElementById("sumSub").textContent = "Rs " + sub.toLocaleString();
+      document.getElementById("sumFeeLabel").textContent = fulfillment === "pickup" ? "Store Pickup" : "Delivery (" + delivTierName + ")";
+      document.getElementById("sumFee").textContent = appliedFee === 0 ? "FREE" : "Rs " + appliedFee;
+      document.getElementById("sumTotal").textContent = "Rs " + (sub + appliedFee).toLocaleString();
+    }
+
+    function stepQty(idx, d) {
+      cart[idx].qty += d;
+      if (cart[idx].qty <= 0) cart.splice(idx, 1);
+      renderCart();
+    }
+
+    function addToDelivery(btn, title, price, img) {
+      var existing = cart.find(function (x) { return x.title === title; });
+      if (existing) existing.qty += 1;
+      else cart.push({ title: title, price: price, qty: 1, img: img });
+      renderCart();
+      var badge = document.getElementById("cartBadge");
+      if (badge) { badge.classList.remove("pop-anim"); void badge.offsetWidth; badge.classList.add("pop-anim"); }
+      if (btn) {
+        var orig = btn.textContent;
+        btn.textContent = "✓ Added";
+        btn.classList.add("added");
+        setTimeout(function () { btn.textContent = orig; btn.classList.remove("added"); }, 1100);
+      }
+    }
+
+    function setFulfillment(mode) {
+      fulfillment = mode;
+      var isDeliv = mode === "delivery";
+      document.getElementById("optDelivBtn").classList.toggle("on", isDeliv);
+      document.getElementById("optPickupBtn").classList.toggle("on", !isDeliv);
+      document.getElementById("delivTiersWrap").style.display = isDeliv ? "block" : "none";
+      document.getElementById("freeDelivBox").style.display = isDeliv ? "block" : "none";
+      document.getElementById("sideDelivTitle").textContent = isDeliv ? "Delivery · On" : "Pickup · On";
+      document.getElementById("sideDelivSub").textContent = isDeliv ? (delivFee === 95 ? "35–45 min" : "Same-day") : "Free collect";
+      renderCart();
+    }
+
+    function setDelivTier(tier, fee) {
+      delivFee = fee;
+      delivTierName = tier === "express" ? "Grabbit Express" : "Same-Day";
+      document.getElementById("tierExpress").classList.toggle("on", tier === "express");
+      document.getElementById("tierStd").classList.toggle("on", tier === "standard");
+      document.getElementById("sideDelivSub").textContent = tier === "express" ? "35–45 min" : "Same-day";
+      renderCart();
+    }
+
+    function openDeliveryDrawer() {
+      document.getElementById("orderPlacedMsg").classList.remove("show");
+      renderCart();
+      document.getElementById("deliveryDialog").showModal();
+    }
+
+    function placeCustomerOrder() {
+      var msg = document.getElementById("orderPlacedMsg");
+      msg.textContent = fulfillment === "delivery"
+        ? "✓ Order placed! Grabbit Express rider assigned — live tracking added to Notifications."
+        : "✓ Order confirmed for Store Pickup! The shop has been notified.";
+      msg.classList.add("show");
+    }
+
+    // Shop & Product Ratings Modal
+    var reviewsStore = {
+      default: [
+        { name: "Anoushka N.", stars: 5, text: "Super fresh quality and arrived in 35 mins via Grabbit!" },
+        { name: "Kevin R.", stars: 5, text: "Exactly as pictured, great local Mauritian service." }
+      ]
+    };
+    var currentRateTarget = "";
+    var chosenStars = 5;
+
+    function openRatings(target, avg, count) {
+      currentRateTarget = target;
+      document.getElementById("rateTitle").textContent = target;
+      document.getElementById("rateSummary").textContent = "★ " + avg + " · " + count + " verified reviews";
+      pickStars(5);
+      renderReviews();
+      document.getElementById("rateDialog").showModal();
+    }
+    function pickStars(n) {
+      chosenStars = n;
+      document.querySelectorAll("#starPicker .star-btn").forEach(function (b, idx) {
+        b.classList.toggle("lit", idx < n);
+      });
+    }
+    function renderReviews() {
+      var list = reviewsStore[currentRateTarget] || reviewsStore.default;
+      var box = document.getElementById("revList");
+      box.innerHTML = "";
+      list.forEach(function (r) {
+        var d = document.createElement("div");
+        d.className = "rev-item";
+        d.innerHTML = '<div class="rev-item-head"><b>' + r.name + '</b><span>' + "★".repeat(r.stars) + '</span></div><div>' + r.text + '</div>';
+        box.appendChild(d);
+      });
+    }
+    function submitReview(e) {
+      e.preventDefault();
+      var inp = document.getElementById("revInput");
+      var txt = inp.value.trim();
+      if (!txt) return;
+      if (!reviewsStore[currentRateTarget]) reviewsStore[currentRateTarget] = reviewsStore.default.slice();
+      reviewsStore[currentRateTarget].unshift({ name: "You · Verified", stars: chosenStars, text: txt });
+      inp.value = "";
+      renderReviews();
+    }
+
+    // Staggered Scroll-Reveal on Shop & Product Cards
+    (function initScrollReveal() {
+      var els = document.querySelectorAll(".reveal-up");
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+        els.forEach(function (el) { el.classList.add("in-view"); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en, i) {
+          if (en.isIntersecting) {
+            en.target.style.transitionDelay = ((i % 5) * 0.06) + "s";
+            en.target.classList.add("in-view");
+            io.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+    renderCart();
+
+    // Direct Customer ↔ Shop / Business Owner Messaging
+    var shopThreads = [
+      {
+        id: "chelseas",
+        shop: "Chelsea's Cup N Cake",
+        status: "Curepipe · Online now",
+        time: "2m",
+        unread: 1,
+        img: "photos/shop-chelseas.jpg",
+        msgs: [
+          { from: "user", text: "Hi! Do you have the signature chocolate fudge cake available today?" },
+          { from: "shop", text: "Hello! Yes, freshly baked this morning. We can deliver by 2:30 PM or hold one for pickup." }
+        ]
+      },
+      {
+        id: "dodo",
+        shop: "Dodo Café Boutique",
+        status: "Pereybere · Replies in ~5 min",
+        time: "1h",
+        unread: 0,
+        img: "photos/shop-dodo-cafe.jpg",
+        msgs: [
+          { from: "user", text: "Can you grind the 250g single-origin beans for espresso?" },
+          { from: "shop", text: "Of course! Just add 'Espresso grind' in your order note and we'll prepare it fresh." }
+        ]
+      },
+      {
+        id: "bookcourt",
+        shop: "Bookcourt Caudan",
+        status: "Port Louis · Verified Business",
+        time: "Yesterday",
+        unread: 0,
+        img: "photos/shop-bookcourt.jpg",
+        msgs: [
+          { from: "shop", text: "Good afternoon! Your reserved copy is ready at our Caudan Waterfront counter." }
+        ]
+      },
+      {
+        id: "lagon",
+        shop: "Lagon Beauty & Hair",
+        status: "Grand Baie · Salon & Spa",
+        time: "Sat",
+        unread: 0,
+        img: "photos/cat-beauty.jpg",
+        msgs: [
+          { from: "shop", text: "Your Saturday 11:30 AM styling appointment is confirmed. See you soon!" }
+        ]
+      }
+    ];
+    var activeThreadId = null;
+
+    function renderMsgList() {
+      var box = document.getElementById("msgList");
+      box.innerHTML = "";
+      var anyUnread = false;
+      shopThreads.forEach(function (t) {
+        if (t.unread > 0) anyUnread = true;
+        var last = t.msgs[t.msgs.length - 1];
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "msg-item";
+        btn.onclick = function () { openShopThread(t.id); };
+        btn.innerHTML =
+          '<img src="' + t.img + '" alt="">' +
+          '<div class="msg-meta">' +
+            '<div class="msg-meta-top"><b>' + t.shop + '</b><small>' + t.time + '</small></div>' +
+            '<div class="msg-prev">' + (last ? last.text : "") + '</div>' +
+          '</div>' +
+          (t.unread ? '<span class="msg-unread">' + t.unread + '</span>' : '');
+        box.appendChild(btn);
+      });
+      var dot = document.getElementById("msgUnreadDot");
+      if (dot) dot.style.display = anyUnread ? "block" : "none";
+    }
+
+    function openMessages(shopName) {
+      renderMsgList();
+      closeShopThread();
+      document.getElementById("msgDialog").showModal();
+      if (shopName) {
+        var found = shopThreads.find(function (t) { return t.shop === shopName; });
+        if (found) openShopThread(found.id);
+      }
+    }
+
+    function openShopThread(id) {
+      var t = shopThreads.find(function (x) { return x.id === id; });
+      if (!t) return;
+      activeThreadId = id;
+      t.unread = 0;
+      renderMsgList();
+      document.getElementById("msgList").classList.add("hidden");
+      document.getElementById("threadView").classList.add("active");
+      document.getElementById("threadShopName").textContent = t.shop;
+      document.getElementById("threadShopMeta").textContent = t.status;
+      var log = document.getElementById("shopChatLog");
+      log.innerHTML = "";
+      t.msgs.forEach(function (m) {
+        var d = document.createElement("div");
+        d.className = "bubble " + (m.from === "user" ? "bubble--user" : "bubble--bot");
+        d.textContent = m.text;
+        log.appendChild(d);
+      });
+      log.scrollTop = log.scrollHeight;
+      document.getElementById("shopChatInput").focus();
+    }
+
+    function closeShopThread() {
+      activeThreadId = null;
+      document.getElementById("threadView").classList.remove("active");
+      document.getElementById("msgList").classList.remove("hidden");
+    }
+
+    function sendShopMsg(e) {
+      e.preventDefault();
+      var inp = document.getElementById("shopChatInput");
+      var txt = inp.value.trim();
+      if (!txt || !activeThreadId) return;
+      var t = shopThreads.find(function (x) { return x.id === activeThreadId; });
+      if (!t) return;
+      t.msgs.push({ from: "user", text: txt });
+      t.time = "Just now";
+      inp.value = "";
+      openShopThread(activeThreadId);
+    }
+
+    // Bazar Assist AI Side Panel (Single retained AI button on Customer Dashboard)
+    var customerAssist = {
+      greeting: "Bonzour! I'm Bazar Assist. Ask me to discover businesses near you, find secondhand deals, or message a shop.",
+      chips: [
+        { q: "Open near me", a: "3 verified shops are open near Port Louis & Curepipe: Bookcourt Caudan (0.5 km), Dodo Café Boutique (0.8 km), and Chelsea's Cup N Cake (1.1 km)." },
+        { q: "Secondhand deals", a: "Top pre-loved finds nearby: iPhone 13 128GB (Rs 18,500 at St Jean Tech Hub) & vintage home pieces in Quatre Bornes." },
+        { q: "Under Rs 500", a: "Top picks under Rs 500: La Flore Boodhoo samoussas (Rs 180), Le Fournil butter croissants (Rs 280), Dodo Café roasted beans (Rs 420)." },
+        { q: "Ask a shop about delivery", a: "Tell me which shop or item you like and I'll send your enquiry directly (in English, French, or Kreol)." }
+      ]
+    };
+
+    function openAssist() {
+      var log = document.getElementById("chatLog");
+      if (!log.children.length) {
+        log.innerHTML = '<div class="bubble bubble--bot">' + customerAssist.greeting + '</div>';
+        var chips = document.getElementById("chatChips");
+        chips.innerHTML = "";
+        customerAssist.chips.forEach(function (c) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.textContent = c.q;
+          b.onclick = function () { pushChat(c.q, c.a); };
+          chips.appendChild(b);
+        });
+      }
+      document.getElementById("assistDialog").showModal();
+    }
+    function pushChat(q, a) {
+      var log = document.getElementById("chatLog");
+      var u = document.createElement("div"); u.className = "bubble bubble--user"; u.textContent = q;
+      var b = document.createElement("div"); b.className = "bubble bubble--bot"; b.textContent = a;
+      log.appendChild(u); log.appendChild(b);
+      log.scrollTop = log.scrollHeight;
+    }
+    function submitChat(e) {
+      e.preventDefault();
+      var inp = document.getElementById("chatInput");
+      var q = inp.value.trim();
+      if (!q) return;
+      var a = "Checking nearby shops in " + document.getElementById("loc-city").textContent + " for \"" + q + "\" — 3 matches found with same-day delivery.";
+      pushChat(q, a);
+      inp.value = "";
+    }
+
+    // Dropdown menus (Profile Account & Language Flag Switcher)
+    function togglePop(id) {
+      document.querySelectorAll(".pop-menu").forEach(function (m) {
+        if (m.id !== id) m.classList.remove("open");
+      });
+      document.getElementById(id).classList.toggle("open");
+    }
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".pop-wrap")) {
+        document.querySelectorAll(".pop-menu").forEach(function (m) { m.classList.remove("open"); });
+      }
+    });
+    var flags = {
+      en: '<clipPath id="i-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#i-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g>',
+      fr: '<clipPath id="i-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#i-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g>',
+      mfe: '<clipPath id="i-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#i-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g>'
+    };
+    function setLang(code) {
+      if (!flags[code]) return;
+      document.getElementById("langFlagSvg").innerHTML = flags[code];
+      document.querySelectorAll("#langMenu button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-lang") === code); });
+      document.getElementById("langMenu").classList.remove("open");
+      try { localStorage.setItem("bazar-lang", code); } catch (e) {}
+    }
+    try { var sl = localStorage.getItem("bazar-lang"); if (sl && flags[sl]) setLang(sl); } catch (e) {}
+
+    // Service Booking & Calendar logic
+    var selShop = "", selDay = "Sat 28 Nov", selTime = "11:30";
+    function openBooking(shop, srv, price) {
+      selShop = shop;
+      document.getElementById("bookTitle").textContent = shop;
+      document.getElementById("bookSub").textContent = srv + " · " + price;
+      document.getElementById("bookOk").classList.remove("show");
+      document.getElementById("bookingDialog").showModal();
+    }
+    function pickDay(btn, d) {
+      selDay = d;
+      document.querySelectorAll("#calDays .cal-day").forEach(function (b) { b.classList.remove("on"); });
+      btn.classList.add("on");
+    }
+    function pickTime(btn, t) {
+      selTime = t;
+      document.querySelectorAll("#timeGrid .time-opt").forEach(function (b) { b.classList.remove("on"); });
+      btn.classList.add("on");
+    }
+    function confirmBooking() {
+      var box = document.getElementById("bookOk");
+      box.textContent = "✓ Booked with " + selShop + " for " + selDay + " at " + selTime + "!";
+      box.classList.add("show");
+    }
+
+    // Fallback for browsers without <dialog closedby="any"> support (e.g. Safari)
+    if (!("closedBy" in HTMLDialogElement.prototype)) {
+      document.querySelectorAll("dialog[closedby='any']").forEach(function (dialog) {
+        dialog.addEventListener("click", function (event) {
+          if (event.target !== dialog) return;
+          var rect = dialog.getBoundingClientRect();
+          var inside = rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
+                       rect.left <= event.clientX && event.clientX <= rect.left + rect.width;
+          if (!inside) dialog.close();
+        });
+      });
+    }
   </script>
+  <script src="i18n.js"></script>
   <script src="edit-text.js"></script>
 </body>
 </html>

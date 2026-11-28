@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e6">
+  <title>Bazar — Map</title>
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="app.css">
+  <!-- Map engine: MapLibre GL (open source). Map tiles: OpenFreeMap. No API key needed. -->
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <style>
+    :focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+
+    /* Language switcher + profile menu (same as Home) */
+    .pop-wrap { position: relative; }
+    .lang-btn {
+      width: 36px; height: 36px; border-radius: 999px;
+      background: var(--lime); border: 2px solid var(--black);
+      display: grid; place-items: center; padding: 0; margin-right: 4px;
+    }
+    .lang-btn svg { width: 22px; height: 22px; border-radius: 999px; display: block; }
+    .profile-btn {
+      width: 38px; height: 38px; border-radius: 999px;
+      background: var(--black); color: var(--lime);
+      display: grid; place-items: center; font-weight: 700; font-size: 13px;
+    }
+    .pop-menu {
+      position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+      min-width: 196px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 6px; box-shadow: 0 14px 32px rgba(14, 14, 12, 0.18);
+      display: none; flex-direction: column; gap: 2px;
+    }
+    .pop-menu.open { display: flex; }
+    .pop-menu a, .pop-menu button {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--black); text-align: left; width: 100%;
+    }
+    .pop-menu a:hover, .pop-menu button:hover { background: var(--cream); }
+    .pop-menu button.on { background: var(--black); color: var(--lime); }
+    .pop-menu svg { width: 18px; height: 18px; flex: none; }
+    .pop-sep { height: 1px; background: var(--line); margin: 4px 6px; }
+
+    /* ───── MAP AREA: fills the space between the top bar and the tab bar ───── */
+    main.map-main {
+      position: relative; padding: 0;
+      height: calc(100svh - var(--top-bar) - var(--tab-bar) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      min-height: 420px;
+    }
+    #map { position: absolute; inset: 0; background: var(--cream); }
+
+    /* Top overlay: location status + find me */
+    .map-top {
+      position: absolute; top: 12px; left: var(--gutter); right: var(--gutter); z-index: 5;
+      display: flex; align-items: center; gap: 8px; pointer-events: none;
+    }
+    .map-top > * { pointer-events: auto; }
+    .loc-chip {
+      display: inline-flex; align-items: center; gap: 8px; min-height: 40px; max-width: 100%;
+      padding: 6px 14px 6px 8px; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--line); box-shadow: 0 6px 18px rgba(14, 14, 12, 0.12);
+      font-size: var(--label); font-weight: 600;
+    }
+    .loc-chip .pin {
+      width: 24px; height: 24px; border-radius: 999px; background: var(--lime); color: var(--black);
+      display: grid; place-items: center; flex: none;
+    }
+    .loc-chip span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .find-btn {
+      margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 8px;
+      min-height: 44px; padding: 0 16px 0 12px; border-radius: 999px;
+      background: var(--black); color: var(--lime); font-size: 13px; font-weight: 700;
+      box-shadow: 0 8px 24px rgba(14, 14, 12, 0.28);
+    }
+
+    /* Bottom overlay: selected place card + nearby strip */
+    .map-bottom {
+      position: absolute; left: var(--gutter); right: var(--gutter); bottom: 12px; z-index: 5;
+      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+    }
+    .map-bottom > * { pointer-events: auto; }
+
+    .place {
+      background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+      padding: 14px; box-shadow: 0 14px 36px rgba(14, 14, 12, 0.2);
+      display: none; flex-direction: column; gap: 12px;
+    }
+    .place.show { display: flex; }
+    .place-head { display: flex; align-items: center; gap: 12px; }
+    .mono {
+      width: 44px; height: 44px; border-radius: 12px; background: var(--black); color: var(--lime);
+      display: grid; place-items: center; font-weight: 700; font-size: 17px; flex: none;
+    }
+    .place-name { font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
+    .place-meta { color: var(--muted); font-size: var(--caption); margin-top: 2px; }
+    .place-close {
+      margin-left: auto; width: 40px; height: 40px; border-radius: 999px; flex: none;
+      display: grid; place-items: center; color: var(--black);
+    }
+    .place-close:hover { background: var(--line); }
+
+    .dist-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .dist-box { background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+    .dist-box small { display: block; font-size: 11px; font-weight: 600; color: var(--muted); }
+    .dist-box b { display: block; margin-top: 3px; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+    .dist-box b.wait { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+    .dist-note { font-size: var(--caption); color: var(--muted); }
+
+    .place-actions { display: flex; gap: 8px; }
+    .place-actions .btn { flex: 1; min-height: 44px; padding: 0 14px; font-size: 13px; }
+    .btn-ghost { background: var(--cream); border: 1px solid var(--line); color: var(--black); }
+
+    .nearby { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .nearby::-webkit-scrollbar { display: none; }
+    .near-chip {
+      flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+      padding: 6px 14px 6px 6px; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--line); box-shadow: 0 6px 18px rgba(14, 14, 12, 0.12);
+      font-size: var(--label); font-weight: 600; white-space: nowrap;
+    }
+    .near-chip .mono { width: 32px; height: 32px; border-radius: 999px; font-size: 13px; }
+    .near-chip .km { color: var(--lime-ink); font-weight: 700; }
+    .near-chip.on { background: var(--black); color: var(--card); border-color: var(--black); }
+    .near-chip.on .mono { background: var(--lime); color: var(--black); }
+    .near-chip.on .km { color: var(--lime); }
+
+    /* Map pins */
+    .shop-pin {
+      width: 38px; height: 38px; border-radius: 999px; background: var(--black); color: var(--lime);
+      display: grid; place-items: center; font: 700 14px/1 var(--font);
+      border: 3px solid var(--card); box-shadow: 0 6px 16px rgba(14, 14, 12, 0.35); cursor: pointer;
+      transition: transform .15s;
+    }
+    .shop-pin:hover { transform: scale(1.08); }
+    .shop-pin.on { background: var(--lime); color: var(--black); border-color: var(--black); transform: scale(1.15); }
+    .drop-pin {
+      width: 22px; height: 22px; border-radius: 999px; background: var(--card);
+      border: 6px solid var(--black); box-shadow: 0 6px 16px rgba(14, 14, 12, 0.35);
+    }
+    .me-dot {
+      width: 20px; height: 20px; border-radius: 999px; background: var(--lime);
+      border: 4px solid var(--black); box-shadow: 0 0 0 8px rgba(212, 245, 60, 0.35);
+    }
+    .maplibregl-ctrl-attrib { font-size: 10px; }
+    .maplibregl-ctrl-group { border-radius: 12px !important; overflow: hidden; }
+
+    /* ───── LAPTOP: card + nearby list sit in a left panel ───── */
+    @media (min-width: 1280px) {
+      .map-bottom {
+        top: 72px; bottom: auto; right: auto; width: 380px;
+      }
+      .nearby { flex-direction: column; overflow: visible; }
+      .near-chip { width: 100%; border-radius: 16px; }
+      .near-chip .km { margin-left: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- APP BAR (same as Home) -->
+  <header class="app-bar">
+    <div class="wrap">
+      <a href="business.html" class="logo" data-text="bar.logo">bazar</a>
+      <nav class="top-nav">
+        <a href="index.html" data-text="nav.home">Home</a>
+        <a href="map.html" class="on" data-text="nav.map">Map</a>
+        <a href="resell.html" data-text="nav.resell">Resell</a>
+        <a href="#" data-text="nav.orders">Orders</a>
+      </nav>
+      <div class="right">
+        <!-- Language Flag Switcher -->
+        <div class="pop-wrap">
+          <button type="button" class="lang-btn" id="langBtn" aria-label="Change language" onclick="togglePop('langMenu')">
+            <svg viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="m-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#m-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+          </button>
+          <div class="pop-menu" id="langMenu" role="menu">
+            <button type="button" class="on" data-lang="en" onclick="setLang('en')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="mm-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#mm-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg> English</button>
+            <button type="button" data-lang="fr" onclick="setLang('fr')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="mm-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#mm-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg> Français</button>
+            <button type="button" data-lang="mfe" onclick="setLang('mfe')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="mm-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#mm-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg> Kreol Morisien</button>
+          </div>
+        </div>
+        <!-- Messages Icon -->
+        <a class="icon-btn" href="index.html" aria-label="Messages"><span class="dot"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+        </a>
+        <!-- Cart Icon -->
+        <button class="icon-btn" aria-label="Cart">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </button>
+        <!-- Profile Icon with Account Dropdown -->
+        <div class="pop-wrap">
+          <button type="button" class="profile-btn" aria-label="Account menu" onclick="togglePop('profileMenu')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          </button>
+          <div class="pop-menu" id="profileMenu" role="menu">
+            <a href="auth.html">My Profile</a>
+            <a href="#">Saved Items</a>
+            <a href="#">My Orders &amp; Cart</a>
+            <a href="resell.html">My Resell Listings</a>
+            <div class="pop-sep"></div>
+            <a href="auth.html">Sign in / Switch Account</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="map-main">
+    <div id="map" aria-label="Map of businesses"></div>
+
+    <!-- TOP: where you are + find me -->
+    <div class="map-top">
+      <div class="loc-chip" aria-live="polite">
+        <span class="pin" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.5-6-10a6 6 0 1 1 12 0c0 4.5-6 10-6 10Z"/><circle cx="12" cy="11" r="2"/></svg></span>
+        <span id="locStatus">Tap Find me to see distances</span>
+      </div>
+      <button type="button" class="find-btn" onclick="findMe()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>
+        <span data-text="map.find">Find me</span>
+      </button>
+    </div>
+
+    <!-- BOTTOM: selected place + nearby list -->
+    <div class="map-bottom">
+      <section class="place" id="place" aria-live="polite">
+        <div class="place-head">
+          <span class="mono" id="placeMono">B</span>
+          <div>
+            <div class="place-name" id="placeName"></div>
+            <div class="place-meta" id="placeMeta"></div>
+          </div>
+          <button type="button" class="place-close" aria-label="Close" onclick="clearSelection()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <div class="dist-row">
+          <div class="dist-box"><small data-text="map.straight">Straight line</small><b id="distStraight" class="wait">—</b></div>
+          <div class="dist-box"><small data-text="map.road">By road</small><b id="distRoad" class="wait">—</b></div>
+        </div>
+        <p class="dist-note" id="distNote">Turn on your location to measure the distance.</p>
+        <div class="place-actions">
+          <button type="button" class="btn btn-black" id="routeBtn" onclick="getRoute()">Show route</button>
+        </div>
+      </section>
+
+      <div class="nearby" id="nearby" role="list" aria-label="Businesses on the map"></div>
+    </div>
+  </main>
+
+  <!-- BOTTOM TAB BAR (same as Home, Map selected) -->
+  <nav class="tab-bar t-caption" aria-label="Main">
+    <a href="index.html"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg></span><span data-text="tab.home">Home</span></a>
+    <a href="map.html" class="on"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20Z"/><path d="M9 4v13.5M15 6.5V20"/></svg></span><span data-text="tab.map">Map</span></a>
+    <a href="resell.html"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg></span><span data-text="tab.resell">Resell</span></a>
+    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><span data-text="tab.orders">Orders</span></a>
+  </nav>
+
+  <script>
+    /* ───── Businesses on the map (same shops as Home; positions are approximate) ───── */
+    var shops = [
+      { id: "bookcourt", name: "Bookcourt Caudan",     meta: "Books & Gifts · Port Louis",      mono: "B", lng: 57.4977, lat: -20.1609 },
+      { id: "laflore",   name: "La Flore Boodhoo",     meta: "Street food · Port Louis",        mono: "F", lng: 57.5040, lat: -20.1622 },
+      { id: "dodo",      name: "Dodo Café Boutique",   meta: "Coffee & Lifestyle · Pereybere",  mono: "D", lng: 57.5915, lat: -19.9940 },
+      { id: "goyco",     name: "Goyco Boutique",       meta: "Fashion · Pereybere",             mono: "G", lng: 57.5880, lat: -19.9975 },
+      { id: "fournil",   name: "Le Fournil Bakery",    meta: "Bakery · Grand Baie",             mono: "L", lng: 57.5800, lat: -20.0110 },
+      { id: "sjtech",    name: "St Jean Tech Hub",     meta: "Phones · Quatre Bornes",          mono: "S", lng: 57.4791, lat: -20.2654 },
+      { id: "vaneron",   name: "Vaneron Garden",       meta: "Plants · Moka",                   mono: "V", lng: 57.4960, lat: -20.2190 },
+      { id: "chelseas",  name: "Chelsea's Cup N Cake", meta: "Patisserie · Curepipe",           mono: "C", lng: 57.5259, lat: -20.3163 }
+    ];
+
+    var me = null;          // { lng, lat } once we know where the user is
+    var selected = null;    // a shop, or a dropped pin { custom: true, lng, lat }
+    var meMarker = null, dropMarker = null;
+    var pinEls = {};
+
+    /* ───── Map (MapLibre + OpenFreeMap, no key) ───── */
+    var map = new maplibregl.Map({
+      container: "map",
+      style: "https://tiles.openfreemap.org/styles/positron",
+      center: [57.55, -20.2],   // Mauritius
+      zoom: 9.6,
+      minZoom: 8,
+      maxBounds: [[56.9, -20.75], [58.1, -19.6]],
+      attributionControl: { compact: true }
+    });
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+
+    map.on("load", function () {
+      // Tint the map to the Bazar cream background.
+      try { if (map.getLayer("background")) map.setPaintProperty("background", "background-color", "#f4f0e6"); } catch (e) {}
+      // Empty route line, filled in when a route is requested.
+      map.addSource("route", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+      map.addLayer({ id: "route-casing", type: "line", source: "route",
+        paint: { "line-color": "#d4f53c", "line-width": 9 }, layout: { "line-cap": "round", "line-join": "round" } });
+      map.addLayer({ id: "route-line", type: "line", source: "route",
+        paint: { "line-color": "#0e0e0c", "line-width": 4 }, layout: { "line-cap": "round", "line-join": "round" } });
+    });
+
+    // Shop pins
+    shops.forEach(function (s) {
+      var el = document.createElement("button");
+      el.type = "button";
+      el.className = "shop-pin";
+      el.textContent = s.mono;
+      el.setAttribute("aria-label", s.name);
+      el.addEventListener("click", function (ev) { ev.stopPropagation(); select(s); });
+      pinEls[s.id] = el;
+      new maplibregl.Marker({ element: el }).setLngLat([s.lng, s.lat]).addTo(map);
+    });
+
+    // Tap anywhere else on the map: measure to that spot.
+    map.on("click", function (e) {
+      var p = { custom: true, lng: e.lngLat.lng, lat: e.lngLat.lat };
+      if (!dropMarker) {
+        var d = document.createElement("div"); d.className = "drop-pin";
+        dropMarker = new maplibregl.Marker({ element: d });
+      }
+      dropMarker.setLngLat([p.lng, p.lat]).addTo(map);
+      select(p);
+    });
+
+    /* ───── Distance maths ───── */
+    // Straight-line ("as the crow flies") distance in km, haversine formula.
+    function kmBetween(a, b) {
+      var R = 6371, toRad = Math.PI / 180;
+      var dLat = (b.lat - a.lat) * toRad, dLng = (b.lng - a.lng) * toRad;
+      var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(a.lat * toRad) * Math.cos(b.lat * toRad) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      return 2 * R * Math.asin(Math.sqrt(h));
+    }
+    function fmtKm(km) { return km < 1 ? Math.round(km * 1000) + " m" : (km < 10 ? km.toFixed(1) : Math.round(km)) + " km"; }
+    function fmtMin(sec) {
+      var m = Math.round(sec / 60);
+      return m < 60 ? m + " min" : Math.floor(m / 60) + " h " + (m % 60) + " min";
+    }
+
+    /* ───── Find me (browser location, asks permission) ───── */
+    function setStatus(t) { document.getElementById("locStatus").textContent = t; }
+    function findMe() {
+      if (!("geolocation" in navigator)) { setStatus("This browser can't share your location"); return; }
+      setStatus("Finding your location…");
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        me = { lng: pos.coords.longitude, lat: pos.coords.latitude };
+        if (!meMarker) {
+          var el = document.createElement("div"); el.className = "me-dot";
+          meMarker = new maplibregl.Marker({ element: el });
+        }
+        meMarker.setLngLat([me.lng, me.lat]).addTo(map);
+        setStatus("You are here");
+        map.flyTo({ center: [me.lng, me.lat], zoom: Math.max(map.getZoom(), 11.5) });
+        renderNearby();
+        if (selected) showDistances();
+      }, function (err) {
+        setStatus(err.code === 1 ? "Location is blocked — allow it in your browser" : "Couldn't find your location. Try again");
+      }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+    }
+
+    /* ───── Select a shop or a dropped pin ───── */
+    function select(p) {
+      selected = p;
+      Object.keys(pinEls).forEach(function (id) { pinEls[id].classList.toggle("on", !p.custom && p.id === id); });
+      if (!p.custom && dropMarker) dropMarker.remove();
+      document.getElementById("placeMono").textContent = p.custom ? "•" : p.mono;
+      document.getElementById("placeName").textContent = p.custom ? "Dropped pin" : p.name;
+      document.getElementById("placeMeta").textContent = p.custom ? p.lat.toFixed(4) + ", " + p.lng.toFixed(4) : p.meta;
+      document.getElementById("place").classList.add("show");
+      clearRoute();
+      showDistances();
+      renderNearby();
+      if (!p.custom) map.easeTo({ center: [p.lng, p.lat], zoom: Math.max(map.getZoom(), 12) });
+    }
+    function clearSelection() {
+      selected = null;
+      document.getElementById("place").classList.remove("show");
+      Object.keys(pinEls).forEach(function (id) { pinEls[id].classList.remove("on"); });
+      if (dropMarker) dropMarker.remove();
+      clearRoute();
+      renderNearby();
+    }
+
+    function showDistances() {
+      var s = document.getElementById("distStraight"), r = document.getElementById("distRoad");
+      var note = document.getElementById("distNote");
+      r.textContent = "—"; r.className = "wait";
+      if (!me) {
+        s.textContent = "—"; s.className = "wait";
+        note.textContent = "Turn on your location to measure the distance.";
+        return;
+      }
+      s.textContent = fmtKm(kmBetween(me, selected)); s.className = "";
+      note.textContent = "Tap Show route for the distance and time by car.";
+    }
+
+    /* ───── Road distance + route (OSRM demo server: free, no key, light use only) ───── */
+    function getRoute() {
+      if (!selected) return;
+      if (!me) { findMe(); return; }
+      var r = document.getElementById("distRoad"), note = document.getElementById("distNote");
+      r.textContent = "Calculating…"; r.className = "wait";
+      var url = "https://router.project-osrm.org/route/v1/driving/" +
+        me.lng + "," + me.lat + ";" + selected.lng + "," + selected.lat + "?overview=full&geometries=geojson";
+      fetch(url).then(function (res) { return res.json(); }).then(function (data) {
+        if (!data.routes || !data.routes.length) throw new Error("no route");
+        var route = data.routes[0];
+        r.textContent = fmtKm(route.distance / 1000) + " · " + fmtMin(route.duration); r.className = "";
+        note.textContent = "Driving estimate. Real time depends on traffic.";
+        if (map.getSource("route")) map.getSource("route").setData({ type: "Feature", geometry: route.geometry });
+        var b = new maplibregl.LngLatBounds();
+        route.geometry.coordinates.forEach(function (c) { b.extend(c); });
+        var laptop = window.matchMedia("(min-width: 1280px)").matches;
+        map.fitBounds(b, { padding: laptop ? { top: 80, bottom: 60, left: 420, right: 60 } : { top: 80, bottom: 300, left: 40, right: 40 }, maxZoom: 15 });
+      }).catch(function () {
+        r.textContent = "—"; r.className = "wait";
+        note.textContent = "Couldn't get the road distance. Try again.";
+      });
+    }
+    function clearRoute() {
+      if (map.getSource && map.getSource("route")) map.getSource("route").setData({ type: "FeatureCollection", features: [] });
+    }
+
+    /* ───── Nearby list (sorted by distance once we know where you are) ───── */
+    function renderNearby() {
+      var list = shops.slice();
+      if (me) list.sort(function (a, b) { return kmBetween(me, a) - kmBetween(me, b); });
+      var wrap = document.getElementById("nearby");
+      wrap.innerHTML = "";
+      list.forEach(function (s) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.setAttribute("role", "listitem");
+        b.className = "near-chip" + (selected && !selected.custom && selected.id === s.id ? " on" : "");
+        b.innerHTML = '<span class="mono"></span><span class="nm"></span>' + (me ? '<span class="km"></span>' : "");
+        b.querySelector(".mono").textContent = s.mono;
+        b.querySelector(".nm").textContent = s.name;
+        if (me) b.querySelector(".km").textContent = fmtKm(kmBetween(me, s));
+        b.onclick = function () { select(s); };
+        wrap.appendChild(b);
+      });
+    }
+    renderNearby();
+
+    /* ───── Menus + language flag (same as Home); i18n.js does the translating ───── */
+    function togglePop(id) {
+      document.querySelectorAll(".pop-menu").forEach(function (m) { if (m.id !== id) m.classList.remove("open"); });
+      document.getElementById(id).classList.toggle("open");
+    }
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".pop-wrap")) document.querySelectorAll(".pop-menu").forEach(function (m) { m.classList.remove("open"); });
+    });
+    var flags = {
+      en: '<clipPath id="m-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#m-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g>',
+      fr: '<clipPath id="m-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#m-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g>',
+      mfe: '<clipPath id="m-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#m-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g>'
+    };
+    function setLang(code) {
+      if (!flags[code]) return;
+      document.getElementById("langFlagSvg").innerHTML = flags[code];
+      document.querySelectorAll("#langMenu button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-lang") === code); });
+      document.getElementById("langMenu").classList.remove("open");
+      try { localStorage.setItem("bazar-lang", code); } catch (e) {}
+    }
+    try { var sl = localStorage.getItem("bazar-lang"); if (sl && flags[sl]) setLang(sl); } catch (e) {}
+  </script>
+  <script src="i18n.js"></script>
+  <script src="edit-text.js"></script>
+</body>
+</html>

@@ -1,0 +1,1297 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e0e0c">
+  <title>Bazar — Resell Marketplace &amp; Escrow</title>
+  <link rel="stylesheet" href="brand.css">
+  <link rel="stylesheet" href="app.css">
+  <style>
+    :focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+    main { padding-bottom: calc(var(--tab-bar) + env(safe-area-inset-bottom) + 32px); }
+
+    /* ───── 1. FABRID-STYLE EDITORIAL RESELL HERO (Oversized bazar® type + notched quick-buy card) ───── */
+    .fab-hero-wrap { padding-top: 14px; }
+    .fab-hero-grid {
+      display: grid; grid-template-columns: 1fr; gap: 12px; align-items: stretch;
+    }
+    .fab-banner {
+      position: relative; border-radius: 28px; overflow: hidden; min-height: 310px;
+      background:
+        radial-gradient(circle at 58% 38%, rgba(212, 245, 60, 0.45) 0%, rgba(73, 97, 0, 0.24) 40%, rgba(14, 14, 12, 0.94) 84%),
+        var(--black);
+      color: var(--card); padding: 20px 24px 22px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      touch-action: pan-y; user-select: none;
+    }
+    .fab-top-bar {
+      position: relative; z-index: 4; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+    }
+
+    /* Multi-layered Choreographed Fade + Swipe Carousel */
+    .resell-slides {
+      position: relative; z-index: 3; flex: 1; min-height: 210px; margin-top: 12px;
+      overflow: hidden;
+    }
+    .r-slide {
+      position: absolute; inset: 0; display: grid; grid-template-columns: 1fr; gap: 16px; align-items: center;
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transform: translateX(72px) scale(0.96);
+      filter: blur(6px);
+      transition:
+        opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 0.55s ease,
+        visibility 0s linear 0.55s;
+    }
+    .r-slide.active {
+      opacity: 1; visibility: visible; pointer-events: auto;
+      transform: translateX(0) scale(1);
+      filter: blur(0);
+      transition:
+        opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 0.5s ease,
+        visibility 0s linear 0s;
+    }
+    .r-slide.exit {
+      opacity: 0; visibility: hidden;
+      transform: translateX(-72px) scale(0.94);
+      filter: blur(8px);
+    }
+
+    /* Staggered multi-element cascade inside active slide */
+    .r-copy > * {
+      opacity: 0; transform: translateX(26px);
+      transition: opacity 0.55s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .r-slide.active .r-copy > * { opacity: 1; transform: translateX(0); }
+    .r-slide.active .r-copy > :nth-child(1) { transition-delay: 0.05s; }
+    .r-slide.active .r-copy > :nth-child(2) { transition-delay: 0.13s; }
+    .r-slide.active .r-copy > :nth-child(3) { transition-delay: 0.21s; }
+    .r-slide.active .r-copy > :nth-child(4) { transition-delay: 0.29s; }
+
+    .r-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; max-width: 450px; }
+    .r-kicker {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(212, 245, 60, 0.16); border: 1px solid rgba(212, 245, 60, 0.42);
+      color: var(--lime); padding: 5px 12px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .r-copy h2 {
+      font-size: clamp(24px, 3.6vw, 38px); font-weight: 800; line-height: 1.06;
+      letter-spacing: -0.035em; color: var(--card);
+    }
+    .r-copy h2 em { font-style: normal; color: var(--lime); }
+    .r-copy p { font-size: 13.5px; color: #d6d0c2; line-height: 1.45; }
+    .r-pills { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 2px; }
+    .r-pills span {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 6px 12px; border-radius: 999px; background: rgba(251, 248, 241, 0.1);
+      border: 1px solid rgba(251, 248, 241, 0.18); font-size: 11.5px; font-weight: 600; color: var(--card);
+    }
+    .r-pills svg { width: 14px; height: 14px; color: var(--lime); flex: none; }
+
+    /* Multi-card depth stack on the right of each slide */
+    .r-visual {
+      display: none; align-items: center; justify-content: center; position: relative; height: 185px;
+    }
+    .r-vis-back {
+      position: absolute; width: 176px; height: 146px; border-radius: 20px;
+      background: rgba(212, 245, 60, 0.14); border: 1px solid rgba(212, 245, 60, 0.3);
+      transform: translate(18px, 14px) rotate(6deg) scale(0.9);
+      opacity: 0; transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s, opacity 0.6s ease 0.12s;
+    }
+    .r-slide.active .r-vis-back {
+      transform: translate(14px, 10px) rotate(5deg) scale(1); opacity: 1;
+    }
+    .r-vis-card {
+      position: relative; z-index: 2; width: 196px; height: 164px; border-radius: 22px; overflow: hidden;
+      background: rgba(251, 248, 241, 0.98); padding: 14px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+      transform: translateX(48px) rotate(5deg) scale(0.92);
+      transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
+    }
+    .r-slide.active .r-vis-card { transform: translateX(0) rotate(-2deg) scale(1); }
+    .r-vis-card img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+    .r-vis-card--dark {
+      background: linear-gradient(155deg, #1b1e11 0%, #0e0e0c 100%);
+      border: 1px solid rgba(212, 245, 60, 0.38); color: var(--card); text-align: center;
+    }
+
+    /* Animated Progress Indicators along bottom of Hero Banner */
+    .r-prog {
+      position: relative; z-index: 4; display: flex; align-items: center; gap: 8px; margin-top: 12px;
+    }
+    .r-bar {
+      flex: 1; max-width: 72px; height: 4px; border-radius: 999px;
+      background: rgba(251, 248, 241, 0.22); overflow: hidden; padding: 0;
+    }
+    .r-bar i {
+      display: block; height: 100%; width: 0%; background: var(--lime); border-radius: 999px;
+    }
+    .r-bar.on i { animation: barFill 4.2s linear forwards; }
+    @keyframes barFill { from { width: 0%; } to { width: 100%; } }
+    @media (min-width: 640px) {
+      .r-slide { grid-template-columns: 1.35fr 0.75fr; }
+      .r-visual { display: flex; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .r-slide, .r-vis-card, .r-bar.on i { transition: none !important; animation: none !important; }
+      .r-bar.on i { width: 100%; }
+    }
+
+    /* Right Notched Column: 70+ Verified + Spotlight Quick-Buy Card (Fabrid signature) */
+    .fab-side { display: grid; grid-template-columns: 1fr 1.2fr; gap: 12px; }
+    .fab-stat {
+      background: #ece7da; border-radius: 24px; padding: 18px;
+      display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+      border: 1px solid var(--line);
+    }
+    .fab-stat b { font-size: 32px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: var(--black); }
+    .fab-stat span { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: 4px; }
+    .fab-spot {
+      background: linear-gradient(150deg, #1b1e10 0%, #0e0e0c 100%);
+      border-radius: 24px; padding: 14px; color: var(--card);
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center;
+      cursor: pointer; border: 1px solid rgba(212, 245, 60, 0.25);
+      transition: transform .2s ease;
+    }
+    .fab-spot:hover { transform: translateY(-3px); }
+    .fab-spot img { width: 88px; height: 88px; object-fit: contain; filter: drop-shadow(0 10px 18px rgba(0,0,0,0.45)); }
+    .fab-spot small { font-size: 11px; color: #cfc7b4; line-height: 1.25; }
+    .fab-spot .buy-pill {
+      margin-top: 8px; width: 100%; padding: 7px 10px; border-radius: 999px;
+      background: var(--lime); color: var(--black); font-size: 11.5px; font-weight: 800;
+    }
+
+    /* View Mode Switcher: Browse Secondhand vs My Escrow */
+    .view-tabs {
+      display: inline-flex; background: rgba(14, 14, 12, 0.55); backdrop-filter: blur(10px);
+      border: 1px solid rgba(251, 248, 241, 0.18); border-radius: 999px; padding: 3px; gap: 3px;
+    }
+    .view-tabs button {
+      padding: 6px 13px; border-radius: 999px; font-size: 11.5px; font-weight: 700; color: #e2dcd0;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .view-tabs button.on { background: var(--lime); color: var(--black); }
+    .view-tabs .cnt {
+      background: var(--black); color: var(--lime); font-size: 10px; padding: 1px 6px; border-radius: 999px;
+    }
+
+    /* Compact Search + Post Ad Bar right below the Editorial Banner */
+    .jiji-search {
+      margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch;
+    }
+    .js-box {
+      flex: 1 1 260px; display: flex; align-items: center;
+      background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 6px 4px 10px; height: 48px;
+    }
+    .js-loc {
+      border: 0; background: var(--cream); color: var(--black); font: inherit; font-size: 12.5px; font-weight: 600;
+      padding: 6px 10px; border-radius: 999px; margin-right: 8px; cursor: pointer;
+    }
+    .js-box input {
+      flex: 1; min-width: 0; border: 0; outline: 0; background: none;
+      font: inherit; font-size: 14px; color: var(--black);
+    }
+    .js-box input::placeholder { color: var(--muted); }
+    .js-go {
+      width: 38px; height: 38px; border-radius: 999px; background: var(--black); color: var(--lime);
+      display: grid; place-items: center; flex: none;
+    }
+    .sell-cta {
+      height: 48px; padding: 0 20px; border-radius: 999px; background: var(--black); color: var(--lime);
+      font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      white-space: nowrap; flex: none;
+    }
+    .sell-cta:hover { background: var(--black-2); }
+
+    /* ───── 2. FABRID-STYLE SEAMLESS FLOATING CATEGORY CARDS (mix-blend-mode: multiply, ZERO white boxes!) ───── */
+    .fab-cat-head {
+      margin-top: 28px; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
+    }
+    .fab-cat-head h2 { font-size: var(--h2); font-weight: 700; letter-spacing: -0.025em; }
+    .fab-cat-head p { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+    .cat-strip {
+      margin-top: 14px; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px;
+    }
+    .cat-strip::-webkit-scrollbar { display: none; }
+    .c-tile {
+      position: relative; flex: none; width: 158px; min-height: 204px; padding: 14px 14px 16px;
+      border-radius: 24px; background: #ede9de; border: 1.5px solid transparent;
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center;
+      transition: transform .22s ease, border-color .22s ease, background .22s ease, box-shadow .22s ease;
+    }
+    .c-tile:hover { transform: translateY(-4px); background: #e8e3d5; box-shadow: 0 14px 28px rgba(14, 14, 12, 0.08); }
+    .c-tile.on { background: #e7eece; border-color: var(--black); }
+    .c-go {
+      position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border-radius: 999px;
+      background: rgba(251, 248, 241, 0.85); color: var(--black); display: grid; place-items: center; font-size: 13px; font-weight: 700;
+      transition: background .18s, color .18s;
+    }
+    .c-tile:hover .c-go, .c-tile.on .c-go { background: var(--black); color: var(--lime); }
+    .c-ph {
+      width: 116px; height: 116px; margin-top: 14px; display: grid; place-items: center; flex: none;
+    }
+    .c-ph img {
+      width: 100%; height: 100%; object-fit: contain;
+      mix-blend-mode: multiply; /* White photo bg disappears seamlessly into card! */
+      transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .c-tile:hover .c-ph img { transform: scale(1.1) translateY(-4px); }
+    .c-tile b { margin-top: 8px; font-size: 14px; font-weight: 700; color: var(--black); line-height: 1.2; }
+    .c-tile small { font-size: 11px; color: var(--muted); }
+
+    @media (min-width: 1024px) {
+      .fab-hero-grid { grid-template-columns: 1fr 220px; }
+      .fab-banner { min-height: 330px; padding: 26px 30px 24px; }
+      .fab-side { grid-template-columns: 1fr; grid-template-rows: 108px 1fr; }
+    }
+
+    /* ───── 3. SHOPEASE-STYLE UNDERLINE SORT TABS + CLASSIFIEDS GRID ───── */
+    .sort-bar {
+      margin-top: 22px; margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .sort-tabs { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; }
+    .sort-tabs::-webkit-scrollbar { display: none; }
+    .sort-tabs button {
+      padding: 10px 2px; font-size: 13.5px; font-weight: 600; color: var(--muted);
+      border-bottom: 2.5px solid transparent; margin-bottom: -1px; white-space: nowrap;
+      transition: color .15s, border-color .15s;
+    }
+    .sort-tabs button.on { color: var(--black); border-bottom-color: var(--black); font-weight: 700; }
+    .feed-count { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; padding-bottom: 8px; }
+
+    .ads-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+    }
+    .ad-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      overflow: hidden; display: flex; flex-direction: column; text-align: left;
+      transition: transform .2s, box-shadow .2s, border-color .2s; cursor: pointer;
+    }
+    .ad-card:hover { transform: translateY(-3px); border-color: rgba(14, 14, 12, 0.28); box-shadow: 0 12px 28px rgba(14, 14, 12, 0.08); }
+    .ad-ph { position: relative; aspect-ratio: 1; background: #ede9de; padding: 18px; overflow: hidden; display: grid; place-items: center; }
+    .ad-ph img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1); }
+    .ad-card:hover .ad-ph img { transform: scale(1.05); }
+    .ad-cond {
+      position: absolute; top: 8px; left: 8px;
+      background: var(--black); color: var(--card);
+      padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700;
+    }
+    .ad-save {
+      position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; border-radius: 999px;
+      background: var(--card); color: var(--black); display: grid; place-items: center;
+      box-shadow: 0 4px 12px rgba(14, 14, 12, 0.16);
+    }
+    .ad-save.saved { background: var(--black); color: var(--lime); }
+    .ad-save.saved svg { fill: currentColor; }
+
+    /* Language switcher (same as Home) */
+    .app-bar .right { gap: 8px; }
+    .pop-wrap { position: relative; }
+    .lang-btn {
+      width: 36px; height: 36px; border-radius: 999px;
+      background: var(--lime); border: 2px solid var(--black);
+      display: grid; place-items: center; padding: 0;
+    }
+    .lang-btn svg { width: 22px; height: 22px; border-radius: 999px; display: block; }
+    .pop-menu {
+      position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+      min-width: 196px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 6px; box-shadow: 0 14px 32px rgba(14, 14, 12, 0.18);
+      display: none; flex-direction: column; gap: 2px;
+    }
+    .pop-menu.open { display: flex; }
+    .pop-menu button {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--black); text-align: left; width: 100%;
+    }
+    .pop-menu button:hover { background: var(--cream); }
+    .pop-menu button.on { background: var(--black); color: var(--lime); }
+    .pop-menu svg { width: 18px; height: 18px; flex: none; }
+    /* Message seller button on each ad (next to save) */
+    .ad-msg {
+      position: absolute; bottom: 8px; right: 46px; width: 32px; height: 32px; border-radius: 999px;
+      background: var(--black); color: var(--lime); display: grid; place-items: center;
+      box-shadow: 0 4px 12px rgba(14, 14, 12, 0.16);
+    }
+
+    /* Smart description helper in "Create Listing" */
+    .desc-box {
+      width: 100%; min-height: 104px; padding: 12px; border-radius: 12px; resize: vertical;
+      border: 1px solid var(--line); background: var(--cream); font: inherit; font-size: 14px; line-height: 1.45; color: var(--black);
+    }
+    .desc-box:focus { outline: 0; border-color: var(--black); background: var(--card); }
+    .desc-tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .desc-meter { display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 700; color: var(--muted); }
+    .desc-meter .bar { width: 70px; height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+    .desc-meter .bar i { display: block; height: 100%; width: 0; background: var(--black); border-radius: 999px; transition: width .25s; }
+    .desc-meter.good .bar i { background: var(--lime-ink); }
+    .desc-meter.great .bar i { background: var(--lime); box-shadow: inset 0 0 0 1px var(--black); }
+    .ask-hint { font-size: 11.5px; color: var(--muted); }
+    .ask-chip { font-size: 11.5px !important; padding: 5px 10px !important; }
+    .ask-chip.added { opacity: .45; text-decoration: line-through; }
+    .detail-desc { font-size: 13.5px; line-height: 1.5; color: var(--black-2); white-space: pre-line; }
+
+    /* In-app chat with the seller */
+    .chat-dlg { width: min(94vw, 420px); }
+    .chat-who { display: flex; align-items: center; gap: 10px; }
+    .chat-who .av { width: 36px; height: 36px; border-radius: 999px; background: var(--black); color: var(--lime); display: grid; place-items: center; font-weight: 700; }
+    .chat-who small { display: block; font-size: 11px; color: var(--lime-ink); font-weight: 700; }
+    .chat-item { display: flex; align-items: center; gap: 10px; padding: 10px 18px; border-bottom: 1px solid var(--line); font-size: 12.5px; }
+    .chat-item img { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: #ede9de; }
+    .chat-log { padding: 14px 18px; height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .bub { max-width: 82%; padding: 9px 13px; border-radius: 14px; font-size: 13.5px; line-height: 1.4; }
+    .bub.me { align-self: flex-end; background: var(--black); color: var(--lime); border-bottom-right-radius: 4px; }
+    .bub.them { align-self: flex-start; background: var(--cream); color: var(--black); border-bottom-left-radius: 4px; }
+    .bub.sys { align-self: center; background: none; color: var(--muted); font-size: 11.5px; text-align: center; }
+    .chat-quick { display: flex; gap: 6px; overflow-x: auto; padding: 0 18px 10px; scrollbar-width: none; }
+    .chat-quick::-webkit-scrollbar { display: none; }
+    .chat-quick button { flex: none; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); font-size: 12px; font-weight: 600; }
+    .chat-quick button:hover { background: var(--lime); border-color: var(--lime); }
+    .chat-send { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--line); }
+    .chat-send input { flex: 1; min-width: 0; height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); font: inherit; font-size: 14px; }
+    .chat-send button { width: 44px; height: 44px; border-radius: 999px; background: var(--lime); color: var(--black); display: grid; place-items: center; flex: none; }
+
+    .ad-body { padding: 11px 12px 12px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .ad-title {
+      font-size: 13px; font-weight: 600; color: var(--black); line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .ad-price { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; color: var(--black); margin-top: 2px; }
+    .ad-disc-row { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+    .ad-disc { background: rgba(212, 245, 60, 0.45); color: var(--lime-ink); font-weight: 700; padding: 1px 6px; border-radius: 5px; }
+    .ad-orig { color: var(--muted); text-decoration: line-through; }
+    .ad-meta {
+      margin-top: auto; padding-top: 6px; display: flex; align-items: center; gap: 5px;
+      font-size: 11px; color: var(--muted);
+    }
+    .ad-meta b { color: var(--black); }
+
+    /* Shopease-style Option Pills (Used in Product Detail & Easy Listing Creator) */
+    .opt-group { display: flex; flex-direction: column; gap: 7px; }
+    .opt-label { font-size: 11.5px; font-weight: 700; color: var(--black-2); display: flex; justify-content: space-between; }
+    .opt-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+    .opt-pill {
+      padding: 7px 12px; border-radius: 10px; border: 1.5px solid var(--line);
+      background: var(--cream); font-size: 12px; font-weight: 600; color: var(--black-2);
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .opt-pill:hover { border-color: var(--black); }
+    .opt-pill.on {
+      background: rgba(212, 245, 60, 0.32); border-color: var(--black); color: var(--black); font-weight: 700;
+    }
+    .thumb-strip { display: flex; gap: 8px; margin-top: 8px; }
+    .thumb-slot {
+      width: 54px; height: 54px; border-radius: 12px; overflow: hidden;
+      border: 2px solid var(--line); background: var(--cream); display: grid; place-items: center;
+      font-size: 18px; font-weight: 700; color: var(--muted); flex: none;
+    }
+    .thumb-slot.on { border-color: var(--black); box-shadow: 0 0 0 2px var(--lime); }
+    .thumb-slot img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb-strip { flex-wrap: wrap; }
+    .add-slot { border-style: dashed; border-color: var(--black); background: var(--card); color: var(--black); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+    .add-slot span { font-size: 17px; line-height: 1; }
+    .add-slot small { font-size: 9.5px; font-weight: 700; }
+    .add-slot:hover { background: var(--lime); }
+    .split-cta {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      padding-top: 12px; border-top: 1px solid var(--line); margin-top: 4px;
+    }
+    .btn-out {
+      min-height: 46px; border-radius: 12px; border: 1.5px solid var(--black);
+      background: var(--card); color: var(--black); font-weight: 700; font-size: 13.5px;
+    }
+    .btn-solid {
+      min-height: 46px; border-radius: 12px; background: var(--black); color: var(--lime);
+      font-weight: 700; font-size: 13.5px;
+    }
+    .ai-fill-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
+      background: var(--lime); color: var(--black); font-size: 11.5px; font-weight: 700;
+    }
+
+    /* ───── 4. MY ESCROW & LISTINGS PANEL (Toggled via top switcher) ───── */
+    .hidden { display: none !important; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px; }
+    .kpi-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; }
+    .kpi-card small { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .kpi-card b { display: block; font-size: 24px; font-weight: 800; letter-spacing: -0.03em; margin-top: 6px; }
+    .kpi-card em { display: block; font-style: normal; font-size: 12px; font-weight: 600; color: var(--lime-ink); margin-top: 2px; }
+
+    .escrow-card {
+      margin-top: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+      padding: 18px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .escrow-item { display: flex; align-items: center; gap: 12px; }
+    .escrow-item img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; flex: none; }
+    .escrow-badge { margin-left: auto; background: var(--black); color: var(--lime); padding: 5px 12px; border-radius: 999px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+    .stepper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .step { background: var(--cream); border: 1px solid var(--line); border-radius: 12px; padding: 10px; font-size: 12px; }
+    .step.done { background: rgba(212, 245, 60, 0.25); border-color: var(--black); }
+    .step.active { background: var(--card); border-color: var(--black); box-shadow: 0 0 0 1px var(--black); }
+    .step small { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+    .step b { display: block; margin-top: 3px; }
+
+    /* Native Modals (Item Escrow Detail + Post Ad) */
+    dialog {
+      border: 1px solid var(--line); border-radius: 24px; padding: 0;
+      background: var(--card); color: var(--black);
+      width: min(92vw, 460px); max-height: 86svh;
+      box-shadow: 0 24px 60px rgba(14, 14, 12, 0.35);
+    }
+    dialog:modal { overscroll-behavior: contain; }
+    dialog::backdrop { overflow: hidden; overscroll-behavior: contain; background: rgba(14, 14, 12, 0.55); backdrop-filter: blur(3px); }
+    .dlg-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--cream); border-bottom: 1px solid var(--line); }
+    .dlg-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+    .dlg-body label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; }
+    .dlg-body input, .dlg-body select {
+      width: 100%; height: 44px; padding: 0 12px; border-radius: 12px;
+      border: 1px solid var(--line); background: var(--cream); font: inherit; font-size: 14px;
+    }
+    .detail-img { width: 100%; aspect-ratio: 16/10; border-radius: 16px; object-fit: cover; }
+    .detail-trust {
+      background: rgba(212, 245, 60, 0.22); border: 1px solid var(--lime-ink); border-radius: 14px;
+      padding: 12px; font-size: 12.5px; color: var(--black); line-height: 1.4;
+    }
+
+    @media (min-width: 768px) {
+      .ads-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (min-width: 1280px) {
+      .ads-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+      .cat-strip { display: grid; grid-template-columns: repeat(7, 1fr); overflow: visible; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- APP BAR -->
+  <header class="app-bar">
+    <div class="wrap">
+      <a href="business.html" class="logo" data-text="bar.logo">bazar</a>
+      <nav class="top-nav">
+        <a href="index.html">Home</a>
+        <a href="map.html">Map</a>
+        <a href="resell.html" class="on">Resell</a>
+        <a href="#">Orders</a>
+      </nav>
+      <div class="right">
+        <!-- Language Flag Switcher (same as Home) -->
+        <div class="pop-wrap">
+          <button type="button" class="lang-btn" id="langBtn" aria-label="Change language" onclick="togglePop('langMenu')">
+            <svg viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="r-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#r-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+          </button>
+          <div class="pop-menu" id="langMenu" role="menu">
+            <button type="button" class="on" data-lang="en" onclick="setLang('en')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="rm-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#rm-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg> English</button>
+            <button type="button" data-lang="fr" onclick="setLang('fr')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="rm-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#rm-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg> Français</button>
+            <button type="button" data-lang="mfe" onclick="setLang('mfe')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="rm-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#rm-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg> Kreol Morisien</button>
+          </div>
+        </div>
+        <button type="button" class="btn btn-black" style="display:inline-flex;min-height:40px;padding:0 16px;font-size:13px;" onclick="document.getElementById('sellDialog').showModal()">+ Sell Item</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 1. FABRID-STYLE EDITORIAL RESELL HERO -->
+  <section class="fab-hero-wrap wrap">
+    <div class="fab-hero-grid">
+      <div class="fab-banner" id="resellBanner">
+        <div class="fab-top-bar">
+          <span style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lime);">bazar® Resell · Mauritius</span>
+          <div class="view-tabs" role="tablist">
+            <button type="button" id="v-browse" class="on" onclick="switchView('browse')">Browse</button>
+            <button type="button" id="v-escrow" onclick="switchView('escrow')">My Escrow <span class="cnt">1</span></button>
+          </div>
+        </div>
+
+        <!-- 4-Pillar Multi-Layered Fade + Swipe Showcase (No numbers, crisp SVG UI icons) -->
+        <div class="resell-slides" id="resellSlides" aria-live="polite">
+          <!-- Slide 1: Peer-to-Peer Selling -->
+          <div class="r-slide active">
+            <div class="r-copy">
+              <span class="r-kicker">Peer-to-Peer Selling</span>
+              <h2>Buy &amp; sell pre-loved items <em>near you.</em></h2>
+              <p>List phones, fashion, furniture, vehicles &amp; more in 30 seconds — zero middlemen, fair local prices.</p>
+              <div class="r-pills">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><line x1="7" x2="7.01" y1="7" y2="7"/></svg>Zero listing fee</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.5-6-10a6 6 0 1 1 12 0c0 4.5-6 10-6 10Z"/><circle cx="12" cy="11" r="2"/></svg>Instant nearby reach</span>
+              </div>
+            </div>
+            <div class="r-visual">
+              <div class="r-vis-back" aria-hidden="true"></div>
+              <div class="r-vis-card"><img src="photos/resell-macbook.jpg" alt="Peer to peer gadgets"></div>
+            </div>
+          </div>
+
+          <!-- Slide 2: Trust & Safe Payment (Escrow) -->
+          <div class="r-slide">
+            <div class="r-copy">
+              <span class="r-kicker">Trust &amp; Safe Payment</span>
+              <h2>Money locked in <em>Bazar Escrow.</em></h2>
+              <p>Payments stay protected until you inspect the item in person or via Grabbit Express and confirm handover.</p>
+              <div class="r-pills">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Escrow Protected</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>Zero-scam guarantee</span>
+              </div>
+            </div>
+            <div class="r-visual">
+              <div class="r-vis-back" aria-hidden="true"></div>
+              <div class="r-vis-card r-vis-card--dark">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#d4f53c" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+                <b style="font-size:18px;color:var(--lime);">Rs 18,500</b>
+                <span style="font-size:11px;color:#cfc7b4;">Locked until handover</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3: Message, Call & Voice Options -->
+          <div class="r-slide">
+            <div class="r-copy">
+              <span class="r-kicker">Direct Interaction</span>
+              <h2>Interact your way <em>before you buy.</em></h2>
+              <p>Message sellers, place an in-app voice call, or send quick voice notes in English, Français or Kreol.</p>
+              <div class="r-pills">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>Message</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>Call</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>Voice Note</span>
+              </div>
+            </div>
+            <div class="r-visual">
+              <div class="r-vis-back" aria-hidden="true"></div>
+              <div class="r-vis-card"><img src="photos/resell-headphones.jpg" alt="Direct call and voice interaction"></div>
+            </div>
+          </div>
+
+          <!-- Slide 4: Face Check + National ID Verification -->
+          <div class="r-slide">
+            <div class="r-copy">
+              <span class="r-kicker">Face &amp; ID Verification</span>
+              <h2>Real people. <em>Face &amp; ID checked.</em></h2>
+              <p>Every verified seller completes a live selfie Face Check matched to their Mauritius National ID.</p>
+              <div class="r-pills">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h4M14 14h4"/></svg>National ID Check</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 18a4.5 4.5 0 0 1 9 0"/></svg>Live Face Match</span>
+              </div>
+            </div>
+            <div class="r-visual">
+              <div class="r-vis-back" aria-hidden="true"></div>
+              <div class="r-vis-card r-vis-card--dark">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#d4f53c" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 18a4.5 4.5 0 0 1 9 0"/></svg>
+                <b style="font-size:15px;color:var(--lime);">ID + Face Verified</b>
+                <span style="font-size:11px;color:#cfc7b4;">Trusted Mauritian badge</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Animated Progress Bars removed per user request -->
+      </div>
+
+      <div class="fab-side">
+        <div class="fab-stat">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--lime-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+          <b>140+</b>
+          <span>Verified Sellers</span>
+        </div>
+        <div class="fab-spot" onclick="openDetail(ads[0])">
+          <img src="photos/resell-iphone.jpg" alt="iPhone 13 Pro" style="border-radius:14px;background:#fff;padding:6px;">
+          <small>iPhone 13 Pro 256GB · Escrow</small>
+          <span class="buy-pill">+ Buy Rs 24,500</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search + Post Free Ad Bar -->
+    <form class="jiji-search" onsubmit="event.preventDefault(); renderAds();">
+      <div class="js-box">
+        <select id="areaFilter" class="js-loc" aria-label="Filter by Mauritian town" onchange="renderAds()">
+          <option value="all">All Mauritius</option>
+          <option value="Port Louis">Port Louis</option>
+          <option value="Quatre Bornes">Quatre Bornes</option>
+          <option value="Grand Baie">Grand Baie</option>
+          <option value="Curepipe">Curepipe</option>
+          <option value="Moka">Moka</option>
+        </select>
+        <input type="search" id="adQuery" placeholder="Search iPhones, MacBooks, AirPods, cars..." aria-label="Search secondhand listings" oninput="renderAds()">
+        <button type="submit" class="js-go" aria-label="Search">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+      </div>
+      <button type="button" class="sell-cta" onclick="document.getElementById('sellDialog').showModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Post Free Ad
+      </button>
+    </form>
+  </section>
+
+  <main class="wrap">
+
+    <!-- VIEW A: BROWSE RESELL MARKETPLACE -->
+    <div id="browseView">
+      <div class="fab-cat-head">
+        <div>
+          <h2>Featured categories</h2>
+          <p>Shop verified secondhand gadgets &amp; gear in seconds.</p>
+        </div>
+        <button type="button" style="font-size:12px;font-weight:700;color:var(--lime-ink);" onclick="setCat(document.querySelector('.c-tile'), 'all')">All Categories ↗</button>
+      </div>
+      <!-- Category Tiles (Real Isolated Studio Product Photos — Jiji / Amazon style) -->
+      <div class="cat-strip" role="group" aria-label="Resell categories">
+        <button type="button" class="c-tile on" onclick="setCat(this, 'all')">
+          <span class="c-go" aria-hidden="true">↗</span>
+          <span class="c-ph"><img src="photos/resell-earbuds.jpg" alt="All Gadgets & Deals"></span>
+          <div><b>All Ads</b><br><small>142 items</small></div>
+        </button>
+        <button type="button" class="c-tile" onclick="setCat(this, 'phones')">
+          <span class="c-go" aria-hidden="true">↗</span>
+          <span class="c-ph"><img src="photos/resell-iphone.jpg" alt="Phones"></span>
+          <div><b>Phones</b><br><small>42 ads</small></div>
+        </button>
+        <button type="button" class="c-tile" onclick="setCat(this, 'laptops')">
+          <span class="c-go" aria-hidden="true">↗</span>
+          <span class="c-ph"><img src="photos/resell-macbook.jpg" alt="Laptops & Tablets"></span>
+          <div><b>Laptops</b><br><small>24 ads</small></div>
+        </button>
+        <button type="button" class="c-tile" onclick="setCat(this, 'audio')">
+          <span class="c-go" aria-hidden="true">↗</span>
+          <span class="c-ph"><img src="photos/resell-headphones.jpg" alt="Audio & Gadgets"></span>
+          <div><b>Audio</b><br><small>28 ads</small></div>
+        </button>
+        <button type="button" class="c-tile" onclick="setCat(this, 'watches')">
+          <span class="c-go" aria-hidden="true">↗</span>
+          <span class="c-ph"><img src="photos/resell-watch.jpg" alt="Watches"></span>
+          <div><b>Watches</b><br><small>16 ads</small></div>
+        </button>
+        <button type="button" class="c-tile" onclick="setCat(this, 'fashion')">
+          <span class="c-go" aria-hidden="true">↗</span>
+          <span class="c-ph"><img src="photos/resell-sneakers.jpg" alt="Sneakers & Fashion"></span>
+          <div><b>Sneakers</b><br><small>19 ads</small></div>
+        </button>
+        <button type="button" class="c-tile" onclick="setCat(this, 'vehicles')">
+          <span class="c-go" aria-hidden="true">↗</span>
+          <span class="c-ph"><img src="photos/resell-car.jpg" alt="Vehicles"></span>
+          <div><b>Vehicles</b><br><small>13 ads</small></div>
+        </button>
+      </div>
+
+      <!-- Shopease-Style Underline Sort Bar -->
+      <div class="sort-bar">
+        <div class="sort-tabs" role="tablist">
+          <button type="button" class="on" onclick="setSort(this, 'trending')">Popular</button>
+          <button type="button" onclick="setSort(this, 'latest')">Latest</button>
+          <button type="button" onclick="setSort(this, 'low')">Price ↑</button>
+          <button type="button" onclick="setSort(this, 'high')">Price ↓</button>
+        </div>
+        <span class="feed-count" id="feedTitle">8 Escrow deals</span>
+      </div>
+
+      <!-- Listings Grid -->
+      <div class="ads-grid" id="adsGrid"></div>
+    </div>
+
+    <!-- VIEW B: MY ESCROW & ACTIVE DEALS -->
+    <div id="escrowView" class="hidden">
+      <div class="kpi-grid">
+        <div class="kpi-card"><small>Held in Escrow</small><b>Rs 18,500</b><em>1 active handover</em></div>
+        <div class="kpi-card"><small>Released Payouts</small><b>Rs 42,300</b><em>Paid via Juice</em></div>
+        <div class="kpi-card"><small>Trust Score</small><b>4.9 ★</b><em>ID Verified · 14 sales</em></div>
+        <div class="kpi-card"><small>My Active Ads</small><b id="myAdCount">2</b><em>Escrow enabled</em></div>
+      </div>
+
+      <div class="escrow-card">
+        <div class="escrow-item">
+          <img src="photos/resell-iphone.jpg" alt="iPhone 13 Pro" style="background:#fff;object-fit:contain;padding:4px;">
+          <div>
+            <b>iPhone 13, 128GB (Midnight)</b>
+            <div style="font-size:12px;color:var(--muted);">Buyer: Kevin R. (ID Verified) · Quatre Bornes</div>
+          </div>
+          <span class="escrow-badge" id="escrowStatus">Rs 18,500 Locked</span>
+        </div>
+        <div class="stepper">
+          <div class="step done"><small>✓ Step 1</small><b>Buyer paid Escrow</b></div>
+          <div class="step active" id="step2"><small>● Step 2</small><b>Handover / Pickup</b></div>
+          <div class="step" id="step3"><small>3 · Release</small><b>Buyer confirms</b></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+          <button type="button" class="btn btn-black" style="min-height:40px;font-size:13px;" id="confirmBtn" onclick="confirmHandover()">Confirm Handover</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SHOPEASE-STYLE ITEM DETAIL & ESCROW MODAL -->
+  <dialog id="detailDialog" closedby="any" aria-labelledby="detailTitle">
+    <div class="dlg-head">
+      <b id="detailTitle">Item details</b>
+      <button type="button" onclick="document.getElementById('detailDialog').close()" aria-label="Close">✕</button>
+    </div>
+    <div class="dlg-body">
+      <div>
+        <img id="detailImg" class="detail-img" src="" alt="">
+        <div class="thumb-strip" id="detailThumbs"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <b id="detailPrice" style="font-size:22px;font-weight:800;"></b>
+        <span id="detailLoc" style="font-size:12px;color:var(--muted);font-weight:600;"></span>
+      </div>
+      <div id="detailSeller" style="font-size:12.5px;font-weight:700;color:var(--lime-ink);"></div>
+      <div class="opt-pills" id="detailSpecs"></div>
+      <p class="detail-desc" id="detailDesc"></p>
+      <div class="detail-trust" style="display:flex;align-items:flex-start;gap:10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lime-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+        <div><b>Face + ID Verified Seller · Bazar Escrow:</b> Money stays locked safely until you inspect the item and confirm handover.</div>
+      </div>
+      <!-- Message, Call & Voice Interaction Options (Crisp SVG Icons) -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+        <button type="button" class="opt-pill" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="openChat(currentAd)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>Message</button>
+        <button type="button" class="opt-pill" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="alert('Starting private in-app call...')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>Call</button>
+        <button type="button" class="opt-pill" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="alert('Hold to record a quick voice note...')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>Voice</button>
+      </div>
+      <div class="split-cta">
+        <button type="button" class="btn-out" onclick="document.getElementById('detailDialog').close()">Make Offer</button>
+        <button type="button" class="btn-solid" onclick="buyWithEscrow()">Buy with Escrow</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- EASY TAP-TO-PICK LISTING CREATOR (Shopease Option Pills + AI Auto-Fill) -->
+  <dialog id="sellDialog" closedby="any" aria-labelledby="sellTitle">
+    <div class="dlg-head">
+      <b id="sellTitle">Create Listing</b>
+      <button type="button" class="ai-fill-btn" onclick="aiAutoFill()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8Z"/></svg>AI Auto-fill</button>
+      <button type="button" onclick="document.getElementById('sellDialog').close()" aria-label="Close">✕</button>
+    </div>
+    <form class="dlg-body" onsubmit="addListing(event)">
+      <!-- Live Photo Preview + Thumbnail Picker -->
+      <div class="opt-group">
+        <div class="opt-label"><span>Item Photos</span><span style="color:var(--lime-ink)">Cover selected</span></div>
+        <div class="thumb-strip" id="uploadThumbs">
+          <button type="button" class="thumb-slot on" onclick="pickUploadPhoto(this, 'photos/resell-iphone.jpg')"><img src="photos/resell-iphone.jpg" alt=""></button>
+          <button type="button" class="thumb-slot" onclick="pickUploadPhoto(this, 'photos/resell-macbook.jpg')"><img src="photos/resell-macbook.jpg" alt=""></button>
+          <button type="button" class="thumb-slot" onclick="pickUploadPhoto(this, 'photos/resell-headphones.jpg')"><img src="photos/resell-headphones.jpg" alt=""></button>
+          <button type="button" class="thumb-slot add-slot" onclick="takeListingPhoto()" aria-label="Take a photo with the camera"><span>📷</span><small>Camera</small></button>
+          <button type="button" class="thumb-slot add-slot" onclick="uploadListingPhotos()" aria-label="Upload photos"><span>⬆</span><small>Upload</small></button>
+        </div>
+      </div>
+
+      <div><label for="itemTitle">Item title</label><input type="text" id="itemTitle" required placeholder="e.g. MacBook Air M2, AirPods Max"></div>
+      <div><label for="itemPrice">Asking price (Rs)</label><input type="number" id="itemPrice" required min="50" placeholder="e.g. 18500"></div>
+
+      <!-- Smart description helper: drafts a description and suggests what buyers will ask -->
+      <div class="opt-group">
+        <div class="desc-tools">
+          <label for="itemDesc" style="margin:0">Description</label>
+          <button type="button" class="ai-fill-btn" onclick="suggestDescription()">✨ Write it for me</button>
+        </div>
+        <textarea id="itemDesc" class="desc-box" placeholder="Tell buyers about the item: how old it is, how it works, any marks, what's included…" oninput="updateDescMeter()"></textarea>
+        <div class="desc-tools">
+          <span class="ask-hint">Buyers usually ask about — tap to add:</span>
+          <span class="desc-meter" id="descMeter"><span class="bar"><i></i></span><span id="descMeterText">Too short</span></span>
+        </div>
+        <div class="opt-pills" id="askChips"></div>
+      </div>
+
+      <!-- 1-Tap Category Pills -->
+      <div class="opt-group">
+        <span class="opt-label">Category</span>
+        <div class="opt-pills" id="sellCatPills">
+          <button type="button" class="opt-pill on" onclick="pickOpt(this, 'cat', 'phones')">Phones</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'cat', 'laptops')">Laptops</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'cat', 'audio')">Audio</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'cat', 'watches')">Watches</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'cat', 'fashion')">Sneakers</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'cat', 'vehicles')">Vehicles</button>
+        </div>
+      </div>
+
+      <!-- 1-Tap Condition Pills -->
+      <div class="opt-group">
+        <span class="opt-label">Condition</span>
+        <div class="opt-pills" id="sellCondPills">
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'cond', 'Brand New')">Brand New</button>
+          <button type="button" class="opt-pill on" onclick="pickOpt(this, 'cond', 'Like New')">Like New</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'cond', 'Gently Used')">Gently Used</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'cond', 'Fair')">Fair</button>
+        </div>
+      </div>
+
+      <!-- 1-Tap Location & Handover Pills -->
+      <div class="opt-group">
+        <span class="opt-label">Pickup Area</span>
+        <div class="opt-pills" id="sellTownPills">
+          <button type="button" class="opt-pill on" onclick="pickOpt(this, 'town', 'Port Louis')">Port Louis</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'town', 'Quatre Bornes')">Quatre Bornes</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'town', 'Grand Baie')">Grand Baie</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'town', 'Curepipe')">Curepipe</button>
+          <button type="button" class="opt-pill" onclick="pickOpt(this, 'town', 'Moka')">Moka</button>
+        </div>
+      </div>
+
+      <div class="split-cta">
+        <button type="button" class="btn-out" onclick="document.getElementById('sellDialog').close()">Save Draft</button>
+        <button type="submit" class="btn-solid">Publish Listing</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- IN-APP CHAT WITH THE SELLER (stays inside Bazar) -->
+  <dialog id="chatDialog" class="chat-dlg" closedby="any" aria-labelledby="chatSeller">
+    <div class="dlg-head">
+      <div class="chat-who">
+        <span class="av" id="chatAv">K</span>
+        <div><b id="chatSeller">Seller</b><small>✓ ID verified · usually replies in minutes</small></div>
+      </div>
+      <button type="button" onclick="document.getElementById('chatDialog').close()" aria-label="Close">✕</button>
+    </div>
+    <div class="chat-item">
+      <img id="chatImg" src="" alt="">
+      <div><b id="chatItemTitle"></b><div id="chatItemPrice" style="color:var(--muted);"></div></div>
+    </div>
+    <div class="chat-log" id="chatLog" aria-live="polite"></div>
+    <div class="chat-quick" id="chatQuick"></div>
+    <form class="chat-send" onsubmit="sendChat(event)">
+      <input type="text" id="chatInput" placeholder="Write a message…" aria-label="Message the seller" autocomplete="off">
+      <button type="submit" aria-label="Send">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4Z"/></svg>
+      </button>
+    </form>
+  </dialog>
+
+  <!-- SAME BOTTOM TAB BAR -->
+  <nav class="tab-bar t-caption" aria-label="Main">
+    <a href="index.html"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg></span><span>Home</span></a>
+    <a href="map.html"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20Z"/><path d="M9 4v13.5M15 6.5V20"/></svg></span><span>Map</span></a>
+    <a href="resell.html" class="on"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg></span><span>Resell</span></a>
+    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><span>Orders</span></a>
+  </nav>
+
+  <script>
+    var ads = [
+      { id: 1, title: "iPhone 13 Pro 256GB — Battery 92%, Unlocked", price: 24500, orig: 38000, cat: "phones", town: "Quatre Bornes", cond: "Like New", rating: "4.9", seller: "Kevin R. · Verified", img: "photos/resell-iphone.jpg" },
+      { id: 2, title: "Apple MacBook Pro 14\" Space Grey (16GB / 512GB)", price: 58000, orig: 84000, cat: "laptops", town: "Port Louis", cond: "Like New", rating: "5.0", seller: "Ebene Tech · Verified", img: "photos/resell-macbook.jpg" },
+      { id: 3, title: "Apple AirPods Max Silver — With Smart Case", price: 16500, orig: 26000, cat: "audio", town: "Grand Baie", cond: "Like New", rating: "4.9", seller: "Claire D. · Verified", img: "photos/resell-headphones.jpg" },
+      { id: 4, title: "Apple AirPods (3rd Gen) — Sealed Box", price: 6200, orig: 8900, cat: "audio", town: "Moka", cond: "Sealed", rating: "4.9", seller: "Bagatelle Deals · Verified", img: "photos/resell-earbuds.jpg" },
+      { id: 5, title: "Longines Master Collection Automatic Watch", price: 32000, orig: 48000, cat: "watches", town: "Curepipe", cond: "Like New", rating: "5.0", seller: "Marc L. · Verified", img: "photos/resell-watch.jpg" },
+      { id: 6, title: "Nike Air Jordan 1 Sneakers (EU 42 · Box Included)", price: 4800, orig: 7500, cat: "fashion", town: "Port Louis", cond: "Like New", rating: "4.8", seller: "Nadia K. · Verified", img: "photos/resell-sneakers.jpg" },
+      { id: 7, title: "Apple iPad Mini 64GB Wi-Fi — Mint Condition", price: 14900, orig: 22500, cat: "laptops", town: "Quatre Bornes", cond: "Gently Used", rating: "4.9", seller: "Dev P. · Verified", img: "photos/resell-tablet.jpg" },
+      { id: 8, title: "Toyota Yaris Hatchback 2021 — Clean Service History", price: 495000, orig: 620000, cat: "vehicles", town: "Port Louis", cond: "Gently Used", rating: "4.8", seller: "Yash Motors · Verified", img: "photos/resell-car.jpg" }
+    ];
+
+    var activeCat = "all";
+    var activeSort = "trending";
+    var sellState = { cat: "phones", cond: "Like New", town: "Port Louis", img: "photos/resell-iphone.jpg" };
+
+    function pickOpt(btn, key, val) {
+      sellState[key] = val;
+      btn.parentNode.querySelectorAll(".opt-pill").forEach(function (b) { b.classList.remove("on"); });
+      btn.classList.add("on");
+      if (key === "cat") renderAskChips();   // suggestions follow the category
+    }
+    /* Listing photos: live camera or upload (photos stay on the device in this prototype) */
+    function addListingPhoto(src) {
+      var strip = document.getElementById("uploadThumbs");
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "thumb-slot";
+      b.innerHTML = '<img alt="">';
+      b.querySelector("img").src = src;
+      b.onclick = function () { pickUploadPhoto(b, src); };
+      strip.insertBefore(b, strip.querySelector(".add-slot"));
+      return b;
+    }
+    function takeListingPhoto() {
+      var dlg = document.getElementById("sellDialog");
+      dlg.close();
+      BazarDocs.openCamera({ title: "Photo of your item" }).then(function (img) {
+        dlg.showModal();
+        if (img) pickUploadPhoto(addListingPhoto(img), img);
+      });
+    }
+    function uploadListingPhotos() {
+      BazarDocs.pickFiles({ accept: "image/*", multiple: true }).then(function (files) {
+        var first = null;
+        return files.slice(0, 8).reduce(function (p, f) {
+          return p.then(function () { return BazarDocs.fileToDataURL(f); }).then(function (src) {
+            var b = addListingPhoto(src);
+            if (!first) { first = b; pickUploadPhoto(b, src); }
+          });
+        }, Promise.resolve());
+      });
+    }
+
+    function pickUploadPhoto(btn, src) {
+      sellState.img = src;
+      document.querySelectorAll("#uploadThumbs .thumb-slot").forEach(function (b) { b.classList.remove("on"); });
+      btn.classList.add("on");
+    }
+    function aiAutoFill() {
+      document.getElementById("itemTitle").value = "Wireless Noise-Cancelling Earbuds + Case";
+      document.getElementById("itemPrice").value = "3200";
+    }
+
+    function switchView(v) {
+      document.getElementById("browseView").classList.toggle("hidden", v !== "browse");
+      document.getElementById("escrowView").classList.toggle("hidden", v !== "escrow");
+      document.getElementById("v-browse").classList.toggle("on", v === "browse");
+      document.getElementById("v-escrow").classList.toggle("on", v === "escrow");
+    }
+
+    function setCat(btn, cat) {
+      activeCat = cat;
+      document.querySelectorAll(".c-tile").forEach(function (b) { b.classList.remove("on"); });
+      btn.classList.add("on");
+      renderAds();
+    }
+
+    function setSort(btn, s) {
+      activeSort = s;
+      btn.parentNode.querySelectorAll("button").forEach(function (b) { b.classList.remove("on"); });
+      btn.classList.add("on");
+      renderAds();
+    }
+
+    function renderAds() {
+      var q = (document.getElementById("adQuery").value || "").trim().toLowerCase();
+      var area = document.getElementById("areaFilter").value;
+      var list = ads.filter(function (a) {
+        var cOk = activeCat === "all" || a.cat === activeCat;
+        var aOk = area === "all" || a.town === area;
+        var qOk = !q || a.title.toLowerCase().includes(q) || a.town.toLowerCase().includes(q);
+        return cOk && aOk && qOk;
+      });
+      if (activeSort === "low") list.sort(function (a, b) { return a.price - b.price; });
+      if (activeSort === "high") list.sort(function (a, b) { return b.price - a.price; });
+      if (activeSort === "latest") list.sort(function (a, b) { return b.id - a.id; });
+
+      var grid = document.getElementById("adsGrid");
+      grid.innerHTML = "";
+      document.getElementById("feedTitle").textContent = list.length + " Escrow deals";
+
+      list.forEach(function (a) {
+        var disc = a.orig ? Math.round((1 - a.price / a.orig) * 100) : 0;
+        var card = document.createElement("article");
+        card.className = "ad-card";
+        card.onclick = function (ev) {
+          if (ev.target.closest(".ad-save")) return;
+          if (ev.target.closest(".ad-msg")) { openChat(a); return; }
+          openDetail(a);
+        };
+        card.innerHTML =
+          '<div class="ad-ph">' +
+            '<img src="' + a.img + '" alt="">' +
+            '<span class="ad-cond">' + a.cond + '</span>' +
+            '<button type="button" class="ad-msg" aria-label="Message seller"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></button>' +
+            '<button type="button" class="ad-save" aria-label="Save listing" onclick="this.classList.toggle(\'saved\')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button>' +
+          '</div>' +
+          '<div class="ad-body">' +
+            '<div class="ad-title">' + a.title + '</div>' +
+            '<div class="ad-price">Rs ' + a.price.toLocaleString() + '</div>' +
+            (disc > 0 ? '<div class="ad-disc-row"><span class="ad-disc">-' + disc + '%</span><span class="ad-orig">Rs ' + a.orig.toLocaleString() + '</span></div>' : '') +
+            '<div class="ad-meta"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--lime-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg><span>★ <b>' + a.rating + '</b></span><span>•</span><span>' + a.town + '</span></div>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+    }
+
+    var currentAd = null;
+    function openDetail(a) {
+      currentAd = a;
+      document.getElementById("detailDesc").textContent = a.desc ||
+        (a.cond + " · " + a.title + ". Pickup in " + a.town + " or delivery, paid safely through Bazar Escrow.");
+      document.getElementById("detailTitle").textContent = a.title;
+      document.getElementById("detailImg").src = a.img;
+      document.getElementById("detailPrice").textContent = "Rs " + a.price.toLocaleString();
+      document.getElementById("detailLoc").textContent = a.town;
+      document.getElementById("detailSeller").textContent = "★ " + a.rating + " · " + a.seller;
+      document.getElementById("detailSpecs").innerHTML =
+        '<span class="opt-pill on">' + a.cond + '</span>' +
+        '<span class="opt-pill">✓ Escrow Protected</span>' +
+        '<span class="opt-pill">Grabbit / Meetup</span>';
+      var thumbs = [a.img, "photos/resell-earbuds.jpg", "photos/resell-macbook.jpg"];
+      var tw = document.getElementById("detailThumbs");
+      tw.innerHTML = "";
+      thumbs.forEach(function (src, idx) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "thumb-slot" + (idx === 0 ? " on" : "");
+        b.innerHTML = '<img src="' + src + '" alt="">';
+        b.onclick = function () {
+          document.getElementById("detailImg").src = src;
+          tw.querySelectorAll(".thumb-slot").forEach(function (x) { x.classList.remove("on"); });
+          b.classList.add("on");
+        };
+        tw.appendChild(b);
+      });
+      document.getElementById("detailDialog").showModal();
+    }
+
+    function buyWithEscrow() {
+      document.getElementById("detailDialog").close();
+      switchView("escrow");
+    }
+
+    function addListing(e) {
+      e.preventDefault();
+      var price = Number(document.getElementById("itemPrice").value);
+      var item = {
+        id: Date.now(),
+        title: document.getElementById("itemTitle").value.trim(),
+        price: price,
+        orig: Math.round(price * 1.35),
+        cat: sellState.cat,
+        town: sellState.town,
+        cond: sellState.cond,
+        rating: "4.9",
+        seller: "You · Verified",
+        img: sellState.img,
+        desc: document.getElementById("itemDesc").value.trim()
+      };
+      ads.unshift(item);
+      document.getElementById("sellDialog").close();
+      e.target.reset();
+      renderAskChips();
+      updateDescMeter();
+      switchView("browse");
+      renderAds();
+    }
+
+    /* ───── Smart description helper ─────
+       Prototype: drafts come from templates. In the real app this calls the AI
+       on the server (see docs/tech-stack.md). "__" marks a blank for the seller to fill. */
+    var ASK = {
+      phones:   [["Battery health", "Battery health: __%"], ["Storage", "Storage: __ GB"], ["Network", "Unlocked, works on all networks"],
+                 ["Screen & body", "Screen and body: no cracks, __"], ["Box & charger", "Comes with: __"], ["Receipt / warranty", "Receipt available, warranty until __"], ["Why selling", "Selling because __"]],
+      laptops:  [["Processor & RAM", "Processor: __ · RAM: __ GB"], ["Storage", "Storage: __ GB SSD"], ["Battery", "Battery cycles: __, holds __ hours"],
+                 ["Charger", "Original charger included"], ["Keyboard & screen", "Keyboard and screen: __"], ["Receipt / warranty", "Receipt available, warranty until __"]],
+      audio:    [["Battery life", "Battery lasts about __ hours"], ["Noise cancelling", "Noise cancelling works perfectly"], ["Case & cable", "Comes with: case and cable"],
+                 ["Cleaned", "Cleaned, ear tips replaced"], ["Receipt", "Receipt available"]],
+      watches:  [["Box & papers", "Comes with box and papers"], ["Last service", "Last serviced: __"], ["Strap", "Strap condition: __"],
+                 ["Authentic", "100% authentic, proof of purchase available"], ["Size", "Case size: __ mm"]],
+      fashion:  [["Size", "Size: EU __"], ["How often worn", "Worn __ times"], ["Box", "Original box included"], ["Authentic", "100% authentic"], ["Cleaned", "Cleaned and ready to wear"]],
+      vehicles: [["Year & mileage", "Year: __ · Mileage: __ km"], ["Fitness & road tax", "Fitness and road tax valid until __"], ["Service history", "Full service history, last service __"],
+                 ["Accidents", "No accidents"], ["Owners", "Number of owners: __"], ["Tyres", "Tyres: __"]]
+    };
+    var INTRO = {
+      phones: "Works perfectly, never repaired.", laptops: "Runs fast, no issues.", audio: "Sound is perfect, no damage.",
+      watches: "Keeps accurate time.", fashion: "Kept in great shape.", vehicles: "Drives smoothly, well maintained."
+    };
+
+    function renderAskChips() {
+      var wrap = document.getElementById("askChips");
+      if (!wrap) return;
+      wrap.innerHTML = "";
+      (ASK[sellState.cat] || ASK.phones).forEach(function (pair) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "opt-pill ask-chip";
+        b.textContent = "+ " + pair[0];
+        b.onclick = function () { addDescLine(pair[1]); b.classList.add("added"); };
+        wrap.appendChild(b);
+      });
+    }
+
+    function addDescLine(line) {
+      var box = document.getElementById("itemDesc");
+      box.value = (box.value.trim() ? box.value.replace(/\s+$/, "") + "\n" : "") + "• " + line;
+      selectBlank(box);
+      updateDescMeter();
+    }
+
+    // Put the cursor on the first blank so the seller can type over it.
+    function selectBlank(box) {
+      var i = box.value.indexOf("__");
+      box.focus();
+      if (i > -1) box.setSelectionRange(i, i + 2);
+    }
+
+    function suggestDescription() {
+      var title = document.getElementById("itemTitle").value.trim();
+      var box = document.getElementById("itemDesc");
+      if (!title) {
+        document.getElementById("itemTitle").focus();
+        document.getElementById("itemTitle").placeholder = "Add a title first, e.g. iPhone 13 128GB";
+        return;
+      }
+      var ask = (ASK[sellState.cat] || ASK.phones).slice(0, 3);
+      box.value =
+        "Selling my " + title + " in " + sellState.cond.toLowerCase() + " condition. " + (INTRO[sellState.cat] || "") + "\n" +
+        ask.map(function (p) { return "• " + p[1]; }).join("\n") + "\n" +
+        "Pickup in " + sellState.town + " or delivery. Pay safely through Bazar Escrow: your money is only released after you check the item.";
+      document.querySelectorAll("#askChips .ask-chip").forEach(function (c, i) { if (i < 3) c.classList.add("added"); });
+      selectBlank(box);
+      updateDescMeter();
+    }
+
+    // How complete is the description? Length + details covered, capped while blanks remain.
+    function updateDescMeter() {
+      var box = document.getElementById("itemDesc");
+      if (!box) return;
+      var text = box.value.trim(), low = text.toLowerCase();
+      var details = (ASK[sellState.cat] || ASK.phones).filter(function (p) {
+        return low.indexOf(p[1].split(":")[0].toLowerCase().replace(/ __.*$/, "").slice(0, 10)) > -1;
+      }).length;
+      var score = Math.min(1, text.length / 220) * 0.5 + Math.min(1, details / 3) * 0.5;
+      var blanks = text.indexOf("__") > -1;
+      if (blanks) score = Math.min(score, 0.6);
+      var meter = document.getElementById("descMeter");
+      var label = !text || text.length < 30 ? "Too short" : blanks ? "Fill in the __ blanks" : score < 0.45 ? "Basic" : score < 0.8 ? "Good" : "Great";
+      meter.className = "desc-meter" + (label === "Great" ? " great" : label === "Good" ? " good" : "");
+      meter.querySelector(".bar i").style.width = Math.max(4, Math.round(score * 100)) + "%";
+      document.getElementById("descMeterText").textContent = label;
+    }
+
+    /* ───── In-app chat with the seller (prototype: seller replies are scripted) ───── */
+    var chats = {};
+    var chatAd = null;
+    function openChat(a) {
+      if (!a) return;
+      chatAd = a;
+      var seller = (a.seller || "Seller").split(" · ")[0];
+      document.getElementById("chatSeller").textContent = seller;
+      document.getElementById("chatAv").textContent = seller.charAt(0).toUpperCase();
+      document.getElementById("chatImg").src = a.img;
+      document.getElementById("chatItemTitle").textContent = a.title;
+      document.getElementById("chatItemPrice").textContent = "Rs " + a.price.toLocaleString() + " · " + a.town;
+      if (!chats[a.id]) chats[a.id] = [{ who: "sys", text: "Chats stay inside Bazar. Never pay outside Bazar Escrow." }];
+      drawChat();
+      var quick = document.getElementById("chatQuick");
+      quick.innerHTML = "";
+      ["Is it still available?", "Can I see more photos?", "What's your lowest price?", "Can we meet in " + a.town + "?", "Can you deliver?"].forEach(function (q) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.textContent = q;
+        b.onclick = function () { postChat(q); };
+        quick.appendChild(b);
+      });
+      document.getElementById("chatDialog").showModal();
+      document.getElementById("chatInput").focus();
+    }
+    function drawChat() {
+      var log = document.getElementById("chatLog");
+      log.innerHTML = "";
+      chats[chatAd.id].forEach(function (m) {
+        var d = document.createElement("div");
+        d.className = "bub " + m.who;
+        d.textContent = m.text;
+        log.appendChild(d);
+      });
+      log.scrollTop = log.scrollHeight;
+    }
+    function postChat(text) {
+      var a = chatAd;
+      chats[a.id].push({ who: "me", text: text });
+      drawChat();
+      var t = text.toLowerCase(), reply;
+      if (/availab/.test(t)) reply = "Yes, it's still available!";
+      else if (/photo|picture|pic/.test(t)) reply = "Sure, I'll send more photos in a minute.";
+      else if (/price|lowest|offer|less|discount/.test(t)) reply = "I can do Rs " + Math.round(a.price * 0.95).toLocaleString() + " if you pay through Bazar Escrow.";
+      else if (/meet|pickup|pick up/.test(t)) reply = "Yes, we can meet at a public place in " + a.town + ".";
+      else if (/deliver/.test(t)) reply = "Yes, you can choose delivery when you pay with Bazar Escrow.";
+      else reply = "Thanks for your message! I'll reply shortly.";
+      setTimeout(function () {
+        chats[a.id].push({ who: "them", text: reply });
+        if (chatAd === a) drawChat();
+      }, 900);
+    }
+    function sendChat(e) {
+      e.preventDefault();
+      var inp = document.getElementById("chatInput");
+      var v = inp.value.trim();
+      if (!v || !chatAd) return;
+      postChat(v);
+      inp.value = "";
+    }
+
+    function confirmHandover() {
+      document.getElementById("step2").className = "step done";
+      document.getElementById("step2").querySelector("small").textContent = "✓ Step 2";
+      document.getElementById("step3").className = "step done";
+      document.getElementById("step3").querySelector("small").textContent = "✓ Released";
+      document.getElementById("escrowStatus").textContent = "Rs 18,500 Released";
+      var btn = document.getElementById("confirmBtn");
+      btn.textContent = "Payout Sent ✓";
+      btn.disabled = true;
+    }
+
+    if (!("closedBy" in HTMLDialogElement.prototype)) {
+      document.querySelectorAll("dialog[closedby='any']").forEach(function (d) {
+        d.addEventListener("click", function (ev) {
+          if (ev.target !== d) return;
+          var r = d.getBoundingClientRect();
+          if (!(r.top <= ev.clientY && ev.clientY <= r.top + r.height && r.left <= ev.clientX && ev.clientX <= r.left + r.width)) d.close();
+        });
+      });
+    }
+
+    renderAds();
+    renderAskChips();
+    updateDescMeter();
+
+    // Language flag menu (same as Home); i18n.js does the translating.
+    function togglePop(id) { document.getElementById(id).classList.toggle("open"); }
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".pop-wrap")) document.getElementById("langMenu").classList.remove("open");
+    });
+    var flags = {
+      en: '<clipPath id="r-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#r-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g>',
+      fr: '<clipPath id="r-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#r-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g>',
+      mfe: '<clipPath id="r-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#r-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g>'
+    };
+    function setLang(code) {
+      if (!flags[code]) return;
+      document.getElementById("langFlagSvg").innerHTML = flags[code];
+      document.querySelectorAll("#langMenu button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-lang") === code); });
+      document.getElementById("langMenu").classList.remove("open");
+      try { localStorage.setItem("bazar-lang", code); } catch (e) {}
+    }
+    try { var sl = localStorage.getItem("bazar-lang"); if (sl && flags[sl]) setLang(sl); } catch (e) {}
+
+    // 4-Pillar Fade + Swipe Hero Banner Engine (5s interval)
+    (function initResellBanner() {
+      var slides = document.querySelectorAll("#resellSlides .r-slide");
+      var banner = document.getElementById("resellBanner");
+      var cur = 0, tmr = null, startX = null;
+
+      window.goResellSlide = function (next) {
+        if (!slides.length) return;
+        var prev = cur;
+        cur = ((next % slides.length) + slides.length) % slides.length;
+        slides.forEach(function (s, i) {
+          s.classList.remove("active", "exit");
+          if (i === prev && prev !== cur) s.classList.add("exit");
+          if (i === cur) s.classList.add("active");
+        });
+        resetTimer();
+      };
+
+      function resetTimer() {
+        clearInterval(tmr);
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        tmr = setInterval(function () { window.goResellSlide(cur + 1); }, 2000);
+      }
+
+      if (banner) {
+        banner.addEventListener("pointerdown", function (e) { startX = e.clientX; });
+        banner.addEventListener("pointerup", function (e) {
+          if (startX === null) return;
+          var dx = e.clientX - startX; startX = null;
+          if (Math.abs(dx) > 40) window.goResellSlide(cur + (dx < 0 ? 1 : -1));
+        });
+      }
+      resetTimer();
+    })();
+  </script>
+  <script src="doc-tools.js"></script>
+  <script src="i18n.js"></script>
+  <script src="edit-text.js"></script>
+</body>
+</html>

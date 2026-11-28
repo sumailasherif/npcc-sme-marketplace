@@ -3,55 +3,1640 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f4f0e6">
-  <title>Bazar for Business</title>
+  <meta name="theme-color" content="#0e0e0c">
+  <title>Bazar — Every Mauritian business, one intelligent app</title>
   <link rel="stylesheet" href="brand.css">
   <style>
-    /* Info page: simple top bar, no app tab bar. */
-    .top { height: var(--top-bar); display: flex; align-items: center; }
-    .top .wrap { display: flex; align-items: center; gap: 12px; }
-    .logo { background: var(--lime); padding: 4px 10px; border-radius: 8px; font-size: 18px; font-weight: 700; letter-spacing: -0.04em; }
-    .top .back { margin-left: auto; font-size: var(--label); font-weight: 600; color: var(--lime-ink); }
-
-    /* HERO (moved here from the first draft) */
-    .hero {
-      min-height: calc(100svh - var(--top-bar));
-      display: flex; flex-direction: column; justify-content: center;
-      padding-top: 32px; padding-bottom: 48px;
+    /* ───── Landing Page Tokens (Auracore-inspired editorial × Bazar brand) ───── */
+    :root {
+      --r-sharp: 4px;
+      --mono-track: 0.12em;
     }
-    .hero .sub { margin-top: 16px; color: var(--black-2); max-width: 560px; }
-    .hero .actions { margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
-    .hero .actions .btn { width: 100%; }
 
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+
+    body { background: var(--cream); color: var(--black); overflow-x: clip; }
+    :focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+    /* Shared editorial micro-typography */
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600; letter-spacing: var(--mono-track);
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: ""; width: 7px; height: 7px; background: var(--lime); flex: none;
+    }
+    .eyebrow--dark::before { background: var(--black); }
+
+    /* Sharp Auracore-style rectangular buttons */
+    .ed-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: 46px; padding: 0 18px; border-radius: var(--r-sharp);
+      font-size: 12px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+      white-space: nowrap; transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .ed-btn:active { transform: translateY(1px); }
+    .ed-btn--lime { background: var(--lime); color: var(--black); padding-left: 8px; }
+    .ed-btn--lime:hover { background: #dff95b; }
+    .ed-btn--lime .sq {
+      width: 30px; height: 30px; border-radius: 2px; background: var(--black); color: var(--lime);
+      display: grid; place-items: center; font-size: 16px; font-weight: 500; line-height: 1;
+    }
+    .ed-btn--outline-light {
+      border: 1px solid rgba(251, 248, 241, 0.35); color: var(--card); background: rgba(251, 248, 241, 0.04);
+    }
+    .ed-btn--outline-light:hover { border-color: var(--lime); color: var(--lime); }
+    .ed-btn--black { background: var(--black); color: var(--card); padding-left: 8px; }
+    .ed-btn--black:hover { background: var(--black-2); }
+    .ed-btn--black .sq {
+      width: 30px; height: 30px; border-radius: 2px; background: var(--lime); color: var(--black);
+      display: grid; place-items: center; font-size: 16px; font-weight: 600; line-height: 1;
+    }
+    .ed-btn--outline-dark {
+      border: 1px solid rgba(14, 14, 12, 0.22); color: var(--black); background: var(--card);
+    }
+    .ed-btn--outline-dark:hover { border-color: var(--black); background: var(--cream); }
+
+    /* ───── 1. PERSISTENT FLOATING NAV (Shrinking on scroll) ───── */
+    .nav-shell {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+      padding: calc(14px + env(safe-area-inset-top)) 0 12px;
+      background: linear-gradient(to bottom, rgba(14, 14, 12, 0.88), rgba(14, 14, 12, 0));
+      pointer-events: none;
+      transition: padding 0.25s ease, background 0.25s ease;
+    }
+    .nav-shell.scrolled {
+      padding: calc(8px + env(safe-area-inset-top)) 0 8px;
+      background: linear-gradient(to bottom, rgba(14, 14, 12, 0.45), rgba(14, 14, 12, 0));
+    }
+    .nav-shell.scrolled .pill-nav {
+      box-shadow: 0 12px 32px rgba(14, 14, 12, 0.22);
+      transform: scale(0.97);
+    }
+    .nav-shell .wrap {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      pointer-events: auto;
+    }
+    .brand-mark {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(14, 14, 12, 0.85); backdrop-filter: blur(10px);
+      padding: 6px 12px 6px 6px; border-radius: 8px; border: 1px solid rgba(251, 248, 241, 0.12);
+    }
+    .brand-mark .logo {
+      background: var(--lime); color: var(--black); padding: 4px 10px; border-radius: 5px;
+      font-size: 16px; font-weight: 700; letter-spacing: -0.04em; line-height: 1;
+    }
+    .brand-mark .sub {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: #cfc7b4; text-transform: uppercase;
+    }
+
+    .pill-nav {
+      display: none; align-items: center; gap: 4px;
+      background: rgba(251, 248, 241, 0.92); backdrop-filter: blur(12px);
+      border: 1px solid rgba(14, 14, 12, 0.08); border-radius: 999px; padding: 5px 6px;
+      box-shadow: 0 8px 24px rgba(14, 14, 12, 0.14);
+    }
+    .pill-nav a {
+      padding: 8px 14px; border-radius: 999px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--black-2); transition: background .15s, color .15s;
+    }
+    .pill-nav a:hover { background: var(--black); color: var(--lime); }
+    .pill-nav a { white-space: nowrap; }
+
+    /* Phone top bar: keep logo, language and Get Started on one tidy line */
+    @media (max-width: 767px) {
+      .nav-shell .wrap { gap: 8px; }
+      .brand-mark { padding: 5px; }
+      .brand-mark .sub { display: none; }
+      .nav-right { gap: 8px; }
+      .nav-cta { min-height: 38px; padding: 0 12px; letter-spacing: 0.06em; }
+    }
+
+    .nav-cta {
+      min-height: 38px; padding: 0 14px; font-size: 11px;
+      background: rgba(14, 14, 12, 0.82); backdrop-filter: blur(8px);
+    }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+
+    /* Circular Flag Language Switcher (EN / FR / Kreol) */
+    .lang-wrap { position: relative; }
+    .lang-btn {
+      width: 40px; height: 40px; border-radius: 999px;
+      background: var(--lime); border: 2px solid var(--black);
+      display: grid; place-items: center; padding: 0;
+      box-shadow: 0 4px 12px rgba(14, 14, 12, 0.22);
+      transition: transform .15s ease;
+    }
+    .lang-btn:hover { transform: scale(1.06); }
+    .lang-btn svg { width: 24px; height: 24px; border-radius: 999px; display: block; }
+    .lang-menu {
+      position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+      min-width: 156px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 6px; box-shadow: 0 14px 32px rgba(14, 14, 12, 0.2);
+      display: none; flex-direction: column; gap: 2px;
+    }
+    .lang-menu.open { display: flex; }
+    .lang-opt {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--black); text-align: left;
+    }
+    .lang-opt:hover { background: var(--cream); }
+    .lang-opt.on { background: var(--black); color: var(--lime); }
+    .lang-opt svg { width: 20px; height: 20px; border-radius: 999px; flex: none; }
+
+    /* 3-Phone Sneak Peek Showcase (Ondira-inspired) */
+    .sneak-band {
+      background: var(--lime); color: var(--black);
+      padding: 64px 0 0; overflow: hidden;
+      border-top: 1px solid rgba(14, 14, 12, 0.08);
+      border-bottom: 1px solid rgba(14, 14, 12, 0.12);
+    }
+    .sneak-head { text-align: center; }
+    .sneak-big {
+      font-size: clamp(40px, 8.2vw, 108px); line-height: 0.94; font-weight: 800;
+      letter-spacing: -0.05em; text-transform: uppercase; color: var(--black);
+    }
+    .sneak-sub { margin: 14px auto 0; max-width: 560px; color: var(--black-2); font-weight: 500; }
+    .phones-row {
+      margin-top: 40px; display: grid; grid-template-columns: 1fr; gap: 20px;
+      max-width: 1040px; margin-left: auto; margin-right: auto; align-items: end;
+    }
+    .phone-frame {
+      background: #121210; color: var(--card); border-radius: 34px 34px 0 0;
+      border: 5px solid #2b2b27; border-bottom: 0; padding: 14px 14px 28px;
+      min-height: 360px; display: flex; flex-direction: column; gap: 12px;
+      box-shadow: 0 -8px 32px rgba(14, 14, 12, 0.18);
+    }
+    .phone-notch {
+      width: 72px; height: 14px; border-radius: 999px; background: #000;
+      margin: 0 auto 6px;
+    }
+    /* Phone 1: Live Insights Ring */
+    .ring-wrap {
+      width: 148px; height: 148px; border-radius: 999px; margin: 14px auto 8px;
+      background: conic-gradient(var(--lime) 0 74%, #2b2b27 74% 100%);
+      display: grid; place-items: center;
+    }
+    .ring-inner {
+      width: 118px; height: 118px; border-radius: 999px; background: #121210;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .ring-inner b { font-size: 24px; font-weight: 700; color: var(--card); letter-spacing: -0.03em; }
+    .ring-inner span { font-size: 11px; color: #a8a294; }
+    .p1-pills { display: flex; justify-content: center; gap: 8px; margin-top: auto; }
+    .p1-pills span {
+      background: #23231f; border: 1px solid #353530; border-radius: 999px;
+      padding: 6px 12px; font-size: 11px; font-weight: 600; color: var(--card);
+    }
+    /* Phone 2: Auto Invoice Paper */
+    .p2-paper {
+      background: #fffdf8; color: var(--black); border-radius: 8px 8px 0 0;
+      padding: 14px 12px 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px; line-height: 1.5; flex: 1;
+    }
+    .p2-paper .p2-brand { font-weight: 800; letter-spacing: 0.1em; font-size: 12px; }
+    .p2-paper .p2-code { font-size: 14px; font-weight: 700; margin: 8px 0; padding: 6px 0; border-top: 1px dashed #c8c1b0; border-bottom: 1px dashed #c8c1b0; text-align: center; }
+    .p2-row { display: flex; justify-content: space-between; padding: 2px 0; }
+    /* Phone 3: AI Customer & Enquiry Sheet */
+    .p3-sheet {
+      background: #fbf8f1; color: var(--black); border-radius: 10px 10px 0 0;
+      padding: 14px 12px 18px; flex: 1; display: flex; flex-direction: column; gap: 8px;
+    }
+    .p3-sheet small { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+    .p3-sheet h4 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+    .p3-sheet p { font-size: 11.5px; color: var(--black-2); line-height: 1.45; }
+    .p3-tag { align-self: flex-start; background: var(--lime); color: var(--black); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+
+    /* ───── 2. FULL-BLEED DARK CATALIS × AURACORE HERO (Centered + 3D Curved Orbit Carousel) ───── */
+    .hero-wrap {
+      position: relative; background: var(--black); color: var(--card);
+      min-height: 100svh; display: flex; flex-direction: column; justify-content: center;
+      padding-top: calc(96px + env(safe-area-inset-top)); padding-bottom: 72px;
+      overflow: hidden;
+    }
+    /* Halftone dot-matrix dither */
+    .hero-wrap::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      background-image: radial-gradient(rgba(251, 248, 241, 0.13) 1px, transparent 1px);
+      background-size: 16px 16px;
+      mask-image: radial-gradient(circle at 50% 42%, black 32%, transparent 82%);
+    }
+    /* Diagonal volumetric light beams */
+    .hero-beams {
+      position: absolute; inset: -25%; pointer-events: none; z-index: 0;
+      background:
+        repeating-linear-gradient(
+          -28deg,
+          transparent 0 72px,
+          rgba(212, 245, 60, 0.06) 72px 118px,
+          transparent 118px 210px
+        );
+      filter: blur(16px);
+      animation: beamSweep 14s ease-in-out infinite alternate;
+    }
+    @keyframes beamSweep {
+      0% { transform: translate(-4%, -2%) rotate(-2deg); opacity: 0.7; }
+      50% { transform: translate(3%, 2%) rotate(1deg); opacity: 1; }
+      100% { transform: translate(-2%, 4%) rotate(-1deg); opacity: 0.8; }
+    }
+    .hero-aura {
+      position: absolute; width: 640px; height: 420px; border-radius: 999px; z-index: 0;
+      background: radial-gradient(circle, rgba(212, 245, 60, 0.25) 0%, rgba(212, 245, 60, 0.06) 48%, transparent 72%);
+      top: 14%; left: 50%; transform: translateX(-50%); pointer-events: none; filter: blur(26px);
+      animation: auraBreathe 7s ease-in-out infinite;
+    }
+    @keyframes auraBreathe {
+      0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.85; }
+      50% { transform: translateX(-50%) scale(1.16); opacity: 1; }
+    }
+
+    /* Kinetic Vertical-Bar Waveform Curtain along bottom edge */
+    .hero-wave {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 54px; z-index: 1;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 3px;
+      padding: 0 8px; pointer-events: none; opacity: 0.42;
+      mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+    }
+    .hero-wave i {
+      flex: 1; display: block; border-radius: 2px 2px 0 0;
+      background: linear-gradient(to top, rgba(212, 245, 60, 0.75), rgba(212, 245, 60, 0.08));
+      height: var(--h, 28%); transform-origin: bottom center;
+      animation: eqWave var(--d, 3.2s) ease-in-out var(--dl, 0s) infinite alternate;
+    }
+    @keyframes eqWave {
+      0% { transform: scaleY(0.35); opacity: 0.55; }
+      50% { transform: scaleY(1); opacity: 1; }
+      100% { transform: scaleY(0.45); opacity: 0.7; }
+    }
+
+    /* Masked line reveal for editorial headline */
+    .line-mask { display: block; overflow: hidden; }
+    .line-mask > span {
+      display: inline-block;
+      animation: lineRise 0.85s cubic-bezier(0.16, 1, 0.3, 1) var(--ld, 0.08s) both;
+    }
+    @keyframes lineRise {
+      from { transform: translateY(108%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Centered Catalis Hero Header */
+    .hero-center {
+      position: relative; z-index: 3; text-align: center;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .hero-center h1 {
+      margin-top: 14px; color: var(--card); max-width: 15ch;
+    }
+    .hero-center h1 em { font-style: normal; color: var(--lime); }
+    .hero-center p {
+      margin-top: 14px; color: #cfc7b4; max-width: 540px;
+      animation: heroIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+    }
+    .hero-pills {
+      margin-top: 24px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+      animation: heroIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both;
+    }
+    .cat-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      min-height: 46px; padding: 0 20px; border-radius: 999px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+      transition: transform .15s, background .15s, border-color .15s;
+    }
+    .cat-btn:hover { transform: translateY(-2px); }
+    .cat-btn--ghost {
+      background: rgba(251, 248, 241, 0.08); border: 1px solid rgba(251, 248, 241, 0.25);
+      color: var(--card); backdrop-filter: blur(8px);
+    }
+    .cat-btn--ghost:hover { border-color: var(--lime); color: var(--lime); }
+    .cat-btn--lime {
+      background: var(--lime); color: var(--black); padding-right: 6px;
+      box-shadow: 0 10px 28px rgba(212, 245, 60, 0.28);
+    }
+    .cat-btn--lime .orb {
+      width: 34px; height: 34px; border-radius: 999px; background: var(--black); color: var(--lime);
+      display: grid; place-items: center; font-size: 15px; line-height: 1;
+    }
+
+    @keyframes heroIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ───── 3D CURVED PANORAMIC CAROUSEL RING (Catalis signature) ───── */
+    .orbit-stage {
+      position: relative; z-index: 3; width: 100%; height: 240px;
+      margin-top: 38px; perspective: 1050px; overflow: hidden;
+      mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    }
+    .orbit-ring {
+      position: absolute; top: 50%; left: 50%; width: 0; height: 0;
+      transform-style: preserve-3d;
+      animation: ringSpin 28s linear infinite;
+    }
+    .orbit-stage:hover .orbit-ring { animation-play-state: paused; }
+    @keyframes ringSpin {
+      from { transform: translateZ(var(--ring-neg, -420px)) rotateY(0deg); }
+      to   { transform: translateZ(var(--ring-neg, -420px)) rotateY(-360deg); }
+    }
+    .orbit-card {
+      position: absolute; top: -95px; left: -88px;
+      width: 176px; height: 190px; border-radius: 18px; overflow: hidden;
+      background: var(--card); color: var(--black);
+      border: 1px solid rgba(251, 248, 241, 0.22);
+      box-shadow: 0 22px 44px rgba(0, 0, 0, 0.45);
+      backface-visibility: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 14px;
+    }
+    .orbit-card--photo { padding: 0; background: #141412; color: var(--card); }
+    .orbit-card--photo img { width: 100%; height: 100%; object-fit: cover; }
+    .orbit-card--photo::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(14, 14, 12, 0.88) 0%, transparent 58%);
+    }
+    .orbit-card--photo .oc-cap {
+      position: absolute; left: 12px; right: 12px; bottom: 10px; z-index: 2;
+    }
+    .orbit-card--photo b { display: block; font-size: 13px; font-weight: 700; }
+    .orbit-card--photo span { font-size: 10.5px; color: var(--lime); font-weight: 600; }
+
+    .orbit-card--dark {
+      background: linear-gradient(155deg, #161613 0%, #242910 100%);
+      color: var(--card); border-color: rgba(212, 245, 60, 0.35);
+    }
+    .orbit-card--lime { background: var(--lime); color: var(--black); border-color: #c2e325; }
+
+    .oc-kicker { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.65; }
+    .oc-big { font-size: 24px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; }
+    .oc-bars { display: flex; align-items: flex-end; gap: 5px; height: 54px; margin-top: 8px; }
+    .oc-bars i { flex: 1; border-radius: 999px; background: var(--black); display: block; }
+    .oc-bars i.l { background: var(--lime); }
+
+    /* Trust rating under carousel */
+    .hero-trust {
+      position: relative; z-index: 3; margin-top: 22px; text-align: center;
+      font-size: 12px; color: #cfc7b4; display: flex; flex-direction: column; align-items: center; gap: 5px;
+    }
+    .hero-stars { color: var(--lime); letter-spacing: 0.14em; font-size: 14px; }
+    /* Rotating line: cycles through everything Bazar does */
+    .trust-rot { display: block; min-height: 1.4em; transition: opacity .35s ease, transform .35s ease; }
+    .trust-rot.out { opacity: 0; transform: translateY(6px); }
+
+    /* Auto-scrolling Mauritius SME Marquee right below hero */
+    .marquee-bar {
+      background: var(--card); border-bottom: 1px solid var(--line);
+      overflow: hidden; padding: 14px 0;
+    }
+    .marquee-track {
+      display: flex; align-items: center; gap: 40px; width: max-content;
+      animation: mqScroll 24s linear infinite;
+    }
+    .marquee-track span {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); white-space: nowrap; display: inline-flex; align-items: center; gap: 10px;
+    }
+    .marquee-track span::before {
+      content: ""; width: 6px; height: 6px; border-radius: 999px; background: var(--lime-ink);
+    }
+    @keyframes mqScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
     @media (min-width: 768px) {
-      .hero { text-align: center; align-items: center; }
-      .hero .sub { margin-left: auto; margin-right: auto; }
-      .hero .actions { flex-direction: row; justify-content: center; }
-      .hero .actions .btn { width: auto; min-width: 200px; }
+      .orbit-stage { height: 270px; margin-top: 44px; }
+      .orbit-card { width: 196px; height: 210px; top: -105px; left: -98px; }
     }
-    @media (min-width: 1280px) { .hero .sub { max-width: 680px; } }
+
+    /* ───── 3. VERTICAL-BAR WAVEFORM DIVIDER + STATEMENT ───── */
+    .wave-bars {
+      height: 36px; width: 100%;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--black) 0 3px,
+        transparent 3px 9px
+      );
+      opacity: 0.16;
+    }
+    .statement {
+      padding: 64px 0 48px; text-align: center;
+    }
+    .statement-lead {
+      font-size: clamp(22px, 3.2vw, 38px); line-height: 1.25; font-weight: 500;
+      letter-spacing: -0.025em; max-width: 820px; margin: 0 auto; color: var(--black-2);
+    }
+    .inline-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+      padding: 2px 10px; font-weight: 600; color: var(--black); vertical-align: baseline;
+    }
+    .inline-chip--lime { background: var(--lime); border-color: var(--lime); }
+    .statement-big {
+      margin-top: 28px; font-size: clamp(44px, 9vw, 120px); line-height: 0.94;
+      font-weight: 700; letter-spacing: -0.05em; color: var(--black);
+    }
+    .statement-big span {
+      display: inline-block; background: var(--black); color: var(--lime);
+      padding: 4px 18px 8px; border-radius: 8px;
+    }
+
+    /* ───── 4. THE BAZAR SYSTEM — NUMBERED MODULAR CARDS (/ 01 / 02 / 03) ───── */
+    .system { padding: 40px 0 72px; }
+    .section-head { text-align: center; max-width: 680px; margin: 0 auto 36px; }
+    .section-head h2 { margin-top: 12px; }
+    .section-head p { margin-top: 10px; color: var(--muted); }
+
+    .sys-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .sys-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--r-sharp);
+      padding: 22px; display: flex; flex-direction: column; gap: 18px;
+      box-shadow: 0 10px 28px rgba(14, 14, 12, 0.04);
+      transition: transform .2s ease, border-color .2s ease;
+    }
+    .sys-card:hover { transform: translateY(-3px); border-color: rgba(14, 14, 12, 0.3); }
+    .sys-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .sys-idx { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--muted); }
+    .sys-card h3 { margin-top: 6px; font-size: var(--h3); letter-spacing: -0.02em; }
+    .sys-plus {
+      width: 30px; height: 30px; border-radius: 2px; background: var(--black); color: var(--lime);
+      display: grid; place-items: center; font-size: 16px; font-weight: 600; flex: none;
+    }
+    .sys-visual {
+      border-radius: 6px; overflow: hidden; background: var(--cream);
+      border: 1px solid var(--line); padding: 14px; min-height: 128px;
+      display: flex; flex-direction: column; justify-content: center; gap: 8px;
+    }
+    .sys-rule { height: 1px; background: var(--line); border: 0; margin: 0; }
+    .sys-card p { color: var(--muted); font-size: var(--body); }
+
+    /* Visual snippets inside cards */
+    .radar-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; background: var(--card); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line); }
+    .radar-row b { font-weight: 600; }
+    .radar-row span { color: var(--lime-ink); font-weight: 700; font-size: 12px; }
+    .stat-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-box { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+    .stat-box small { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .stat-box b { display: block; margin-top: 4px; font-size: 16px; font-weight: 700; color: var(--black); }
+
+    /* ───── 4B. BUSINESS SUITE: AUTO INVOICES, CAMERA SCAN & INSIGHTS ───── */
+    .suite { padding: 24px 0 80px; }
+    .suite-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
+
+    /* Thermal receipt preview (inspired by receipt slot mockup) */
+    .receipt-stage {
+      background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+      padding: 24px 18px 20px; display: flex; flex-direction: column; align-items: center;
+      box-shadow: 0 14px 36px rgba(14, 14, 12, 0.06);
+    }
+    .printer-slot {
+      width: 100%; max-width: 310px; height: 22px; border-radius: 999px;
+      background: var(--black); padding: 0 14px; display: flex; align-items: center; justify-content: space-between;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; color: #a8a294;
+    }
+    .receipt-paper {
+      position: relative; width: calc(100% - 28px); max-width: 282px; margin-top: -10px;
+      background: #fffdf8; color: var(--black); padding: 18px 18px 24px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.5;
+      box-shadow: 0 12px 28px rgba(14, 14, 12, 0.12);
+      border-left: 1px solid rgba(14, 14, 12, 0.06); border-right: 1px solid rgba(14, 14, 12, 0.06);
+    }
+    .receipt-paper::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 8px;
+      background:
+        radial-gradient(circle at 8px 8px, transparent 6px, #fffdf8 6.5px) 0 0 / 16px 8px repeat-x;
+    }
+    .rc-top { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); padding-bottom: 10px; border-bottom: 1px dashed #c8c1b0; }
+    .rc-total { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 8px; font-size: 16px; font-weight: 700; }
+    .rc-row { display: flex; justify-content: space-between; padding: 3px 0; color: var(--black-2); }
+    .rc-row span:first-child { color: var(--muted); }
+    .rc-div { border: 0; border-top: 1px dashed #c8c1b0; margin: 12px 0; }
+    .rc-copy { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; }
+    .rc-sub { text-align: center; font-size: 10px; color: var(--muted); margin-top: 4px; }
+    .rc-note { margin-top: 10px; font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+    .rc-actions {
+      margin-top: 24px; width: 100%; max-width: 310px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    }
+    .rc-pill {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      padding: 10px 6px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      background: var(--cream); border: 1px solid var(--line); color: var(--black);
+    }
+    .rc-pill--dark { background: var(--black); border-color: var(--black); color: var(--lime); }
+
+    /* Right column: Camera Scan + Business Breakdown cards */
+    .suite-stack { display: flex; flex-direction: column; gap: 16px; }
+    .suite-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--r-sharp);
+      padding: 22px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .suite-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .suite-tag {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      background: var(--lime); color: var(--black); padding: 4px 10px; border-radius: 4px;
+    }
+    .scan-mock {
+      background: var(--black); color: var(--card); border-radius: 10px; padding: 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      border: 1px solid var(--black-2);
+    }
+    .scan-frame {
+      width: 68px; height: 68px; border-radius: 8px; flex: none; position: relative;
+      background: rgba(212, 245, 60, 0.08); border: 1.5px dashed var(--lime);
+      display: grid; place-items: center; color: var(--lime);
+    }
+    .scan-meta b { display: block; font-size: 14px; color: var(--card); }
+    .scan-meta span { display: block; margin-top: 3px; font-size: 12px; color: #cfc7b4; }
+    .scan-ok {
+      margin-top: 8px; display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600; color: var(--lime);
+    }
+
+    /* Business Dashboard Breakdown — Colorful KPI Cards + Profit Chart */
+    .bd-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 560px) { .bd-grid { grid-template-columns: 1fr 1.25fr 0.95fr; } }
+    .bd-kpi {
+      border-radius: 14px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;
+      border: 1px solid var(--line); position: relative; overflow: hidden;
+    }
+    .bd-kpi-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .bd-kpi-ico {
+      width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; flex: none;
+    }
+    .bd-kpi small { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .bd-kpi b { display: block; margin-top: 8px; font-size: 20px; font-weight: 800; letter-spacing: -0.03em; }
+    .bd-kpi em { display: inline-block; margin-top: 4px; font-style: normal; font-size: 11px; font-weight: 700; }
+
+    /* Colorful Revenue Card (Lime) */
+    .bd-kpi--rev {
+      background: linear-gradient(135deg, #d4f53c 0%, #c1ea22 100%);
+      border-color: #b4dc18; color: var(--black);
+    }
+    .bd-kpi--rev .bd-kpi-ico { background: var(--black); color: var(--lime); }
+    .bd-kpi--rev small { color: rgba(14, 14, 12, 0.72); }
+    .bd-kpi--rev em { background: var(--black); color: var(--lime); padding: 2px 8px; border-radius: 999px; }
+
+    /* Net Profit Card (Dark + Animated Sparkline Chart) */
+    .bd-kpi--profit {
+      background: var(--black); border-color: var(--black-2); color: var(--card);
+    }
+    .bd-kpi--profit .bd-kpi-ico { background: rgba(212, 245, 60, 0.16); color: var(--lime); }
+    .bd-kpi--profit small { color: #a8a294; }
+    .bd-kpi--profit b { color: var(--card); }
+    .bd-kpi--profit em { color: var(--lime); }
+    .profit-chart { width: 100%; height: 36px; margin-top: 8px; display: block; }
+    .profit-line {
+      fill: none; stroke: var(--lime); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+      stroke-dasharray: 180; stroke-dashoffset: 180;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+    }
+    .suite-card.in-view .profit-line { stroke-dashoffset: 0; }
+
+    /* VAT Due Card (Warm Amber Accent) */
+    .bd-kpi--vat {
+      background: linear-gradient(135deg, #fff4d6 0%, #f9e6b3 100%);
+      border-color: #ead18d; color: var(--black);
+    }
+    .bd-kpi--vat .bd-kpi-ico { background: #0e0e0c; color: #f9e6b3; }
+    .bd-kpi--vat small { color: #6b5620; }
+    .bd-kpi--vat em { color: #6b5620; }
+
+    .bd-bars { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .bd-bar-row { display: grid; grid-template-columns: 112px 1fr auto; gap: 10px; align-items: center; font-size: 12px; font-weight: 500; }
+    .bd-track { height: 9px; border-radius: 999px; background: var(--cream); overflow: hidden; border: 1px solid var(--line); }
+    .bd-fill { height: 100%; background: var(--black); border-radius: 999px; }
+    .bd-fill--lime { background: var(--lime); }
+
+    /* Highlighted Global Marketplace Starter Gallery */
+    .market-gallery-head {
+      display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px;
+      margin-bottom: 18px;
+    }
+    .market-gallery {
+      display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 64px;
+    }
+    @media (min-width: 640px) { .market-gallery { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .market-gallery { grid-template-columns: repeat(4, 1fr); } }
+    .mg-card {
+      position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3;
+      border: 1px solid var(--line); background: var(--black); display: block;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .mg-card:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(14, 14, 12, 0.16); }
+    .mg-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.45s ease; }
+    .mg-card:hover img { transform: scale(1.06); }
+    .mg-card::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(14, 14, 12, 0.85) 0%, transparent 60%);
+    }
+    .mg-cap { position: absolute; left: 14px; right: 14px; bottom: 12px; z-index: 2; color: var(--card); }
+    .mg-cap b { display: block; font-size: 14px; font-weight: 700; }
+    .mg-cap span { font-size: 11px; color: var(--lime); font-weight: 600; }
+
+    /* ───── 5. INTERACTIVE BAZAR ASSIST DEMO (Customer + Business) ───── */
+    .assist-band {
+      background: var(--black); color: var(--card); padding: 64px 0;
+      position: relative; overflow: hidden;
+    }
+    .assist-grid { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center; }
+    .assist-copy h2 { margin-top: 12px; color: var(--card); }
+    .assist-copy p { margin-top: 12px; color: #cfc7b4; max-width: 480px; }
+    .mode-switch {
+      margin-top: 22px; display: inline-flex; background: var(--black-2);
+      border: 1px solid rgba(251, 248, 241, 0.14); border-radius: 6px; padding: 4px; gap: 4px;
+    }
+    .mode-switch button {
+      padding: 10px 16px; border-radius: 4px; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; color: #cfc7b4;
+    }
+    .mode-switch button.on { background: var(--lime); color: var(--black); }
+
+    .assist-box {
+      background: var(--card); color: var(--black); border-radius: 14px;
+      border: 1px solid var(--line); overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+    .assist-head {
+      display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+      border-bottom: 1px solid var(--line); background: var(--cream);
+    }
+    .assist-avatar {
+      width: 34px; height: 34px; border-radius: 999px; background: var(--black); color: var(--lime);
+      display: grid; place-items: center; flex: none;
+    }
+    .assist-title { font-weight: 700; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .assist-badge {
+      margin-left: auto; font-size: 11px; font-weight: 600; color: var(--lime-ink);
+      background: rgba(212, 245, 60, 0.35); padding: 3px 9px; border-radius: 999px;
+    }
+    .assist-log {
+      padding: 18px; min-height: 170px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .msg {
+      max-width: 88%; padding: 11px 14px; border-radius: 14px; font-size: 14px; line-height: 1.45;
+    }
+    .msg--bot { background: var(--cream); color: var(--black); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .msg--user { background: var(--black); color: var(--lime); align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 500; }
+    .assist-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 18px 12px; }
+    .assist-chips button {
+      padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line);
+      background: var(--cream); font-size: 12px; font-weight: 500; color: var(--black);
+      transition: background .15s, border-color .15s;
+    }
+    .assist-chips button:hover { background: var(--lime); border-color: var(--lime); }
+    .assist-form {
+      display: flex; align-items: center; gap: 8px; padding: 12px 14px;
+      border-top: 1px solid var(--line); background: var(--card);
+    }
+    .assist-form input {
+      flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--cream);
+      border-radius: 999px; height: 42px; padding: 0 16px; font: inherit; font-size: 14px; color: var(--black);
+    }
+    .assist-form button {
+      width: 42px; height: 42px; border-radius: 999px; background: var(--lime); color: var(--black);
+      display: grid; place-items: center; flex: none;
+    }
+
+    /* ───── 6. MID-LOWER CTA + PHOTO BANNER ───── */
+    .cta-band { padding: 72px 0 56px; text-align: center; }
+    .cta-band h2 { margin-top: 12px; }
+    .cta-band p { margin: 12px auto 0; max-width: 520px; color: var(--muted); }
+    .cta-row { margin-top: 26px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+    .photo-strip {
+      display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 56px;
+    }
+    .photo-tile {
+      position: relative; border-radius: var(--r-sharp); overflow: hidden; aspect-ratio: 16/9;
+      border: 1px solid var(--line);
+    }
+    .photo-tile img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-tile span {
+      position: absolute; left: 12px; bottom: 12px; background: rgba(14, 14, 12, 0.85); color: var(--lime);
+      padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+
+    /* ───── 7. STRUCTURED MULTI-COLUMN HAIRLINE FOOTER (Auracore style) ───── */
+    footer {
+      background: var(--card); border-top: 1px solid var(--line);
+      padding: 48px 0 28px;
+    }
+    .foot-grid {
+      display: grid; grid-template-columns: 1fr; gap: 32px;
+      padding-bottom: 36px; border-bottom: 1px solid var(--line);
+    }
+    .foot-brand p { margin: 12px 0 18px; color: var(--muted); max-width: 280px; }
+    .foot-col h4 {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin: 0 0 14px;
+    }
+    .foot-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+    .foot-col a { font-size: 14px; font-weight: 500; color: var(--black-2); }
+    .foot-col a:hover { color: var(--lime-ink); }
+    .foot-bottom {
+      padding-top: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px; font-size: 12px; color: var(--muted);
+    }
+    .foot-legal { display: flex; flex-wrap: wrap; gap: 18px; }
+
+    /* ───── SCROLL-TRIGGERED & MICRO ANIMATIONS (GPU-composited) ───── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.in-view { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.08s; }
+    .reveal-d2 { transition-delay: 0.16s; }
+    .reveal-d3 { transition-delay: 0.24s; }
+
+    /* 3-Phone Fan-Up */
+    .phone-frame {
+      opacity: 0;
+      transform: translateY(44px);
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .phones-row.in-view .phone-frame { opacity: 1; transform: translateY(0); }
+    .phones-row.in-view .phone-frame:nth-child(2) { transition-delay: 0.05s; }
+    .phones-row.in-view .phone-frame:nth-child(1) { transition-delay: 0.18s; }
+    .phones-row.in-view .phone-frame:nth-child(3) { transition-delay: 0.28s; }
+
+    /* Thermal Receipt Print-Out */
+    .receipt-clip {
+      width: 100%; display: flex; justify-content: center;
+      overflow: hidden; padding-bottom: 14px; margin-top: -10px;
+    }
+    .receipt-stage .receipt-paper {
+      margin-top: 0;
+      transform: translateY(-76%);
+      opacity: 0.25;
+      transition: transform 1.15s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.7s ease;
+    }
+    .receipt-stage.in-view .receipt-paper {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Camera Laser Scan Sweep */
+    .scan-frame { overflow: hidden; }
+    .scan-frame::after {
+      content: ""; position: absolute; left: 4px; right: 4px; top: 8px; height: 2px;
+      background: var(--lime); box-shadow: 0 0 10px var(--lime), 0 0 4px #fff;
+      animation: scanSweep 2.2s ease-in-out infinite;
+    }
+    @keyframes scanSweep {
+      0%, 100% { transform: translateY(0); opacity: 0.9; }
+      50% { transform: translateY(48px); opacity: 1; }
+    }
+
+    /* Business Breakdown Animated Bars */
+    .bd-fill {
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .suite-card.in-view .bd-fill { transform: scaleX(1); }
+    .suite-card.in-view .bd-bar-row:nth-child(2) .bd-fill { transition-delay: 0.12s; }
+    .suite-card.in-view .bd-bar-row:nth-child(3) .bd-fill { transition-delay: 0.24s; }
+
+    /* Kinetic Vertical-Bar Divider Shimmer */
+    .wave-bars {
+      animation: wavePulse 5s ease-in-out infinite;
+    }
+    @keyframes wavePulse {
+      0%, 100% { opacity: 0.14; }
+      50% { opacity: 0.28; }
+    }
+
+    /* ───── TABLET (768px+) ───── */
+    @media (min-width: 768px) {
+      .hero-inner { grid-template-columns: 1.1fr 0.95fr; gap: 44px; }
+      .hero-actions .ed-btn { flex: 0 1 auto; }
+      .phones-row { grid-template-columns: repeat(3, 1fr); gap: 22px; }
+      .sys-grid { grid-template-columns: repeat(3, 1fr); }
+      .suite-grid { grid-template-columns: 0.95fr 1.15fr; gap: 28px; }
+      .photo-strip { grid-template-columns: 1.4fr 1fr; }
+      .foot-grid { grid-template-columns: 1.5fr repeat(2, 1fr); }
+    }
+
+    /* ───── LAPTOP (1280px+) ───── */
+    @media (min-width: 1280px) {
+      .pill-nav { display: flex; }   /* section menu on laptop only (tablet is too narrow) */
+      .hero-wrap { padding-top: 110px; padding-bottom: 52px; }
+      .assist-grid { grid-template-columns: 1fr 1.15fr; gap: 56px; }
+      .foot-grid {
+        grid-template-columns: 1.6fr repeat(4, 1fr); gap: 0;
+      }
+      .foot-brand, .foot-col { padding: 0 28px; border-left: 1px solid var(--line); }
+      .foot-brand { padding-left: 0; border-left: 0; }
+    }
   </style>
 </head>
 <body>
-  <header class="top">
+
+  <!-- 1. FLOATING NAV -->
+  <header class="nav-shell">
     <div class="wrap">
-      <a href="index.html" class="logo" data-text="bar.logo">bazar</a>
-      <a href="index.html" class="back" data-text="bar.back">Go to the app →</a>
+      <a href="index.html" class="brand-mark">
+        <span class="logo" data-text="bar.logo">bazar</span>
+        <span class="sub" data-text="bar.sub">Mauritius</span>
+      </a>
+      <nav class="pill-nav" aria-label="Landing navigation">
+        <a href="#system" data-text="nav.near">Features</a>
+        <a href="#insights" data-text="nav.insights">Insights &amp; Invoices</a>
+        <a href="#assist" data-text="nav.ai">AI Assist</a>
+        <a href="index.html" data-text="nav.market">Marketplace</a>
+      </nav>
+      <div class="nav-right">
+        <div class="lang-wrap">
+          <button type="button" class="lang-btn" id="langBtn" aria-label="Change language" aria-expanded="false" onclick="toggleLangMenu()">
+            <svg viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="c-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#c-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+          </button>
+          <div class="lang-menu" id="langMenu" role="menu">
+            <button type="button" class="lang-opt on" data-lang="en" onclick="setLang('en')">
+              <svg viewBox="0 0 60 60"><clipPath id="m-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#m-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+              English
+            </button>
+            <button type="button" class="lang-opt" data-lang="fr" onclick="setLang('fr')">
+              <svg viewBox="0 0 60 60"><clipPath id="m-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#m-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg>
+              Français
+            </button>
+            <button type="button" class="lang-opt" data-lang="mfe" onclick="setLang('mfe')">
+              <svg viewBox="0 0 60 60"><clipPath id="m-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#m-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg>
+              Kreol Morisien
+            </button>
+          </div>
+        </div>
+        <a href="auth.html" class="ed-btn ed-btn--outline-light nav-cta" data-text="bar.open" id="navCta">↳ Get Started</a>
+      </div>
     </div>
   </header>
 
-  <!-- HERO -->
-  <section class="hero wrap">
-    <h1 class="t-hero" data-text="hero.title">One place for every Mauritian business</h1>
-    <p class="sub t-body-l" data-text="hero.subtitle">Shop local brands, sell what you don't need, and grow your business — all on Bazar.</p>
-    <div class="actions">
-      <a href="#" class="btn btn-lime" data-text="hero.button-1">Open your shop</a>
-      <a href="#" class="btn btn-black" data-text="hero.button-2">See how it works</a>
+  <!-- 2. DARK CATALIS × AURACORE HERO (Centered Headline + 3D Curved Orbit Carousel + Kinetic Waveform) -->
+  <section class="hero-wrap" id="heroWrap">
+    <div class="hero-beams" aria-hidden="true"></div>
+    <div class="hero-aura" id="heroAura" aria-hidden="true"></div>
+
+    <div class="wrap hero-center">
+      <span class="eyebrow" data-text="hero.eyebrow">Mauritius AI Commerce Platform</span>
+      <h1 class="t-hero" data-text="hero.title">
+        <span class="line-mask"><span style="--ld:0.06s">Every Mauritian</span></span>
+        <span class="line-mask"><span style="--ld:0.16s">business, <em>one app.</em></span></span>
+      </h1>
+      <p class="t-body-l" data-text="hero.subtitle">Discover verified shops near you, resell with Escrow protection, and run your business with smart invoicing, camera scan, and live analytics.</p>
+      <div class="hero-pills">
+        <a href="index.html" class="cat-btn cat-btn--ghost" data-text="hero.cta2">Explore Marketplace</a>
+        <a href="auth.html" class="cat-btn cat-btn--lime" data-text="hero.cta1">Get Started <span class="orb" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+
+    <!-- Continuous 3D Curved Panoramic Showcase Ring (pauses on hover) -->
+    <div class="orbit-stage" aria-label="Bazar platform showcase">
+      <div class="orbit-ring" id="orbitRing">
+        <!-- Card 1: Weekly Sales -->
+        <div class="orbit-card">
+          <div>
+            <span class="oc-kicker">Revenue</span>
+            <div class="oc-big">Rs 142K</div>
+          </div>
+          <div class="oc-bars" aria-hidden="true">
+            <i style="height:45%"></i><i style="height:72%"></i><i class="l" style="height:95%"></i><i style="height:64%"></i><i class="l" style="height:82%"></i>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:var(--lime-ink);">+18% this month</span>
+        </div>
+
+        <!-- Card 2: Dodo Café Photo -->
+        <div class="orbit-card orbit-card--photo">
+          <img src="photos/shop-dodo-cafe.jpg" alt="Dodo Café Boutique">
+          <div class="oc-cap"><b>Dodo Café Boutique</b><span>Grand Baie · 0.8 km</span></div>
+        </div>
+
+        <!-- Card 3: Net Profit Sparkline -->
+        <div class="orbit-card">
+          <div>
+            <span class="oc-kicker">Net Profit</span>
+            <div class="oc-big">Rs 84.2K</div>
+          </div>
+          <svg viewBox="0 0 140 44" style="width:100%;height:44px;" aria-hidden="true">
+            <path d="M2 38 L28 28 L54 32 L82 16 L110 20 L138 6" fill="none" stroke="#496100" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span style="font-size:11px;font-weight:700;color:var(--muted);">59% healthy margin</span>
+        </div>
+
+        <!-- Card 4: Bazar Assist AI (Dark focal card) -->
+        <div class="orbit-card orbit-card--dark">
+          <span class="oc-kicker" style="color:var(--lime);opacity:1;">● Bazar Assist</span>
+          <div style="font-size:15px;font-weight:700;line-height:1.3;">VAT due, profit &amp; 24/7 AI replies.</div>
+          <span style="font-size:11px;color:#cfc7b4;">English · Français · Kreol</span>
+        </div>
+
+        <!-- Card 5: Chelsea's Cup N Cake Photo -->
+        <div class="orbit-card orbit-card--photo">
+          <img src="photos/shop-chelseas.jpg" alt="Chelsea's Cup N Cake">
+          <div class="oc-cap"><b>Chelsea's Cup N Cake</b><span>Curepipe · Open now</span></div>
+        </div>
+
+        <!-- Card 6: Auto Invoice Receipt -->
+        <div class="orbit-card">
+          <span class="oc-kicker">Auto Invoice</span>
+          <div style="font-family:ui-monospace,monospace;font-size:12px;border-top:1px dashed #c8c1b0;border-bottom:1px dashed #c8c1b0;padding:8px 0;">
+            <b>#BZ-1048</b><br>Total: Rs 2,450<br>VAT: Rs 319
+          </div>
+          <span style="font-size:11px;font-weight:700;color:var(--lime-ink);">✓ Saved to ledger</span>
+        </div>
+
+        <!-- Card 7: Bookcourt Photo -->
+        <div class="orbit-card orbit-card--photo">
+          <img src="photos/shop-bookcourt.jpg" alt="Bookcourt Caudan Waterfront">
+          <div class="oc-cap"><b>Bookcourt · Caudan</b><span>Port Louis · 0.5 km</span></div>
+        </div>
+
+        <!-- Card 8: Resell & Escrow (Lime focal card) -->
+        <div class="orbit-card orbit-card--lime">
+          <span class="oc-kicker" style="opacity:0.8;">Escrow Trust</span>
+          <div class="oc-big">Rs 18.5K</div>
+          <span style="font-size:11.5px;font-weight:700;">Held safely until handover</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-trust">
+      <span class="trust-rot" id="trustRot" aria-live="polite">Trusted by Mauritian SMEs &amp; shoppers across the island</span>
+      <span class="hero-stars" aria-label="5 out of 5 stars">★★★★★</span>
+    </div>
+    <script>
+      // Rotating trust line: one message per thing Bazar does. Add a line here when we add a feature
+      // (and its translation row in i18n.js).
+      (function () {
+        var lines = [
+          "Trusted by Mauritian SMEs & shoppers across the island",
+          "Discover verified shops near you on a live map",
+          "See the distance and route to any shop",
+          "Buy & resell safely with Bazar Escrow",
+          "Chat with sellers without leaving Bazar",
+          "AI helps you write better listings",
+          "Automatic invoices, camera scan & live insights",
+          "Shop in English, Français or Kreol"
+        ];
+        var el = document.getElementById("trustRot"), i = 0;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        setInterval(function () {
+          el.classList.add("out");
+          setTimeout(function () {
+            i = (i + 1) % lines.length;
+            el.textContent = lines[i];
+            el.classList.remove("out");
+          }, 350);
+        }, 3200);
+      })();
+    </script>
+
+    <!-- Kinetic Vertical-Bar Equalizer Waveform -->
+    <div class="hero-wave" id="heroWave" aria-hidden="true"></div>
+  </section>
+
+  <!-- MAURITIUS BUSINESSES MARQUEE STRIP -->
+  <div class="marquee-bar" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Caudan Waterfront</span><span>Dodo Café Boutique</span><span>Chelsea's Cup N Cake</span><span>Le Fournil Bakery</span><span>Bookcourt Port Louis</span><span>Grand Baie</span><span>Curepipe</span><span>Bagatelle</span><span>Mahébourg</span>
+      <span>Caudan Waterfront</span><span>Dodo Café Boutique</span><span>Chelsea's Cup N Cake</span><span>Le Fournil Bakery</span><span>Bookcourt Port Louis</span><span>Grand Baie</span><span>Curepipe</span><span>Bagatelle</span><span>Mahébourg</span>
+    </div>
+  </div>
+
+  <!-- 3. SNEAK PEEK 3-PHONE SHOWCASE (Ondira-inspired) -->
+  <section class="sneak-band" aria-label="App sneak peek">
+    <div class="wrap sneak-head">
+      <div class="sneak-big" data-text="sneak.title" id="sneakTitle">DISCOVER.<br>INVOICE. GROW.</div>
+      <p class="sneak-sub t-body-l" data-text="sneak.sub" id="sneakSub">A sneak peek inside Bazar — live sales insights, automatic receipts, and 24/7 AI support in one app.</p>
+
+      <div class="phones-row" data-reveal>
+        <!-- Phone 1: Business Insights -->
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="ring-wrap">
+            <div class="ring-inner">
+              <b id="salesCounter">Rs 142K</b>
+              <span>Monthly sales</span>
+            </div>
+          </div>
+          <div class="p1-pills">
+            <span>48 Orders</span>
+            <span>Rs 12.4K VAT</span>
+          </div>
+        </div>
+
+        <!-- Phone 2: Auto Invoice Receipt -->
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="p2-paper">
+            <div class="p2-brand">BAZAR RECEIPT</div>
+            <div style="color:#6b665a;font-size:10px;">AUTO INVOICE · MAURITIUS</div>
+            <div class="p2-code">INV-BZ4829</div>
+            <div class="p2-row"><span>Shop:</span><b>Chelsea's Cake</b></div>
+            <div class="p2-row"><span>Subtotal:</span><span>Rs 2,130</span></div>
+            <div class="p2-row"><span>VAT (15%):</span><span>Rs 320</span></div>
+            <div class="p2-row"><span>Total:</span><b>Rs 2,450</b></div>
+            <div class="p2-row"><span>Status:</span><b>Paid · Juice</b></div>
+          </div>
+        </div>
+
+        <!-- Phone 3: AI Customer Enquiry & Support -->
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="p3-sheet">
+            <small>28 Nov 2026 · Bazar Assist</small>
+            <span class="p3-tag">EN · FR · KREOL</span>
+            <h4>Instant AI Reply</h4>
+            <p>“Bonzour! Yes, our chocolate fudge cake (Rs 950) is fresh today. Same-day delivery to Curepipe &amp; Port Louis available.”</p>
+            <p style="margin-top:auto;color:#496100;font-weight:700;">✓ Auto-replied in 2s · Order captured</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- More sections will be added here one by one -->
+  <!-- 3B. EDITORIAL STATEMENT -->
+  <div class="wave-bars" aria-hidden="true"></div>
+  <section class="statement wrap">
+    <p class="statement-lead" data-text="statement.lead">
+      One local platform combining
+      <span class="inline-chip">Near-Me Discovery</span>,
+      <span class="inline-chip inline-chip--lime">Bazar Assist AI</span>, and
+      <span class="inline-chip">WhatsApp-ready Shops</span>
+      built for Mauritian SMEs.
+    </p>
+    <div class="statement-big" data-text="statement.big">That’s <span>BAZAR</span></div>
+  </section>
+  <div class="wave-bars" aria-hidden="true"></div>
 
+  <!-- 4. THE BAZAR SYSTEM (/ 01 / 02 / 03) -->
+  <section class="system wrap" id="system">
+    <div class="section-head">
+      <span class="eyebrow eyebrow--dark" data-text="sys.eyebrow">The Bazar System</span>
+      <h2 class="t-h1" data-text="sys.title">Three engines. One seamless experience.</h2>
+      <p class="t-body-l" data-text="sys.sub">Designed for phone-first speed, zero app-store friction, and instant local trust.</p>
+    </div>
+
+    <div class="sys-grid">
+      <!-- / 01 -->
+      <article class="sys-card reveal reveal-d1" data-reveal>
+        <div class="sys-card-top">
+          <div>
+            <span class="sys-idx">/ 01</span>
+            <h3 data-text="sys.1-title">Discover Near You</h3>
+          </div>
+          <span class="sys-plus" aria-hidden="true">+</span>
+        </div>
+        <div class="sys-visual">
+          <div class="radar-row"><b>Bookcourt · Caudan</b><span>500 m · Open</span></div>
+          <div class="radar-row"><b>Chelsea's Cup N Cake</b><span>800 m · Curepipe</span></div>
+          <div class="radar-row"><b>Le Fournil Bakery</b><span>1.2 km · Grand Baie</span></div>
+        </div>
+        <hr class="sys-rule">
+        <p data-text="sys.1-text">Hyperlocal search by district and 5 km radius. Buyers find nearby bakeries, boutiques, electronics, and home services without digging through social feeds.</p>
+      </article>
+
+      <!-- / 02 -->
+      <article class="sys-card reveal reveal-d2" data-reveal>
+        <div class="sys-card-top">
+          <div>
+            <span class="sys-idx">/ 02</span>
+            <h3 data-text="sys.2-title">Customer Enquiry AI</h3>
+          </div>
+          <span class="sys-plus" aria-hidden="true">+</span>
+        </div>
+        <div class="sys-visual">
+          <div class="radar-row"><b>“Gato patate near me?”</b><span>Kreol / EN / FR</span></div>
+          <div class="radar-row"><b>“Delivery to Rose Hill?”</b><span>Instant answer</span></div>
+        </div>
+        <hr class="sys-rule">
+        <p data-text="sys.2-text">Shoppers ask Bazar Assist in plain English, French, or Kreol to check stock, compare prices, or send enquiries directly to local businesses.</p>
+      </article>
+
+      <!-- / 03 -->
+      <article class="sys-card reveal reveal-d3" data-reveal>
+        <div class="sys-card-top">
+          <div>
+            <span class="sys-idx">/ 03</span>
+            <h3 data-text="sys.3-title">Business Support AI</h3>
+          </div>
+          <span class="sys-plus" aria-hidden="true">+</span>
+        </div>
+        <div class="sys-visual">
+          <div class="stat-pair">
+            <div class="stat-box"><small>VAT Due</small><b>Rs 12,450</b></div>
+            <div class="stat-box"><small>Net Profit</small><b>Rs 84,200</b></div>
+          </div>
+        </div>
+        <hr class="sys-rule">
+        <p data-text="sys.3-text">An intelligent agent for merchants: auto-replies to buyer enquiries 24/7 and answers questions on profit, VAT due, and overdue invoices in one tap.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- 4B. BUSINESS INSIGHTS, AUTO INVOICES & CAMERA SCAN -->
+  <section class="suite wrap" id="insights">
+    <div class="section-head">
+      <span class="eyebrow eyebrow--dark" data-text="suite.eyebrow">Smart Business Tools</span>
+      <h2 class="t-h1" data-text="suite.title">Automatic invoices, camera scan &amp; live insights.</h2>
+      <p class="t-body-l" data-text="suite.sub">Know exactly how your business is performing — without spreadsheets or manual bookkeeping.</p>
+    </div>
+
+    <div class="suite-grid">
+      <!-- Left: Thermal-Receipt Style Auto Invoice Generator -->
+      <div class="receipt-stage" data-reveal>
+        <div class="printer-slot" aria-hidden="true">
+          <span>INV #BZ-1048</span>
+          <span>AUTO-GENERATED</span>
+        </div>
+        <div class="receipt-clip">
+          <div class="receipt-paper">
+            <div class="rc-top">
+              <span>TAX INVOICE · MRA</span>
+              <span>VAT 15%</span>
+            </div>
+            <div class="rc-total">
+              <span>TOTAL:</span>
+              <span>Rs 2,450</span>
+            </div>
+            <div class="rc-row"><span>INVOICE NO</span><span>INV/2026/00148</span></div>
+            <div class="rc-row"><span>MERCHANT</span><span>CHELSEA'S CUP N CAKE</span></div>
+            <div class="rc-row"><span>SUBTOTAL (EXCL)</span><span>Rs 2,130.43</span></div>
+            <div class="rc-row"><span>VAT (15%)</span><span>Rs 319.57</span></div>
+            <div class="rc-row"><span>PAYMENT</span><span>JUICE / CASH ON DEL.</span></div>
+            <hr class="rc-div">
+            <div style="display:flex;align-items:center;gap:10px;padding:4px 0;">
+              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="1.8" style="flex:none;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3zM14 20h2M20 14v2"/></svg>
+              <div style="font-size:10px;line-height:1.35;">
+                <b style="display:block;">IRN: 8F2C-41A7-9E0B</b>
+                <span style="color:#496100;font-weight:700;">✓ Fiscalised by MRA</span>
+              </div>
+            </div>
+            <p class="rc-note">Every invoice is MRA-compliant automatically — with real-time VAT 15% calculation, IRN &amp; QR code included.</p>
+          </div>
+        </div>
+        <div class="rc-actions" aria-hidden="true">
+          <span class="rc-pill rc-pill--dark">↓ Save</span>
+          <span class="rc-pill">⎙ Share</span>
+          <span class="rc-pill">✎ Sign</span>
+        </div>
+      </div>
+
+      <!-- Right: Camera Invoice Scan + Business Breakdown -->
+      <div class="suite-stack">
+        <article class="suite-card reveal reveal-d1" data-reveal>
+          <div class="suite-card-head">
+            <h3 class="t-h3" data-text="scan.title">Scan paper invoices with your camera</h3>
+            <span class="suite-tag">Camera AI</span>
+          </div>
+          <p class="t-body" data-text="scan.text">Snap any supplier bill, market receipt, or handwritten invoice with your phone camera. Bazar reads the items, date, VAT, and total automatically into your books.</p>
+          <div class="scan-mock">
+            <div class="scan-frame" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/><path d="M7 12h10"/></svg>
+            </div>
+            <div class="scan-meta">
+              <b>Supplier Invoice #882 · Captured</b>
+              <span>Flour &amp; Packaging · Rs 4,150 · VAT Rs 541</span>
+              <span class="scan-ok">✓ Recorded to Nov expenses in 1.4s</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="suite-card reveal reveal-d2" data-reveal>
+          <div class="suite-card-head">
+            <h3 class="t-h3" data-text="bd.title">Clear breakdown of how your business is doing</h3>
+            <span class="suite-tag">Live Dashboard</span>
+          </div>
+          <p class="t-body" data-text="bd.text">Track revenue, net profit trends, VAT due, and top-performing categories at a glance — updated automatically with every sale and scanned invoice.</p>
+          <div class="bd-grid">
+            <!-- Colorful Revenue Card + Icon -->
+            <div class="bd-kpi bd-kpi--rev">
+              <div class="bd-kpi-top">
+                <small>Revenue</small>
+                <span class="bd-kpi-ico" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></svg>
+                </span>
+              </div>
+              <div>
+                <b>Rs 142k</b>
+                <em>+18% this mo</em>
+              </div>
+            </div>
+
+            <!-- Net Profit Card + Icon + Animated Chart -->
+            <div class="bd-kpi bd-kpi--profit">
+              <div class="bd-kpi-top">
+                <small>Net Profit</small>
+                <span class="bd-kpi-ico" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
+                </span>
+              </div>
+              <div>
+                <b>Rs 84.2k</b>
+                <em>59% margin</em>
+              </div>
+              <svg class="profit-chart" viewBox="0 0 140 36" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="pGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#d4f53c" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#d4f53c" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M2 30 L24 24 L46 27 L70 16 L94 18 L116 9 L138 4 L138 36 L2 36 Z" fill="url(#pGrad)"/>
+                <path class="profit-line" d="M2 30 L24 24 L46 27 L70 16 L94 18 L116 9 L138 4"/>
+              </svg>
+            </div>
+
+            <!-- VAT Due Card + Icon -->
+            <div class="bd-kpi bd-kpi--vat">
+              <div class="bd-kpi-top">
+                <small>VAT Due</small>
+                <span class="bd-kpi-ico" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 10h8M8 14h5"/></svg>
+                </span>
+              </div>
+              <div>
+                <b>Rs 12.4k</b>
+                <em>Due 20 Dec</em>
+              </div>
+            </div>
+          </div>
+
+          <div class="bd-bars">
+            <div class="bd-bar-row"><span>Cakes &amp; Boxes</span><div class="bd-track"><div class="bd-fill" style="width:82%"></div></div><b>Rs 78k</b></div>
+            <div class="bd-bar-row"><span>Coffee &amp; Drinks</span><div class="bd-track"><div class="bd-fill bd-fill--lime" style="width:54%"></div></div><b>Rs 41k</b></div>
+            <div class="bd-bar-row"><span>Direct Orders</span><div class="bd-track"><div class="bd-fill" style="width:36%"></div></div><b>Rs 23k</b></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. INTERACTIVE BAZAR ASSIST PREVIEW (Business Owner Persona) -->
+  <section class="assist-band" id="assist">
+    <div class="wrap assist-grid">
+      <div class="assist-copy">
+        <span class="eyebrow" data-text="ai.eyebrow">Live Preview · Business AI</span>
+        <h2 class="t-h1" data-text="ai.title">Ask anything about your shop's numbers.</h2>
+        <p class="t-body-l" data-text="ai.sub">Bazar Assist automatically adapts to your role — business owners get instant VAT, profit, overdue invoice alerts, and 24/7 customer enquiry drafts, while customers get a dedicated shopping assistant.</p>
+      </div>
+
+      <div class="assist-box" aria-live="polite">
+        <div class="assist-head">
+          <div class="assist-avatar" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>
+          </div>
+          <span class="assist-title">Bazar Assist</span>
+          <span class="assist-badge">Business Assistant</span>
+        </div>
+
+        <div class="assist-log" id="demo-log">
+          <div class="msg msg--bot">Hi! I'm Bazar Assist. Ask me anything about your shop's numbers or customer enquiries.</div>
+        </div>
+
+        <div class="assist-chips" id="demo-chips"></div>
+
+        <form class="assist-form" onsubmit="sendDemoMsg(event)">
+          <input type="text" id="demo-input" placeholder="Ask about your business..." aria-label="Ask Bazar Assist">
+          <button type="submit" aria-label="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4Z"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. CTA + MAURITIUS PHOTO STRIP -->
+  <section class="cta-band wrap" id="start">
+    <span class="eyebrow eyebrow--dark" data-text="cta.eyebrow">Get Started Today</span>
+    <h2 class="t-h1" data-text="cta.title">Ready to run your business smarter?</h2>
+    <p class="t-body-l" data-text="cta.sub">Create your free Bazar account in 2 minutes. Get automatic invoices, camera receipt scanning, live business insights, and your own Mauritian storefront.</p>
+    <div class="cta-row">
+      <a href="auth.html" class="ed-btn ed-btn--black" data-text="cta.1"><span class="sq">+</span> Get Started</a>
+      <a href="index.html" class="ed-btn ed-btn--outline-dark" data-text="cta.2">↳ Browse marketplace</a>
+      <a href="#assist" class="ed-btn ed-btn--outline-dark" data-text="cta.3">↳ Try Bazar Assist</a>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="market-gallery-head">
+      <div>
+        <span class="eyebrow eyebrow--dark">Global Marketplace Showcase</span>
+        <h3 class="t-h2" style="margin-top:8px;">Storefronts ready to get started on Bazar</h3>
+      </div>
+      <a href="auth.html?mode=signup&amp;role=business" class="ed-btn ed-btn--black"><span class="sq">+</span> Launch yours</a>
+    </div>
+    <div class="market-gallery">
+      <a href="index.html" class="mg-card reveal reveal-d1" data-reveal>
+        <img src="photos/shop-bookcourt.jpg" alt="Bookcourt Caudan Waterfront">
+        <div class="mg-cap"><b>Bookcourt · Caudan</b><span>Port Louis · Books &amp; Lifestyle</span></div>
+      </a>
+      <a href="index.html" class="mg-card reveal reveal-d2" data-reveal>
+        <img src="photos/shop-dodo-cafe.jpg" alt="Dodo Café Boutique">
+        <div class="mg-cap"><b>Dodo Café Boutique</b><span>Grand Baie · Specialty Coffee</span></div>
+      </a>
+      <a href="index.html" class="mg-card reveal reveal-d3" data-reveal>
+        <img src="photos/shop-chelseas.jpg" alt="Chelsea's Cup N Cake">
+        <div class="mg-cap"><b>Chelsea's Cup N Cake</b><span>Curepipe · Artisan Patisserie</span></div>
+      </a>
+      <a href="index.html" class="mg-card reveal reveal-d3" data-reveal>
+        <img src="photos/shop-le-fournil.jpg" alt="Le Fournil Bakery">
+        <div class="mg-cap"><b>Le Fournil Bakery</b><span>Grand Baie · French Bakery</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- 7. STRUCTURED MULTI-COLUMN FOOTER -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a href="index.html" class="brand-mark">
+            <span class="logo">bazar</span>
+            <span class="sub">Mauritius</span>
+          </a>
+          <p class="t-body">Ready to shop local or grow your Mauritian business with AI?</p>
+          <a href="auth.html" class="ed-btn ed-btn--black"><span class="sq">+</span> Get Started</a>
+        </div>
+
+        <div class="foot-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="index.html">Marketplace Home</a></li>
+            <li><a href="#system">Discover Near Me</a></li>
+            <li><a href="#assist">Bazar Assist AI</a></li>
+            <li><a href="resell.html">Resell &amp; Escrow</a></li>
+          </ul>
+        </div>
+
+        <div class="foot-col">
+          <h4>For Business</h4>
+          <ul>
+            <li><a href="auth.html">Open Your Shop</a></li>
+            <li><a href="#insights">Smart Invoicing</a></li>
+            <li><a href="#insights">Camera Scan</a></li>
+            <li><a href="#insights">Business Analytics</a></li>
+          </ul>
+        </div>
+
+        <div class="foot-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html">Port Louis</a></li>
+            <li><a href="index.html">Curepipe &amp; Plaines Wilhems</a></li>
+            <li><a href="index.html">Grand Baie</a></li>
+            <li><a href="index.html">Mahébourg</a></li>
+          </ul>
+        </div>
+
+        <div class="foot-col">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="#">NPCC Startup Lab</a></li>
+            <li><a href="#">Partner Program</a></li>
+            <li><a href="auth.html">Merchant Login</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="foot-bottom">
+        <span>© 2026 Bazar Mauritius. All rights reserved.</span>
+        <div class="foot-legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Use</a>
+          <a href="#">AI Data Promise</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    var demoData = {
+      biz: {
+        badge: "Business mode",
+        placeholder: "Ask about your business...",
+        greeting: "Hi! I'm Bazar Assist. Ask me anything about your shop's numbers or customer enquiries.",
+        chips: [
+          { q: "VAT due?", a: "Estimated VAT due for November is Rs 12,450 (15% across 48 taxable orders). Next filing deadline: 20 Dec." },
+          { q: "My profit", a: "This month's net profit is Rs 84,200 (+14% vs October). Top seller: Chocolate fudge cake (62 units)." },
+          { q: "Overdue invoices", a: "You have 2 overdue invoices totalling Rs 6,800 (Hotel Le Palm Rs 4,500 · Café Nord Rs 2,300). Want me to draft a WhatsApp reminder?" },
+          { q: "Unanswered enquiries", a: "3 buyers asked about delivery to Quatre Bornes today. I've drafted replies in English & Kreol ready for 1-tap send." }
+        ]
+      },
+      cust: {
+        badge: "Customer mode",
+        placeholder: "Ask about shops, prices, or near you...",
+        greeting: "Bonzour! I'm Bazar Assist. Ask me to find shops near you, check stock, or message a seller.",
+        chips: [
+          { q: "Open near me", a: "3 verified shops are open within 1.5 km: Bookcourt Caudan (0.5 km), Dodo Café Boutique (0.8 km), and Chelsea's Cup N Cake (1.1 km)." },
+          { q: "Snacks under Rs 300", a: "Found 2 local picks: La Flore Boodhoo (Mauritian samoussas · Rs 180) and Le Fournil (Artisan butter croissants · Rs 280, delivers today)." },
+          { q: "Ask about delivery", a: "Most nearby shops offer same-day cash-on-delivery via Grabbit Express (Rs 75–125). Which shop should I message for you?" }
+        ]
+      }
+    };
+    var currentMode = "biz";
+
+    function renderChips() {
+      var wrap = document.getElementById("demo-chips");
+      wrap.innerHTML = "";
+      demoData[currentMode].chips.forEach(function (item) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = item.q;
+        btn.onclick = function () { appendExchange(item.q, item.a); };
+        wrap.appendChild(btn);
+      });
+    }
+
+    function appendExchange(q, a) {
+      var log = document.getElementById("demo-log");
+      var u = document.createElement("div");
+      u.className = "msg msg--user";
+      u.textContent = q;
+      var b = document.createElement("div");
+      b.className = "msg msg--bot";
+      b.textContent = a;
+      log.appendChild(u);
+      log.appendChild(b);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function setDemoMode(mode) {
+      currentMode = mode;
+      document.getElementById("tab-biz").classList.toggle("on", mode === "biz");
+      document.getElementById("tab-biz").setAttribute("aria-selected", mode === "biz");
+      document.getElementById("tab-cust").classList.toggle("on", mode === "cust");
+      document.getElementById("tab-cust").setAttribute("aria-selected", mode === "cust");
+      document.getElementById("demo-badge").textContent = demoData[mode].badge;
+      document.getElementById("demo-input").placeholder = demoData[mode].placeholder;
+      document.getElementById("demo-log").innerHTML = '<div class="msg msg--bot">' + demoData[mode].greeting + '</div>';
+      renderChips();
+    }
+
+    function sendDemoMsg(e) {
+      e.preventDefault();
+      var inp = document.getElementById("demo-input");
+      var val = inp.value.trim();
+      if (!val) return;
+      var reply = currentMode === "biz"
+        ? "Got it! In the live app, Bazar Assist checks your orders, invoices, and customer messages to answer \"" + val + "\" instantly."
+        : "Searching verified shops near Port Louis for \"" + val + "\" — 4 matches found with same-day delivery.";
+      appendExchange(val, reply);
+      inp.value = "";
+    }
+
+    renderChips();
+
+    // Circular Flag Language Switcher (English, French, Kreol Morisien)
+    var i18n = {
+      en: {
+        flag: '<clipPath id="c-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#c-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g>',
+        navCta: "↳ Get Started",
+        sneakTitle: "DISCOVER.<br>INVOICE. GROW.",
+        sneakSub: "A sneak peek inside Bazar — live sales insights, automatic receipts, and 24/7 AI support in one app."
+      },
+      fr: {
+        flag: '<clipPath id="c-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#c-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g>',
+        navCta: "↳ Commencer",
+        sneakTitle: "DÉCOUVREZ.<br>FACTUREZ. GRANDISSEZ.",
+        sneakSub: "Un aperçu de Bazar — analyses en direct, factures automatiques et assistant IA 24/7 dans une seule app."
+      },
+      mfe: {
+        flag: '<clipPath id="c-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#c-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g>',
+        navCta: "↳ Koumanse",
+        sneakTitle: "DEKOUVER.<br>FAKTIR. PROGRESE.",
+        sneakSub: "Get ki ena dan Bazar — stat bisnis an direk, faktir otomatik, ek AI 24/7 dan enn sel app."
+      }
+    };
+    function toggleLangMenu() {
+      var m = document.getElementById("langMenu");
+      var open = m.classList.toggle("open");
+      document.getElementById("langBtn").setAttribute("aria-expanded", open);
+    }
+    function setLang(code) {
+      var d = i18n[code] || i18n.en;
+      document.getElementById("langFlagSvg").innerHTML = d.flag;
+      document.getElementById("navCta").textContent = d.navCta;
+      document.getElementById("sneakTitle").innerHTML = d.sneakTitle;
+      document.getElementById("sneakSub").textContent = d.sneakSub;
+      document.querySelectorAll(".lang-opt").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-lang") === code); });
+      document.getElementById("langMenu").classList.remove("open");
+      document.getElementById("langBtn").setAttribute("aria-expanded", "false");
+      try { localStorage.setItem("bazar-lang", code); } catch (e) {}
+    }
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".lang-wrap")) {
+        document.getElementById("langMenu").classList.remove("open");
+        document.getElementById("langBtn").setAttribute("aria-expanded", "false");
+      }
+    });
+    try { var savedLang = localStorage.getItem("bazar-lang"); if (savedLang && i18n[savedLang]) setLang(savedLang); } catch (e) {}
+
+    // 1. Shrinking floating nav on scroll
+    var navShell = document.querySelector(".nav-shell");
+    window.addEventListener("scroll", function () {
+      navShell.classList.toggle("scrolled", window.scrollY > 60);
+    }, { passive: true });
+
+    // 1A. Kinetic Vertical-Bar Waveform + 3D Curved Orbit Ring Layout
+    (function initHeroMotion() {
+      var wave = document.getElementById("heroWave");
+      if (wave) {
+        var bars = 48;
+        var frag = document.createDocumentFragment();
+        for (var i = 0; i < bars; i++) {
+          var el = document.createElement("i");
+          var norm = Math.sin((i / (bars - 1)) * Math.PI);
+          var h = Math.round(22 + norm * 72);
+          el.style.setProperty("--h", h + "%");
+          el.style.setProperty("--d", (2.4 + (i % 5) * 0.35).toFixed(2) + "s");
+          el.style.setProperty("--dl", ((i * 0.07) % 2.1).toFixed(2) + "s");
+          frag.appendChild(el);
+        }
+        wave.appendChild(frag);
+      }
+
+      // Position the 8 showcase cards around a smooth 3D cylindrical orbit
+      var ring = document.getElementById("orbitRing");
+      if (ring) {
+        var cards = ring.querySelectorAll(".orbit-card");
+        function layoutOrbit() {
+          var r = window.innerWidth >= 768 ? 360 : 285;
+          ring.style.setProperty("--ring-neg", -r + "px");
+          cards.forEach(function (c, idx) {
+            var angle = idx * (360 / cards.length);
+            c.style.transform = "rotateY(" + angle + "deg) translateZ(" + r + "px)";
+          });
+        }
+        layoutOrbit();
+        window.addEventListener("resize", layoutOrbit);
+      }
+    })();
+
+    // 1B. Live Hero AI Ticker (smooth fade + glide every 3.4s)
+    var tickerSlides = [
+      { l: "Live Business AI", m: "VAT due this month: Rs 12,450 · Profit +18%" },
+      { l: "Camera Invoice Scan", m: "Supplier bill #882 recorded in 1.4s automatically" },
+      { l: "Hyperlocal Discovery", m: "Bookcourt & 14 verified shops open within 2 km" },
+      { l: "Escrow Resell Trust", m: "Rs 18,500 held safely until buyer confirms handover" }
+    ];
+    var tkIdx = 0;
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setInterval(function () {
+        var box = document.getElementById("heroTicker");
+        if (!box) return;
+        box.classList.add("fading");
+        setTimeout(function () {
+          tkIdx = (tkIdx + 1) % tickerSlides.length;
+          document.getElementById("tkLabel").textContent = tickerSlides[tkIdx].l;
+          document.getElementById("tkMsg").textContent = tickerSlides[tkIdx].m;
+          box.classList.remove("fading");
+        }, 320);
+      }, 3400);
+    }
+
+    // 2. Scroll-triggered reveals (3-phone fan-up, receipt print-out, cards, breakdown bars)
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var revealEls = document.querySelectorAll("[data-reveal]");
+    var counted = false;
+
+    function animateCounter() {
+      if (counted || reduced) return;
+      counted = true;
+      var el = document.getElementById("salesCounter");
+      if (!el) return;
+      var start = performance.now();
+      var dur = 950;
+      function tick(now) {
+        var t = Math.min((now - start) / dur, 1);
+        var eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = "Rs " + Math.round(eased * 142) + "K";
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    if (reduced || !("IntersectionObserver" in window)) {
+      revealEls.forEach(function (el) { el.classList.add("in-view"); });
+    } else {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            if (entry.target.classList.contains("phones-row")) animateCounter();
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.18 });
+      revealEls.forEach(function (el) { io.observe(el); });
+    }
+  </script>
+  <script src="i18n.js"></script>
   <script src="edit-text.js"></script>
 </body>
 </html>
