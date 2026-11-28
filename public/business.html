@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="text-scale" content="scale">
   <meta name="color-scheme" content="light dark">
   <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#0e0e0c">
@@ -162,7 +163,7 @@
     }
     .sneak-head { text-align: center; }
     .sneak-big {
-      font-size: clamp(40px, 8.2vw, 108px); line-height: 0.94; font-weight: 800;
+      font-size: clamp(2.5rem, 1.5rem + 6.5vw, 6.75rem); line-height: 0.94; font-weight: 800;
       letter-spacing: -0.05em; text-transform: uppercase; color: var(--black);
     }
     .sneak-sub { margin: 14px auto 0; max-width: 560px; color: var(--black-2); font-weight: 500; }
@@ -833,7 +834,7 @@
       .hero-wrap { padding-top: 110px; padding-bottom: 52px; }
       .assist-grid { grid-template-columns: 1fr 1.15fr; gap: 56px; }
       .foot-grid {
-        grid-template-columns: 1.6fr repeat(4, 1fr); gap: 0;
+        grid-template-columns: 1.6fr repeat(3, 1fr); gap: 0;
       }
       .foot-brand, .foot-col { padding: 0 28px; border-left: 1px solid var(--line); }
       .foot-brand { padding-left: 0; border-left: 0; }
@@ -1449,27 +1450,33 @@
             <li><a href="index.html">Mahébourg</a></li>
           </ul>
         </div>
-
-        <div class="foot-col">
-          <h4>Connect</h4>
-          <ul>
-            <li><a href="#">NPCC Startup Lab</a></li>
-            <li><a href="#">Partner Program</a></li>
-            <li><a href="auth.html">Merchant Login</a></li>
-          </ul>
-        </div>
       </div>
 
       <div class="foot-bottom">
         <span>© 2026 Bazar Mauritius. All rights reserved.</span>
         <div class="foot-legal">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Use</a>
-          <a href="#">AI Data Promise</a>
+          <a href="#privacy" onclick="openInfoModal('privacy'); return false;">Privacy Policy</a>
+          <a href="#terms" onclick="openInfoModal('terms'); return false;">Terms of Use</a>
+          <a href="#ai-promise" onclick="openInfoModal('ai'); return false;">AI Data Promise</a>
         </div>
       </div>
     </div>
   </footer>
+
+  <!-- LEGAL, DATA PRIVACY & PARTNER INFO DIALOG -->
+  <dialog id="infoDialog" closedby="any" aria-labelledby="infoDialogTitle" style="border:1px solid var(--line);border-radius:20px;padding:0;background:var(--card);color:var(--black);width:min(92vw,480px);box-shadow:0 24px 60px rgba(14,14,12,0.35);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--cream);border-bottom:1px solid var(--line);">
+      <b id="infoDialogTitle" style="font-size:1rem;">AI Data Promise</b>
+      <button type="button" aria-label="Close" onclick="document.getElementById('infoDialog').close()" style="width:36px;height:36px;border-radius:999px;display:grid;place-items:center;">✕</button>
+    </div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:12px;font-size:0.875rem;line-height:1.55;">
+      <p id="infoDialogBody" style="color:var(--black-2);"></p>
+      <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:6px;">
+        <a href="auth.html?role=business&mode=signup" class="btn btn-lime" style="min-block-size:40px;padding:0 18px;font-size:0.8125rem;">Open Free Shop</a>
+        <button type="button" class="btn btn-black" style="min-block-size:40px;padding:0 18px;font-size:0.8125rem;" onclick="document.getElementById('infoDialog').close()">Got it</button>
+      </div>
+    </div>
+  </dialog>
 
   <script>
     var demoData = {
@@ -1544,6 +1551,20 @@
         : "Searching verified shops near Port Louis for \"" + val + "\" — 4 matches found with same-day delivery.";
       appendExchange(val, reply);
       inp.value = "";
+    }
+
+    var INFO_COPY = {
+      ai: ["AI Data Promise", "Every AI feature on Bazar is 100% opt-in. Your business numbers, invoices, and customer messages are never shared with other merchants or used to train public AI models. Every AI listing or reply draft is shown to you for review before anything is published or sent."],
+      privacy: ["Privacy Policy · Mauritius DPA 2017", "Bazar collects only the details needed to run your shop or deliver your order, aligned with the Mauritius Data Protection Act 2017. Merchants and buyers can export or delete their account data at any time."],
+      terms: ["Terms of Use", "Bazar connects verified Mauritian SMEs, shoppers, and peer-to-peer sellers. Secondhand Escrow funds remain locked until handover inspection is confirmed by the buyer."],
+      npcc: ["NPCC National AI Startups Lab", "Designed in Mauritius under the NPCC National AI Startups Lab to help local home sellers and SMEs turn social DMs into real storefronts, automated MRA-ready receipts, and hyperlocal discovery."],
+      partner: ["Bazar Partner Program", "Delivery partners, local business associations, and Mauritian SME collectives can onboard merchants in bulk with zero setup fees. Create a business account to connect with our team."]
+    };
+    function openInfoModal(kind) {
+      var pair = INFO_COPY[kind] || INFO_COPY.ai;
+      document.getElementById("infoDialogTitle").textContent = pair[0];
+      document.getElementById("infoDialogBody").textContent = pair[1];
+      document.getElementById("infoDialog").showModal();
     }
 
     renderChips();

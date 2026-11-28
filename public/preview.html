@@ -37,8 +37,9 @@
       <option value="dashboard.html">5. App — Business Dashboard</option>
       <option value="map.html">6. App — Discover Map (Uber UI)</option>
       <option value="onboarding.html">7. Business — Create your shop</option>
+      <option value="/s/chelseas">8. Storefront — Public Shop Page (/s/chelseas)</option>
     </select>
-    <a href="business.html" id="openFull" target="_blank">Open full page ↗</a>
+    <a href="business.html" id="openFull" target="_blank" rel="noopener">Open full page ↗</a>
   </header>
 
   <div class="row" id="row"></div>
@@ -53,16 +54,26 @@
     var row = document.getElementById("row");
     var select = document.getElementById("page");
 
+    function activeThemeParam() {
+      try {
+        var t = localStorage.getItem("bazar-theme");
+        if (t === "dark" || t === "light") return t;
+      } catch (e) {}
+      return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+
     function render() {
       row.innerHTML = "";
       document.getElementById("openFull").href = select.value;
+      var sep = select.value.indexOf("?") > -1 ? "&" : "?";
+      var frameSrc = select.value + sep + "theme=" + activeThemeParam();
       devices.forEach(function (d) {
         var box = document.createElement("div");
         box.className = "device " + d.cls;
         box.innerHTML =
           '<div class="name">' + d.name + '<span>' + d.w + ' × ' + d.h + '</span></div>' +
           '<div class="screen" style="width:' + (d.w * d.scale + 16) + 'px;height:' + (d.h * d.scale + 16) + 'px">' +
-          '<iframe src="' + select.value + '" width="' + d.w + '" height="' + d.h + '" style="transform:scale(' + d.scale + ')" title="' + d.name + '"></iframe>' +
+          '<iframe src="' + frameSrc + '" width="' + d.w + '" height="' + d.h + '" style="transform:scale(' + d.scale + ')" title="' + d.name + ' preview"></iframe>' +
           '</div>' + (d.cls === "laptop" ? '<div class="base"></div>' : "");
         row.appendChild(box);
       });

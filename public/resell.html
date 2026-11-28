@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="text-scale" content="scale">
   <meta name="color-scheme" content="light dark">
   <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#0e0e0c">
@@ -82,7 +83,7 @@
       font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
     }
     .r-copy h2 {
-      font-size: clamp(24px, 3.6vw, 38px); font-weight: 800; line-height: 1.06;
+      font-size: clamp(1.5rem, 1.1rem + 2.2vw, 2.375rem); font-weight: 800; line-height: 1.06;
       letter-spacing: -0.035em; color: var(--card);
     }
     .r-copy h2 em { font-style: normal; color: var(--lime); }
@@ -280,6 +281,7 @@
     .ad-card:hover { transform: translateY(-3px); border-color: rgba(14, 14, 12, 0.28); box-shadow: 0 12px 28px rgba(14, 14, 12, 0.08); }
     .ad-ph { position: relative; aspect-ratio: 1; background: #ede9de; padding: 18px; overflow: hidden; display: grid; place-items: center; }
     .ad-ph img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; transition: transform .35s cubic-bezier(0.22, 1, 0.36, 1); }
+    .ad-ph img.user-photo { object-fit: cover; mix-blend-mode: normal; border-radius: 12px; }
     .ad-card:hover .ad-ph img { transform: scale(1.05); }
     .ad-cond {
       position: absolute; top: 8px; left: 8px;
@@ -287,15 +289,15 @@
       padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700;
     }
     .ad-save {
-      position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; border-radius: 999px;
+      position: absolute; bottom: 8px; right: 8px; width: 38px; height: 38px; border-radius: 999px;
       background: var(--card); color: var(--black); display: grid; place-items: center;
       box-shadow: 0 4px 12px rgba(14, 14, 12, 0.16);
     }
     .ad-save.saved { background: var(--black); color: var(--lime); }
     .ad-save.saved svg { fill: currentColor; }
 
-    /* Language switcher (same as Home) */
-    .app-bar .right { gap: 8px; }
+    /* Language switcher + profile menu (same as Home) */
+    .app-bar .right { gap: 6px; }
     .pop-wrap { position: relative; }
     .lang-btn {
       width: 36px; height: 36px; border-radius: 999px;
@@ -303,6 +305,11 @@
       display: grid; place-items: center; padding: 0;
     }
     .lang-btn svg { width: 22px; height: 22px; border-radius: 999px; display: block; }
+    .profile-btn {
+      width: 38px; height: 38px; border-radius: 999px;
+      background: var(--black); color: var(--lime);
+      display: grid; place-items: center; font-weight: 700; font-size: 13px;
+    }
     .pop-menu {
       position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
       min-width: 196px; background: var(--card); border: 1px solid var(--line);
@@ -310,24 +317,31 @@
       display: none; flex-direction: column; gap: 2px;
     }
     .pop-menu.open { display: flex; }
-    .pop-menu button {
+    .pop-menu a, .pop-menu button {
       display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px;
       font-size: 13px; font-weight: 600; color: var(--black); text-align: left; width: 100%;
     }
-    .pop-menu button:hover { background: var(--cream); }
+    .pop-menu a:hover, .pop-menu button:hover { background: var(--cream); }
     .pop-menu button.on { background: var(--black); color: var(--lime); }
     .pop-menu svg { width: 18px; height: 18px; flex: none; }
+    .pop-sep { height: 1px; background: var(--line); margin: 4px 6px; }
     /* Message seller button on each ad (next to save) */
     .ad-msg {
-      position: absolute; bottom: 8px; right: 46px; width: 32px; height: 32px; border-radius: 999px;
+      position: absolute; bottom: 8px; right: 52px; width: 38px; height: 38px; border-radius: 999px;
       background: var(--black); color: var(--lime); display: grid; place-items: center;
       box-shadow: 0 4px 12px rgba(14, 14, 12, 0.16);
     }
+    .ad-open-btn {
+      font: inherit; font-size: 13px; font-weight: 600; color: var(--black); line-height: 1.3;
+      text-align: left; width: 100%;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .ad-open-btn:hover { text-decoration: underline; }
 
     /* Smart description helper in "Create Listing" */
     .desc-box {
-      width: 100%; min-height: 104px; padding: 12px; border-radius: 12px; resize: vertical;
-      border: 1px solid var(--line); background: var(--cream); font: inherit; font-size: 14px; line-height: 1.45; color: var(--black);
+      width: 100%; min-height: 112px; padding: 12px; border-radius: 12px; resize: vertical;
+      border: 1px solid var(--line); background: var(--cream); font: inherit; font-size: max(1rem, 1em); line-height: 1.45; color: var(--black);
     }
     .desc-box:focus { outline: 0; border-color: var(--black); background: var(--card); }
     .desc-tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -389,19 +403,85 @@
     .opt-pill.on {
       background: rgba(212, 245, 60, 0.32); border-color: var(--black); color: var(--black); font-weight: 700;
     }
-    .thumb-strip { display: flex; gap: 8px; margin-top: 8px; }
+    .thumb-strip { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
     .thumb-slot {
-      width: 54px; height: 54px; border-radius: 12px; overflow: hidden;
-      border: 2px solid var(--line); background: var(--cream); display: grid; place-items: center;
+      position: relative; width: 82px; height: 82px; border-radius: 16px; overflow: hidden;
+      border: 2.5px solid var(--line); background: var(--cream); display: grid; place-items: center;
       font-size: 18px; font-weight: 700; color: var(--muted); flex: none;
     }
-    .thumb-slot.on { border-color: var(--black); box-shadow: 0 0 0 2px var(--lime); }
+    .thumb-slot.on { border-color: var(--black); box-shadow: 0 0 0 3px var(--lime); }
+    :root[data-theme="dark"] .thumb-slot.on { border-color: var(--lime); box-shadow: 0 0 0 2px rgba(212, 245, 60, 0.45); }
     .thumb-slot img { width: 100%; height: 100%; object-fit: cover; }
-    .thumb-strip { flex-wrap: wrap; }
-    .add-slot { border-style: dashed; border-color: var(--black); background: var(--card); color: var(--black); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
-    .add-slot span { font-size: 17px; line-height: 1; }
-    .add-slot small { font-size: 9.5px; font-weight: 700; }
-    .add-slot:hover { background: var(--lime); }
+
+    /* Large Upload / Camera Studio in Create Listing */
+    dialog#sellDialog { width: min(95vw, 540px); max-height: 90svh; }
+    .photo-actions-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .photo-big-btn {
+      min-height: 82px; padding: 14px 12px; border-radius: 18px;
+      border: 2px dashed var(--black); background: var(--cream); color: var(--black);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+      text-align: center;
+    }
+    :root[data-theme="dark"] .photo-big-btn {
+      border-color: rgba(212, 245, 60, 0.55); background: var(--surface-2);
+    }
+    .photo-big-btn:hover {
+      background: var(--lime); color: #0e0e0c !important; border-style: solid; border-color: #0e0e0c;
+    }
+    .photo-big-btn svg { width: 26px; height: 26px; }
+    .photo-big-btn b { font-size: 0.9rem; font-weight: 700; line-height: 1.15; }
+    .photo-big-btn small { font-size: 0.72rem; opacity: 0.78; font-weight: 600; }
+
+    .photo-stage {
+      position: relative; width: 100%; aspect-ratio: 16 / 10; min-height: 210px;
+      border-radius: 20px; overflow: hidden; background: #141611;
+      border: 2px solid var(--line); display: grid; place-items: center;
+    }
+    .photo-stage img {
+      width: 100%; height: 100%; max-height: 300px; object-fit: contain; display: block;
+    }
+    .photo-stage-badge {
+      position: absolute; top: 10px; left: 10px; z-index: 2;
+      background: var(--lime); color: #0e0e0c !important;
+      padding: 5px 11px; border-radius: 999px; font-size: 0.72rem; font-weight: 800;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .photo-stage-del {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
+      min-width: 38px; min-height: 38px; padding: 0 12px; border-radius: 999px;
+      background: rgba(14, 14, 12, 0.82); color: #fbf8f1; font-size: 0.75rem; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 5px; backdrop-filter: blur(6px);
+      border: 1px solid rgba(251, 248, 241, 0.22);
+    }
+    .photo-stage-del:hover { background: #b83232; color: #fff; border-color: #b83232; }
+    @keyframes aiLaserSweep {
+      0%, 100% { top: 8%; opacity: 0.85; }
+      50% { top: 88%; opacity: 1; }
+    }
+    .photo-stage.scanning::after {
+      content: ""; position: absolute; left: 10px; right: 10px; top: 10%; height: 3px; z-index: 3;
+      background: var(--lime); box-shadow: 0 0 16px var(--lime), 0 0 6px #fff;
+      animation: aiLaserSweep 1.6s ease-in-out infinite;
+    }
+    .ai-read-btn {
+      width: 100%; min-height: 50px; padding: 0 18px; border-radius: 16px;
+      background: var(--lime); color: #0e0e0c !important;
+      font-size: 0.9rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      box-shadow: 0 8px 20px rgba(212, 245, 60, 0.25);
+    }
+    .ai-read-btn:hover:not(:disabled) { filter: brightness(1.04); transform: translateY(-1px); }
+    .ai-read-btn:disabled { opacity: 0.65; cursor: wait; }
+    .ai-status-box {
+      padding: 10px 13px; border-radius: 13px; font-size: 0.78rem; font-weight: 600; line-height: 1.4;
+      background: rgba(212, 245, 60, 0.2); border: 1px solid var(--lime-ink); color: var(--black);
+    }
+    .ai-status-box.err {
+      background: rgba(184, 50, 50, 0.12); border-color: #b83232; color: #b83232;
+    }
+    :root[data-theme="dark"] .ai-status-box.err { color: #fca5a5; border-color: rgba(252, 165, 165, 0.5); }
     .split-cta {
       display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
       padding-top: 12px; border-top: 1px solid var(--line); margin-top: 4px;
@@ -454,8 +534,8 @@
     .dlg-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
     .dlg-body label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; }
     .dlg-body input, .dlg-body select {
-      width: 100%; height: 44px; padding: 0 12px; border-radius: 12px;
-      border: 1px solid var(--line); background: var(--cream); font: inherit; font-size: 14px;
+      width: 100%; min-height: 48px; padding: 0 14px; border-radius: 12px;
+      border: 1px solid var(--line); background: var(--cream); font: inherit; font-size: max(1rem, 1em); color: var(--black);
     }
     .detail-img { width: 100%; aspect-ratio: 16/10; border-radius: 16px; object-fit: cover; }
     .detail-trust {
@@ -563,25 +643,38 @@
   <header class="app-bar">
     <div class="wrap">
       <a href="business.html" class="logo" data-text="bar.logo">bazar</a>
-      <nav class="top-nav">
+      <nav class="top-nav" aria-label="Primary">
         <a href="index.html">Home</a>
         <a href="map.html">Map</a>
         <a href="resell.html" class="on">Resell</a>
-        <a href="#">Orders</a>
+        <a href="index.html?drawer=orders">Orders</a>
       </nav>
       <div class="right">
         <!-- Language Flag Switcher (same as Home) -->
         <div class="pop-wrap">
-          <button type="button" class="lang-btn" id="langBtn" aria-label="Change language" onclick="togglePop('langMenu')">
-            <svg viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="r-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#r-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+          <button type="button" class="lang-btn" id="langBtn" aria-label="Change language" aria-expanded="false" onclick="togglePop('langMenu', this)">
+            <svg aria-hidden="true" viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="r-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#r-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
           </button>
-          <div class="pop-menu" id="langMenu" role="menu">
-            <button type="button" class="on" data-lang="en" onclick="setLang('en')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="rm-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#rm-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg> English</button>
-            <button type="button" data-lang="fr" onclick="setLang('fr')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="rm-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#rm-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg> Français</button>
-            <button type="button" data-lang="mfe" onclick="setLang('mfe')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="rm-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#rm-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg> Kreol Morisien</button>
+          <div class="pop-menu" id="langMenu">
+            <button type="button" class="on" data-lang="en" onclick="setLang('en')"><svg aria-hidden="true" viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="rm-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#rm-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg> English</button>
+            <button type="button" data-lang="fr" onclick="setLang('fr')"><svg aria-hidden="true" viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="rm-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#rm-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg> Français</button>
+            <button type="button" data-lang="mfe" onclick="setLang('mfe')"><svg aria-hidden="true" viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="rm-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#rm-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg> Kreol Morisien</button>
           </div>
         </div>
-        <button type="button" class="btn btn-black" style="display:inline-flex;min-height:40px;padding:0 16px;font-size:13px;" onclick="document.getElementById('sellDialog').showModal()">+ Sell Item</button>
+        <button type="button" class="btn btn-black" style="display:inline-flex;min-height:40px;padding:0 14px;font-size:13px;" onclick="document.getElementById('sellDialog').showModal()">+ Sell Item</button>
+        <div class="pop-wrap">
+          <button type="button" class="profile-btn" aria-label="Account menu" aria-expanded="false" onclick="togglePop('profileMenu', this)">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          </button>
+          <div class="pop-menu" id="profileMenu">
+            <a href="auth.html">My Profile</a>
+            <a href="index.html?filter=saved#pickedProducts">Saved Items</a>
+            <a href="index.html?drawer=orders">My Orders &amp; Cart</a>
+            <button type="button" onclick="document.getElementById('profileMenu').classList.remove('open'); switchView('escrow');">My Resell &amp; Escrow</button>
+            <div class="pop-sep"></div>
+            <a href="auth.html">Sign in / Switch Account</a>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -839,41 +932,68 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--lime-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:2px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
         <div><b>Face + ID Verified Seller · Bazar Escrow:</b> Money stays locked safely until you inspect the item and confirm handover.</div>
       </div>
-      <!-- Message, Call & Voice Interaction Options (Crisp SVG Icons) -->
+      <!-- Message, Call & Voice Interaction Options (In-App, Zero Browser Alerts) -->
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-        <button type="button" class="opt-pill" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="openChat(currentAd)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>Message</button>
-        <button type="button" class="opt-pill" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="alert('Starting private in-app call...')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>Call</button>
-        <button type="button" class="opt-pill" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="alert('Hold to record a quick voice note...')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>Voice</button>
+        <button type="button" class="opt-pill" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="document.getElementById('detailDialog').close(); openChat(currentAd);"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>Message</button>
+        <button type="button" class="opt-pill" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="startSellerCall(currentAd)"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>Call</button>
+        <button type="button" class="opt-pill" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="sendVoiceNote(currentAd)"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>Voice</button>
       </div>
       <div class="split-cta">
-        <button type="button" class="btn-out" onclick="document.getElementById('detailDialog').close()">Make Offer</button>
+        <button type="button" class="btn-out" onclick="makeOfferInChat(currentAd)">Make Offer</button>
         <button type="button" class="btn-solid" onclick="buyWithEscrow()">Buy with Escrow</button>
       </div>
     </div>
   </dialog>
 
-  <!-- EASY TAP-TO-PICK LISTING CREATOR (Shopease Option Pills + AI Auto-Fill) -->
+  <!-- EASY TAP-TO-PICK LISTING CREATOR (Camera/Upload Studio + AI Photo Reader) -->
   <dialog id="sellDialog" closedby="any" aria-labelledby="sellTitle">
     <div class="dlg-head">
       <b id="sellTitle">Create Listing</b>
-      <button type="button" class="ai-fill-btn" onclick="aiAutoFill()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8Z"/></svg>AI Auto-fill</button>
       <button type="button" onclick="document.getElementById('sellDialog').close()" aria-label="Close">✕</button>
     </div>
     <form class="dlg-body" onsubmit="addListing(event)">
-      <!-- Live Photo Preview + Thumbnail Picker -->
-      <div class="opt-group">
-        <div class="opt-label"><span>Item Photos</span><span style="color:var(--lime-ink)">Cover selected</span></div>
-        <div class="thumb-strip" id="uploadThumbs">
-          <button type="button" class="thumb-slot on" onclick="pickUploadPhoto(this, 'photos/resell-iphone.jpg')"><img src="photos/resell-iphone.jpg" alt=""></button>
-          <button type="button" class="thumb-slot" onclick="pickUploadPhoto(this, 'photos/resell-macbook.jpg')"><img src="photos/resell-macbook.jpg" alt=""></button>
-          <button type="button" class="thumb-slot" onclick="pickUploadPhoto(this, 'photos/resell-headphones.jpg')"><img src="photos/resell-headphones.jpg" alt=""></button>
-          <button type="button" class="thumb-slot add-slot" onclick="takeListingPhoto()" aria-label="Take a photo with the camera"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg><small>Camera</small></button>
-          <button type="button" class="thumb-slot add-slot" onclick="uploadListingPhotos()" aria-label="Upload photos"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg><small>Upload</small></button>
+      <!-- Camera & Upload Studio (Zero pre-loaded pictures; large preview + AI photo reader) -->
+      <div class="opt-group" id="photoGroup">
+        <div class="opt-label">
+          <span>Item Photos <span aria-hidden="true">*</span></span>
+          <span id="photoCountHint" style="color:var(--muted)">Take a photo or upload</span>
         </div>
+
+        <!-- Big Live Preview Stage (Appears as soon as a photo is taken or uploaded) -->
+        <div class="photo-stage hidden" id="photoStage">
+          <span class="photo-stage-badge" id="photoStageBadge">★ Cover Photo</span>
+          <button type="button" class="photo-stage-del" onclick="removeCurrentPhoto()" aria-label="Remove selected photo">✕ Remove</button>
+          <img id="photoStageImg" src="" alt="Selected item preview">
+        </div>
+
+        <!-- Large Thumbnail Strip of Uploaded/Captured Photos -->
+        <div class="thumb-strip hidden" id="uploadThumbs" role="group" aria-label="Uploaded item photos"></div>
+
+        <!-- Prominent Camera & Upload Action Buttons -->
+        <div class="photo-actions-grid" id="photoDropZone">
+          <button type="button" class="photo-big-btn" onclick="takeListingPhoto()">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg>
+            <b>Take Photo</b>
+            <small>Open camera</small>
+          </button>
+          <button type="button" class="photo-big-btn" onclick="uploadListingPhotos()">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+            <b>Upload Photos</b>
+            <small>Choose or drop images</small>
+          </button>
+        </div>
+
+        <!-- Read Photo with AI Button (Shown once a photo is added) -->
+        <button type="button" class="ai-read-btn hidden" id="readPhotoAiBtn" onclick="readPhotoWithAI()">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8Z"/><path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9Z"/></svg>
+          <span id="readPhotoAiLabel">Read Photo with AI · Auto-fill listing</span>
+        </button>
+
+        <div id="photoAiStatus" class="ai-status-box hidden" role="status" aria-live="polite"></div>
       </div>
 
-      <div><label for="itemTitle">Item title</label><input type="text" id="itemTitle" required placeholder="e.g. MacBook Air M2, AirPods Max"></div>
-      <div><label for="itemPrice">Asking price (Rs)</label><input type="number" id="itemPrice" required min="50" placeholder="e.g. 18500"></div>
+      <div><label for="itemTitle">Item title</label><input type="text" id="itemTitle" name="title" required placeholder="e.g. MacBook Air M2, AirPods Max"></div>
+      <div><label for="itemPrice">Asking price (Rs)</label><input type="number" id="itemPrice" name="price" required min="50" placeholder="e.g. 18500"></div>
 
       <!-- Smart description helper: drafts a description and suggests what buyers will ask -->
       <div class="opt-group">
@@ -881,7 +1001,7 @@
           <label for="itemDesc" style="margin:0">Description</label>
           <button type="button" class="ai-fill-btn" onclick="suggestDescription()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8Z"/></svg>Write it for me</button>
         </div>
-        <textarea id="itemDesc" class="desc-box" placeholder="Tell buyers about the item: how old it is, how it works, any marks, what's included…" oninput="updateDescMeter()"></textarea>
+        <textarea id="itemDesc" name="description" class="desc-box" placeholder="Tell buyers about the item: how old it is, how it works, any marks, what's included…" oninput="updateDescMeter()"></textarea>
         <div class="desc-tools">
           <span class="ask-hint">Buyers usually ask about — tap to add:</span>
           <span class="desc-meter" id="descMeter"><span class="bar"><i></i></span><span id="descMeterText">Too short</span></span>
@@ -956,11 +1076,11 @@
   </dialog>
 
   <!-- SAME BOTTOM TAB BAR -->
-  <nav class="tab-bar t-caption" aria-label="Main">
-    <a href="index.html"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg></span><span>Home</span></a>
-    <a href="map.html"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20Z"/><path d="M9 4v13.5M15 6.5V20"/></svg></span><span>Map</span></a>
-    <a href="resell.html" class="on"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg></span><span>Resell</span></a>
-    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><span>Orders</span></a>
+  <nav class="tab-bar t-caption" aria-label="Bottom">
+    <a href="index.html"><span class="pill"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg></span><span>Home</span></a>
+    <a href="map.html"><span class="pill"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20Z"/><path d="M9 4v13.5M15 6.5V20"/></svg></span><span>Map</span></a>
+    <a href="resell.html" class="on"><span class="pill"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg></span><span>Resell</span></a>
+    <a href="index.html?drawer=orders"><span class="pill"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><span>Orders</span></a>
   </nav>
 
   <script>
@@ -977,54 +1097,271 @@
 
     var activeCat = "all";
     var activeSort = "trending";
-    var sellState = { cat: "phones", cond: "Like New", town: "Port Louis", img: "photos/resell-iphone.jpg" };
+    var sellState = { cat: "phones", cond: "Like New", town: "Port Louis", photos: [], coverIdx: 0 };
 
     function pickOpt(btn, key, val) {
       sellState[key] = val;
       btn.parentNode.querySelectorAll(".opt-pill").forEach(function (b) { b.classList.remove("on"); });
       btn.classList.add("on");
-      if (key === "cat") renderAskChips();   // suggestions follow the category
+      if (key === "cat") renderAskChips();
     }
-    /* Listing photos: live camera or upload (photos stay on the device in this prototype) */
-    function addListingPhoto(src) {
+
+    function selectOptPillByValue(groupId, key, val) {
+      var group = document.getElementById(groupId);
+      if (!group) return;
+      var btns = group.querySelectorAll(".opt-pill");
+      btns.forEach(function (b) {
+        var match = b.getAttribute("onclick") && b.getAttribute("onclick").indexOf("'" + val + "'") > -1;
+        if (match) pickOpt(b, key, val);
+      });
+    }
+
+    function showPhotoStatus(msg, isErr) {
+      var box = document.getElementById("photoAiStatus");
+      if (!box) return;
+      box.textContent = msg || "";
+      box.classList.toggle("hidden", !msg);
+      box.classList.toggle("err", !!isErr);
+    }
+
+    /* Resize/compress captured or uploaded photos so preview is crisp and AI uploads are fast */
+    function normalizePhotoDataUrl(dataUrl, maxEdge) {
+      maxEdge = maxEdge || 1100;
+      return new Promise(function (resolve) {
+        var im = new Image();
+        im.onload = function () {
+          var w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
+          if (!w || !h) { resolve(dataUrl); return; }
+          var scale = Math.min(1, maxEdge / Math.max(w, h));
+          var cw = Math.round(w * scale), ch = Math.round(h * scale);
+          var c = document.createElement("canvas");
+          c.width = cw; c.height = ch;
+          c.getContext("2d").drawImage(im, 0, 0, cw, ch);
+          resolve(c.toDataURL("image/jpeg", 0.86));
+        };
+        im.onerror = function () { resolve(dataUrl); };
+        im.src = dataUrl;
+      });
+    }
+
+    function renderUploadedPhotos() {
+      var photos = sellState.photos;
+      var hasPhotos = photos.length > 0;
+      if (sellState.coverIdx >= photos.length) sellState.coverIdx = Math.max(0, photos.length - 1);
+
+      var stage = document.getElementById("photoStage");
+      var stageImg = document.getElementById("photoStageImg");
+      var badge = document.getElementById("photoStageBadge");
       var strip = document.getElementById("uploadThumbs");
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "thumb-slot";
-      b.innerHTML = '<img alt="">';
-      b.querySelector("img").src = src;
-      b.onclick = function () { pickUploadPhoto(b, src); };
-      strip.insertBefore(b, strip.querySelector(".add-slot"));
-      return b;
+      var hint = document.getElementById("photoCountHint");
+      var aiBtn = document.getElementById("readPhotoAiBtn");
+
+      stage.classList.toggle("hidden", !hasPhotos);
+      strip.classList.toggle("hidden", !hasPhotos);
+      aiBtn.classList.toggle("hidden", !hasPhotos);
+
+      if (!hasPhotos) {
+        stageImg.removeAttribute("src");
+        strip.innerHTML = "";
+        hint.textContent = "Take a photo or upload";
+        hint.style.color = "var(--muted)";
+        return;
+      }
+
+      var active = photos[sellState.coverIdx];
+      stageImg.src = active.src;
+      badge.textContent = "★ Cover Photo (" + (sellState.coverIdx + 1) + " of " + photos.length + ")";
+      hint.textContent = photos.length + (photos.length === 1 ? " photo ready" : " photos ready · tap any to set cover");
+      hint.style.color = "var(--lime-ink)";
+
+      strip.innerHTML = "";
+      photos.forEach(function (p, idx) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "thumb-slot" + (idx === sellState.coverIdx ? " on" : "");
+        b.setAttribute("aria-label", "Select photo " + (idx + 1) + " as cover");
+        b.setAttribute("aria-pressed", String(idx === sellState.coverIdx));
+        b.innerHTML = '<img alt="Uploaded photo ' + (idx + 1) + '">';
+        b.querySelector("img").src = p.src;
+        b.onclick = function () {
+          sellState.coverIdx = idx;
+          renderUploadedPhotos();
+        };
+        strip.appendChild(b);
+      });
     }
+
+    function pushListingPhoto(rawSrc, fileName) {
+      if (sellState.photos.length >= 8) {
+        showPhotoStatus("Maximum of 8 photos reached.", true);
+        return Promise.resolve();
+      }
+      return normalizePhotoDataUrl(rawSrc, 1100).then(function (cleanSrc) {
+        sellState.photos.push({ src: cleanSrc, name: fileName || "" });
+        if (sellState.photos.length === 1) sellState.coverIdx = 0;
+        showPhotoStatus("", false);
+        renderUploadedPhotos();
+      });
+    }
+
+    function removeCurrentPhoto() {
+      if (!sellState.photos.length) return;
+      sellState.photos.splice(sellState.coverIdx, 1);
+      if (sellState.coverIdx >= sellState.photos.length) sellState.coverIdx = Math.max(0, sellState.photos.length - 1);
+      showPhotoStatus("", false);
+      renderUploadedPhotos();
+    }
+
     function takeListingPhoto() {
       var dlg = document.getElementById("sellDialog");
       dlg.close();
       BazarDocs.openCamera({ title: "Photo of your item" }).then(function (img) {
         dlg.showModal();
-        if (img) pickUploadPhoto(addListingPhoto(img), img);
+        if (img) pushListingPhoto(img, "camera-photo.jpg");
       });
     }
+
     function uploadListingPhotos() {
       BazarDocs.pickFiles({ accept: "image/*", multiple: true }).then(function (files) {
-        var first = null;
-        return files.slice(0, 8).reduce(function (p, f) {
-          return p.then(function () { return BazarDocs.fileToDataURL(f); }).then(function (src) {
-            var b = addListingPhoto(src);
-            if (!first) { first = b; pickUploadPhoto(b, src); }
-          });
+        if (!files.length) return;
+        return files.slice(0, 8 - sellState.photos.length).reduce(function (p, f) {
+          return p
+            .then(function () { return BazarDocs.fileToDataURL(f); })
+            .then(function (src) { return pushListingPhoto(src, f.name); });
         }, Promise.resolve());
       });
     }
 
-    function pickUploadPhoto(btn, src) {
-      sellState.img = src;
-      document.querySelectorAll("#uploadThumbs .thumb-slot").forEach(function (b) { b.classList.remove("on"); });
-      btn.classList.add("on");
+    // Drag-and-drop support onto the photo buttons
+    (function bindPhotoDropZone() {
+      var dz = document.getElementById("photoDropZone");
+      if (!dz) return;
+      ["dragenter", "dragover"].forEach(function (evName) {
+        dz.addEventListener(evName, function (ev) { ev.preventDefault(); });
+      });
+      dz.addEventListener("drop", function (ev) {
+        ev.preventDefault();
+        var files = Array.prototype.slice.call((ev.dataTransfer && ev.dataTransfer.files) || []).filter(function (f) {
+          return /^image\//.test(f.type);
+        });
+        files.slice(0, 8 - sellState.photos.length).reduce(function (p, f) {
+          return p
+            .then(function () { return BazarDocs.fileToDataURL(f); })
+            .then(function (src) { return pushListingPhoto(src, f.name); });
+        }, Promise.resolve());
+      });
+    })();
+
+    function applyAiListingDraft(draft, sourceNote) {
+      if (draft.category) selectOptPillByValue("sellCatPills", "cat", draft.category);
+      if (draft.condition) selectOptPillByValue("sellCondPills", "cond", draft.condition);
+      if (draft.title) document.getElementById("itemTitle").value = draft.title;
+      if (draft.description) document.getElementById("itemDesc").value = draft.description;
+      if (draft.priceMur && Number(draft.priceMur) >= 50) {
+        document.getElementById("itemPrice").value = String(Math.round(Number(draft.priceMur)));
+      }
+      updateDescMeter();
+      var summary = draft.detectedSummary ? " (" + draft.detectedSummary + ")" : "";
+      showPhotoStatus(
+        "✓ " + (sourceNote || "AI read your photo") + summary + " — review details" +
+        (draft.priceMur ? " before publishing." : " and set your asking price."),
+        false
+      );
     }
-    function aiAutoFill() {
-      document.getElementById("itemTitle").value = "Wireless Noise-Cancelling Earbuds + Case";
-      document.getElementById("itemPrice").value = "3200";
+
+    function localHeuristicDraft(ocrText, fileName) {
+      var clue = ((ocrText || "") + " " + (fileName || "").replace(/[-_.\d]+/g, " ")).trim();
+      var low = clue.toLowerCase();
+      var cat = sellState.cat;
+      if (/iphone|samsung|galaxy|pixel|xiaomi|redmi|phone/.test(low)) cat = "phones";
+      else if (/macbook|laptop|ipad|tablet|dell|lenovo|asus|hp/.test(low)) cat = "laptops";
+      else if (/airpod|headphone|speaker|jbl|sony|bose|earbud/.test(low)) cat = "audio";
+      else if (/watch|seiko|casio|longines|garmin|rolex/.test(low)) cat = "watches";
+      else if (/nike|jordan|adidas|dress|shirt|shoe|sneaker|bag/.test(low)) cat = "fashion";
+      else if (/toyota|honda|suzuki|nissan|bmw|car|scooter/.test(low)) cat = "vehicles";
+      var firstLine = (ocrText || "").split(/\r?\n/).map(function (s) { return s.trim(); }).filter(function (s) { return s.length >= 3 && s.length <= 60; })[0];
+      var cleanName = (fileName || "").replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
+      var guessedTitle = firstLine || (cleanName && !/^camera photo|image|img|photo$/i.test(cleanName) ? cleanName : "Pre-loved " + cat.slice(0, -1));
+      var ask = (ASK[cat] || ASK.phones).slice(0, 3);
+      return {
+        category: cat,
+        condition: sellState.cond,
+        title: guessedTitle.charAt(0).toUpperCase() + guessedTitle.slice(1),
+        description:
+          "Selling my " + guessedTitle + " in " + sellState.cond.toLowerCase() + " condition. " + (INTRO[cat] || "") + "\n" +
+          ask.map(function (p) { return "• " + p[1]; }).join("\n") + "\n" +
+          "Pickup in " + sellState.town + " or delivery with Bazar Escrow protection.",
+        priceMur: null
+      };
+    }
+
+    async function readPhotoWithAI() {
+      if (!sellState.photos.length) {
+        showPhotoStatus("Take or upload a photo first so AI can read it.", true);
+        return;
+      }
+      var current = sellState.photos[sellState.coverIdx];
+      var btn = document.getElementById("readPhotoAiBtn");
+      var label = document.getElementById("readPhotoAiLabel");
+      var stage = document.getElementById("photoStage");
+      var curLang = "en";
+      try { curLang = localStorage.getItem("bazar-lang") || "en"; } catch (e) {}
+
+      btn.disabled = true;
+      stage.classList.add("scanning");
+      label.textContent = "Reading photo with AI…";
+      showPhotoStatus("Scanning item photo and drafting your listing…", false);
+
+      try {
+        var res = await fetch("/api/ai/listing", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            image: current.src,
+            fileName: current.name,
+            lang: curLang,
+            town: sellState.town
+          })
+        }).then(function (r) { return r.json(); });
+
+        if (res && res.ok && res.listing) {
+          applyAiListingDraft(res.listing, "AI read your photo");
+          return;
+        }
+
+        // Fallback: read any visible brand/model text on-device via OCR and ask AI (or local drafter)
+        label.textContent = "Reading labels in photo…";
+        var ocrText = "";
+        try { ocrText = await BazarDocs.readImage(current.src); } catch (e) {}
+
+        if (ocrText.trim() || current.name) {
+          var retry = await fetch("/api/ai/listing", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ocrText: ocrText.slice(0, 2000),
+              fileName: current.name,
+              lang: curLang,
+              town: sellState.town
+            })
+          }).then(function (r) { return r.json(); }).catch(function () { return null; });
+
+          if (retry && retry.ok && retry.listing) {
+            applyAiListingDraft(retry.listing, "AI drafted from your photo");
+            return;
+          }
+        }
+
+        applyAiListingDraft(localHeuristicDraft(ocrText, current.name), "Smart draft ready from your photo");
+      } catch (err) {
+        var fallbackOcr = "";
+        try { fallbackOcr = await BazarDocs.readImage(current.src); } catch (e2) {}
+        applyAiListingDraft(localHeuristicDraft(fallbackOcr, current.name), "Smart draft ready from your photo");
+      } finally {
+        btn.disabled = false;
+        stage.classList.remove("scanning");
+        label.textContent = "Read Photo with AI · Auto-fill listing";
+      }
     }
 
     function switchView(v) {
@@ -1077,16 +1414,16 @@
         };
         card.innerHTML =
           '<div class="ad-ph">' +
-            '<img src="' + a.img + '" alt="">' +
+            '<img src="' + a.img + '"' + (/^data:image\//.test(a.img) ? ' class="user-photo"' : '') + ' alt="' + a.title.replace(/"/g, "&quot;") + '" loading="lazy">' +
             '<span class="ad-cond">' + a.cond + '</span>' +
-            '<button type="button" class="ad-msg" aria-label="Message seller"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></button>' +
-            '<button type="button" class="ad-save" aria-label="Save listing" onclick="this.classList.toggle(\'saved\')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button>' +
+            '<button type="button" class="ad-msg" aria-label="Message seller about ' + a.title.replace(/"/g, "&quot;") + '"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></button>' +
+            '<button type="button" class="ad-save" aria-label="Save listing ' + a.title.replace(/"/g, "&quot;") + '" onclick="this.classList.toggle(\'saved\')"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button>' +
           '</div>' +
           '<div class="ad-body">' +
-            '<div class="ad-title">' + a.title + '</div>' +
+            '<button type="button" class="ad-open-btn">' + a.title + '</button>' +
             '<div class="ad-price">Rs ' + a.price.toLocaleString() + '</div>' +
             (disc > 0 ? '<div class="ad-disc-row"><span class="ad-disc">-' + disc + '%</span><span class="ad-orig">Rs ' + a.orig.toLocaleString() + '</span></div>' : '') +
-            '<div class="ad-meta"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--lime-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg><span>★ <b>' + a.rating + '</b></span><span>•</span><span>' + a.town + '</span></div>' +
+            '<div class="ad-meta"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--lime-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg><span>★ <b>' + a.rating + '</b></span><span>•</span><span>' + a.town + '</span></div>' +
           '</div>';
         grid.appendChild(card);
       });
@@ -1106,14 +1443,16 @@
         '<span class="opt-pill on">' + a.cond + '</span>' +
         '<span class="opt-pill">✓ Escrow Protected</span>' +
         '<span class="opt-pill">Grabbit / Meetup</span>';
-      var thumbs = [a.img, "photos/resell-earbuds.jpg", "photos/resell-macbook.jpg"];
+      var thumbs = (a.photos && a.photos.length) ? a.photos : [a.img];
       var tw = document.getElementById("detailThumbs");
       tw.innerHTML = "";
+      tw.style.display = thumbs.length > 1 ? "flex" : "none";
       thumbs.forEach(function (src, idx) {
         var b = document.createElement("button");
         b.type = "button";
         b.className = "thumb-slot" + (idx === 0 ? " on" : "");
-        b.innerHTML = '<img src="' + src + '" alt="">';
+        b.innerHTML = '<img alt="Photo ' + (idx + 1) + '">';
+        b.querySelector("img").src = src;
         b.onclick = function () {
           document.getElementById("detailImg").src = src;
           tw.querySelectorAll(".thumb-slot").forEach(function (x) { x.classList.remove("on"); });
@@ -1129,9 +1468,50 @@
       switchView("escrow");
     }
 
+    function makeOfferInChat(a) {
+      if (!a) return;
+      document.getElementById("detailDialog").close();
+      openChat(a);
+      var offer = Math.round(a.price * 0.92);
+      var inp = document.getElementById("chatInput");
+      inp.value = "Hi! Would you accept Rs " + offer.toLocaleString() + " via Bazar Escrow?";
+      inp.focus();
+      inp.select();
+    }
+
+    function startSellerCall(a) {
+      if (!a) return;
+      document.getElementById("detailDialog").close();
+      openChat(a);
+      chats[a.id].push({ who: "sys", text: "Private Bazar audio call requested — your phone number stays hidden." });
+      drawChat();
+      setTimeout(function () {
+        chats[a.id].push({ who: "them", text: "Hi! Stepping into a quiet spot — ready to answer your questions on Bazar Call." });
+        if (chatAd === a) drawChat();
+      }, 800);
+    }
+
+    function sendVoiceNote(a) {
+      if (!a) return;
+      document.getElementById("detailDialog").close();
+      openChat(a);
+      postChat("🎙️ Voice note (0:08) — Asking about condition & pickup today");
+    }
+
     function addListing(e) {
       e.preventDefault();
+      if (!sellState.photos.length) {
+        showPhotoStatus("Please take a photo or upload at least one image of your item first.", true);
+        var firstBtn = document.querySelector("#photoDropZone button");
+        if (firstBtn) firstBtn.focus();
+        return;
+      }
       var price = Number(document.getElementById("itemPrice").value);
+      var orderedPhotos = [sellState.photos[sellState.coverIdx].src].concat(
+        sellState.photos
+          .filter(function (_, idx) { return idx !== sellState.coverIdx; })
+          .map(function (p) { return p.src; })
+      );
       var item = {
         id: Date.now(),
         title: document.getElementById("itemTitle").value.trim(),
@@ -1140,14 +1520,19 @@
         cat: sellState.cat,
         town: sellState.town,
         cond: sellState.cond,
-        rating: "4.9",
+        rating: "5.0",
         seller: "You · Verified",
-        img: sellState.img,
+        img: orderedPhotos[0],
+        photos: orderedPhotos,
         desc: document.getElementById("itemDesc").value.trim()
       };
       ads.unshift(item);
       document.getElementById("sellDialog").close();
       e.target.reset();
+      sellState.photos = [];
+      sellState.coverIdx = 0;
+      showPhotoStatus("", false);
+      renderUploadedPhotos();
       renderAskChips();
       updateDescMeter();
       switchView("browse");
@@ -1312,24 +1697,33 @@
       btn.disabled = true;
     }
 
-    if (!("closedBy" in HTMLDialogElement.prototype)) {
-      document.querySelectorAll("dialog[closedby='any']").forEach(function (d) {
-        d.addEventListener("click", function (ev) {
-          if (ev.target !== d) return;
-          var r = d.getBoundingClientRect();
-          if (!(r.top <= ev.clientY && ev.clientY <= r.top + r.height && r.left <= ev.clientX && ev.clientX <= r.left + r.width)) d.close();
-        });
-      });
-    }
-
     renderAds();
     renderAskChips();
     updateDescMeter();
+    try {
+      if (new URLSearchParams(window.location.search).get("view") === "escrow") switchView("escrow");
+    } catch (e) {}
 
-    // Language flag menu (same as Home); i18n.js does the translating.
-    function togglePop(id) { document.getElementById(id).classList.toggle("open"); }
+    // Language flag & account menus; i18n.js does the translating.
+    function togglePop(id, triggerBtn) {
+      document.querySelectorAll(".pop-menu").forEach(function (m) {
+        if (m.id !== id) {
+          m.classList.remove("open");
+          var b = m.parentElement && m.parentElement.querySelector("button[aria-expanded]");
+          if (b) b.setAttribute("aria-expanded", "false");
+        }
+      });
+      var open = document.getElementById(id).classList.toggle("open");
+      if (triggerBtn) triggerBtn.setAttribute("aria-expanded", String(open));
+    }
     document.addEventListener("click", function (e) {
-      if (!e.target.closest(".pop-wrap")) document.getElementById("langMenu").classList.remove("open");
+      if (!e.target.closest(".pop-wrap")) {
+        document.querySelectorAll(".pop-menu").forEach(function (m) {
+          m.classList.remove("open");
+          var b = m.parentElement && m.parentElement.querySelector("button[aria-expanded]");
+          if (b) b.setAttribute("aria-expanded", "false");
+        });
+      }
     });
     var flags = {
       en: '<clipPath id="r-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#r-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g>',
@@ -1341,11 +1735,12 @@
       document.getElementById("langFlagSvg").innerHTML = flags[code];
       document.querySelectorAll("#langMenu button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-lang") === code); });
       document.getElementById("langMenu").classList.remove("open");
+      document.getElementById("langBtn").setAttribute("aria-expanded", "false");
       try { localStorage.setItem("bazar-lang", code); } catch (e) {}
     }
     try { var sl = localStorage.getItem("bazar-lang"); if (sl && flags[sl]) setLang(sl); } catch (e) {}
 
-    // 4-Pillar Fade + Swipe Hero Banner Engine (5s interval)
+    // 4-Pillar Fade + Swipe Hero Banner Engine (5.2s interval so headlines stay comfortable to read)
     (function initResellBanner() {
       var slides = document.querySelectorAll("#resellSlides .r-slide");
       var banner = document.getElementById("resellBanner");
@@ -1374,7 +1769,7 @@
       function resetTimer() {
         clearInterval(tmr);
         if (bannerPaused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-        tmr = setInterval(function () { window.goResellSlide(cur + 1); }, 2000);
+        tmr = setInterval(function () { window.goResellSlide(cur + 1); }, 5200);
       }
 
       if (banner) {

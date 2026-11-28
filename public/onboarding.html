@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="text-scale" content="scale">
   <meta name="color-scheme" content="light dark">
   <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#f4f0e6">
@@ -210,8 +211,11 @@
         <span class="big">✓</span>
         <h2 style="font-size:var(--h2)">Your shop is live!</h2>
         <p class="hint" style="font-size:13px">Share your link on WhatsApp, Facebook or Instagram. We'll check your shop and add the verified badge soon.</p>
-        <div class="share"><code id="shopLink"></code><button type="button" class="btn btn-black" style="min-height:40px;font-size:13px;padding:0 16px" onclick="copyLink(this)">Copy</button></div>
-        <a class="btn btn-lime" href="/dashboard" style="width:100%">Go to my dashboard</a>
+        <div class="share"><a id="shopLink" href="/dashboard" style="flex:1;text-align:left;font:600 13px/1.3 var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:underline;color:var(--lime-ink);"></a><button type="button" class="btn btn-black" style="min-height:40px;font-size:13px;padding:0 16px" onclick="copyLink(this)">Copy</button></div>
+        <div class="actions" style="width:100%">
+          <a class="btn btn-ghost" id="visitShopBtn" href="/dashboard">View my shop ↗</a>
+          <a class="btn btn-lime" href="/dashboard">Go to my dashboard</a>
+        </div>
       </section>
     </div>
   </main>
@@ -376,7 +380,12 @@
     function done(shop) {
       ["step1", "step2", "step3"].forEach(function (id) { document.getElementById(id).hidden = true; });
       ["st1", "st2", "st3"].forEach(function (id) { document.getElementById(id).className = "done"; });
-      document.getElementById("shopLink").textContent = shop.url;
+      var linkEl = document.getElementById("shopLink");
+      var relUrl = "/s/" + encodeURIComponent(shop.slug);
+      linkEl.textContent = shop.url || (location.origin + relUrl);
+      linkEl.href = relUrl;
+      var visitBtn = document.getElementById("visitShopBtn");
+      if (visitBtn) visitBtn.href = relUrl;
       document.getElementById("stepDone").hidden = false;
     }
     function copyLink(btn) {

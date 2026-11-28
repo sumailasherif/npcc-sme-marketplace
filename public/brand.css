@@ -12,11 +12,6 @@
    Phone    0   – 767px       390px         390 × 844   (iPhone 14/15)
    Tablet   768 – 1279px      820px         820 × 1180  (iPad Air)
    Laptop   1280px and up     1440px        1440 × 900
-
-   In CSS, use exactly these two media queries:
-     @media (min-width: 768px)  { tablet and up }
-     @media (min-width: 1280px) { laptop }
-   (Phone styles are the default, written first.)
    ───────────────────────────────────────────────────────────────── */
 
 :root {
@@ -26,6 +21,7 @@
   --lime: #d4f53c;          /* brand fill — ALWAYS paired with --on-lime (#0e0e0c) */
   --on-lime: #0e0e0c;       /* fixed dark ink on lime fills (13.8:1 contrast) */
   --lime-ink: #465d00;      /* accessible olive-green text on cream/card (6.6:1 contrast) */
+  --focus-ring: #465d00;    /* ≥ 3:1 focus outline on light surfaces */
   --black: #0e0e0c;         /* primary text in light mode */
   --black-2: #262621;       /* secondary text in light mode */
   --cream: #f4f0e6;         /* page canvas */
@@ -46,7 +42,7 @@
   accent-color: var(--lime-ink);
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 
-  /* Font */
+  /* Font — do NOT set a root font-size on :root or html so OS text-scale works natively */
   --font: "Inter", system-ui, sans-serif;
 
   /* Layout — phone values */
@@ -60,15 +56,15 @@
   --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Text sizes — phone values (size / line height) */
-  --hero: 40px;    --hero-lh: 1.04;
-  --h1: 28px;      --h1-lh: 1.15;
-  --h2: 22px;      --h2-lh: 1.2;
-  --h3: 18px;      --h3-lh: 1.3;
-  --body-l: 16px;  --body-l-lh: 1.5;
-  --body: 14px;    --body-lh: 1.45;
-  --label: 13px;
-  --caption: 12px;
+  /* Text sizes — relative rem units so OS & browser text scaling work seamlessly */
+  --hero: 2.5rem;      --hero-lh: 1.04;
+  --h1: 1.75rem;       --h1-lh: 1.15;
+  --h2: 1.375rem;      --h2-lh: 1.2;
+  --h3: 1.125rem;      --h3-lh: 1.3;
+  --body-l: 1rem;      --body-l-lh: 1.5;
+  --body: 0.875rem;    --body-lh: 1.45;
+  --label: 0.8125rem;
+  --caption: 0.75rem;
 }
 
 /* Follow system dark mode when no manual override is pinned */
@@ -82,6 +78,7 @@
     --black: #f6f3ea;        /* 15.2:1 contrast on #191c16 */
     --black-2: #e2dccb;      /* 12.6:1 contrast on #191c16 */
     --lime-ink: #d4f53c;     /* 13.8:1 contrast on #191c16 */
+    --focus-ring: #d4f53c;
     --scrollbar-track: #191c16;
     --scrollbar-thumb: #7f8674;
     accent-color: var(--lime);
@@ -100,6 +97,7 @@
   --black: #f6f3ea;
   --black-2: #e2dccb;
   --lime-ink: #d4f53c;
+  --focus-ring: #d4f53c;
   --scrollbar-track: #191c16;
   --scrollbar-thumb: #7f8674;
   accent-color: var(--lime);
@@ -111,32 +109,47 @@
   color-scheme: light;
 }
 
-@media (min-width: 768px) {          /* TABLET */
+/* Legacy WebKit scrollbar fallback only when standard scrollbar-color is unsupported */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+}
+
+@media (min-width: 48em) {          /* TABLET (768px at default scale) */
   :root {
     --gutter: 32px;
     --max: 720px;
     --top-bar: 64px;
-    --hero: 60px;
-    --h1: 34px;
-    --h2: 26px;
-    --h3: 20px;
-    --body-l: 18px;
-    --body: 15px;
+    --hero: 3.75rem;
+    --h1: 2.125rem;
+    --h2: 1.625rem;
+    --h3: 1.25rem;
+    --body-l: 1.125rem;
+    --body: 0.9375rem;
   }
 }
 
-@media (min-width: 1280px) {         /* LAPTOP */
+@media (min-width: 80em) {         /* LAPTOP (1280px at default scale) */
   :root {
     --gutter: 48px;
     --max: 1200px;
     --top-bar: 72px;
     --tab-bar: 0px;
-    --hero: 84px;
-    --h1: 44px;
-    --h2: 30px;
-    --h3: 22px;
-    --body-l: 20px;
-    --body: 15px;
+    --hero: 5.25rem;
+    --h1: 2.75rem;
+    --h2: 1.875rem;
+    --h3: 1.375rem;
+    --body-l: 1.25rem;
+    --body: 0.9375rem;
   }
 }
 
@@ -167,10 +180,32 @@ button {
 }
 button:active:not(:disabled) { transform: scale(0.97); }
 
+/* Accessible Focus Ring across all light & dark surfaces (≥ 3:1 contrast) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring) !important;
+  outline-offset: 3px !important;
+}
+:where(.hero-wrap, .assist-band, .intro, .fab-banner, .fab-spot, .ai-anchor, .kpi--featured, .auth-card-dark) :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline-color: var(--lime) !important;
+}
+
+/* Visually hidden utility (accessible to screen readers, visible if focused as skip link) */
+.visually-hidden:where(:not(:focus-within, :active)) {
+  position: absolute !important;
+  clip-path: inset(50%) !important;
+  overflow: hidden !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+}
+
 /* Shared text styles */
-.t-hero { font-size: var(--hero); line-height: var(--hero-lh); font-weight: 600; letter-spacing: -0.045em; }
-.t-h1   { font-size: var(--h1); line-height: var(--h1-lh); font-weight: 600; letter-spacing: -0.03em; }
-.t-h2   { font-size: var(--h2); line-height: var(--h2-lh); font-weight: 600; letter-spacing: -0.02em; }
+.t-hero { font-size: var(--hero); line-height: var(--hero-lh); font-weight: 600; letter-spacing: -0.045em; text-wrap: balance; }
+.t-h1   { font-size: var(--h1); line-height: var(--h1-lh); font-weight: 600; letter-spacing: -0.03em; text-wrap: balance; }
+.t-h2   { font-size: var(--h2); line-height: var(--h2-lh); font-weight: 600; letter-spacing: -0.02em; text-wrap: balance; }
 .t-h3   { font-size: var(--h3); line-height: var(--h3-lh); font-weight: 600; letter-spacing: -0.01em; }
 .t-body-l { font-size: var(--body-l); line-height: var(--body-l-lh); }
 .t-body { font-size: var(--body); line-height: var(--body-lh); }
@@ -183,8 +218,8 @@ button:active:not(:disabled) { transform: scale(0.97); }
 /* Shared buttons */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 48px; padding: 0 24px; border-radius: 999px;
-  font-size: 15px; font-weight: 600; white-space: nowrap;
+  min-block-size: 48px; padding: 0 24px; border-radius: 999px;
+  font-size: 0.9375rem; font-weight: 600; white-space: nowrap;
   transition: transform 0.18s var(--ease-spring), background-color 0.18s ease, color 0.18s ease, box-shadow 0.2s ease;
 }
 .btn:hover { transform: translateY(-1px); }
@@ -232,7 +267,7 @@ button:active:not(:disabled) { transform: scale(0.97); }
 .biz p { color: #262621 !important; }
 .biz .go { background: #0e0e0c !important; color: var(--lime) !important; }
 
-/* 2. Dark Mode Overrides (both manual [data-theme="dark"] and OS dark fallback) */
+/* 2. Dark Mode Overrides */
 :root[data-theme="dark"] .btn-black,
 :root[data-theme="dark"] .ed-btn--black,
 :root[data-theme="dark"] .pill-btn--primary,
@@ -361,11 +396,13 @@ button:active:not(:disabled) { transform: scale(0.97); }
   border-color: var(--lime) !important;
 }
 
-/* Light-paper / Studio-cutout surfaces that keep light ink in Dark Mode */
+/* Light-paper / Studio-cutout surfaces that keep light ink in Dark Mode.
+   Re-declare accent-color whenever overriding color-scheme on a subtree. */
 .receipt-paper,
 .p2-paper,
 .p3-sheet {
   color-scheme: only light;
+  accent-color: #465d00;
   color: #0e0e0c !important;
 }
 .receipt-paper .rc-top,
@@ -402,26 +439,39 @@ button:active:not(:disabled) { transform: scale(0.97); }
   }
 }
 
-/* Small floating Theme Toggle Button (Dark / Light) across all pages */
+/* Docked Theme Toggle Button (Dark / Light) inside header bars — zero overlap with page content */
 #themeToggleBtn {
-  position: fixed;
-  right: 16px;
-  top: calc(var(--top-bar, 56px) + env(safe-area-inset-top) + 10px);
-  z-index: 90;
-  width: 40px;
-  height: 40px;
+  min-inline-size: 38px;
+  min-block-size: 38px;
   border-radius: 999px;
   background: var(--card);
   color: var(--black);
   border: 1.5px solid var(--line);
-  display: grid;
+  display: inline-grid;
   place-items: center;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+  flex: none;
   transition: transform 0.22s var(--ease-spring), background-color 0.2s ease, border-color 0.2s ease;
+}
+#themeToggleBtn.theme-floating {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 90;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
 }
 :root[data-theme="dark"] #themeToggleBtn {
   background: #23281b;
   color: var(--lime);
   border-color: rgba(212, 245, 60, 0.45);
 }
-#themeToggleBtn:hover { transform: scale(1.08) rotate(-8deg); border-color: var(--lime-ink); }
+#themeToggleBtn:hover { transform: scale(1.06) rotate(-8deg); border-color: var(--lime-ink); }
+
+/* Touch target reinforcement on coarse pointers (phones & tablets) */
+@media (pointer: coarse) {
+  #themeToggleBtn,
+  .lang-btn,
+  .profile-btn {
+    min-inline-size: 40px;
+    min-block-size: 40px;
+  }
+}

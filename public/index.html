@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="text-scale" content="scale">
   <meta name="color-scheme" content="light dark">
   <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#f4f0e6">
@@ -382,8 +383,8 @@
     .cart-row-info { flex: 1; min-width: 0; }
     .cart-row-info b { display: block; font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .cart-row-info span { font-size: 11.5px; color: var(--muted); font-weight: 600; }
-    .qty-box { display: inline-flex; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 2px 6px; font-size: 12px; font-weight: 700; }
-    .qty-box button { width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; }
+    .qty-box { display: inline-flex; align-items: center; gap: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 3px 6px; font-size: 12px; font-weight: 700; }
+    .qty-box button { min-width: 28px; min-height: 28px; border-radius: 999px; display: grid; place-items: center; }
     .qty-box button:hover { background: var(--line); }
     .deliv-foot { padding: 14px 16px; border-top: 1px solid var(--line); background: var(--card); display: flex; flex-direction: column; gap: 8px; }
     .sum-line { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); }
@@ -706,9 +707,6 @@
       border-color: var(--lime);
     }
     :root[data-theme="dark"] #rateSummary { color: #fcd34d !important; }
-    :root[data-theme="dark"] #miniLocMap .maplibregl-canvas {
-      filter: invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(0.92);
-    }
     :root[data-theme="dark"] .shop-msg-btn:hover {
       background: var(--lime);
       color: #0e0e0c;
@@ -731,39 +729,39 @@
       <div class="right">
         <!-- Language Flag Switcher -->
         <div class="pop-wrap">
-          <button type="button" class="lang-btn" id="langBtn" aria-label="Change language" onclick="togglePop('langMenu')">
-            <svg viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="i-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#i-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+          <button type="button" class="lang-btn" id="langBtn" aria-label="Change language" aria-expanded="false" onclick="togglePop('langMenu', this)">
+            <svg aria-hidden="true" viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="i-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#i-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
           </button>
-          <div class="pop-menu" id="langMenu" role="menu">
-            <button type="button" class="on" data-lang="en" onclick="setLang('en')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="im-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#im-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg> English</button>
-            <button type="button" data-lang="fr" onclick="setLang('fr')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="im-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#im-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg> Français</button>
-            <button type="button" data-lang="mfe" onclick="setLang('mfe')"><svg viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="im-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#im-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg> Kreol Morisien</button>
+          <div class="pop-menu" id="langMenu">
+            <button type="button" class="on" data-lang="en" onclick="setLang('en')"><svg aria-hidden="true" viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="im-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#im-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg> English</button>
+            <button type="button" data-lang="fr" onclick="setLang('fr')"><svg aria-hidden="true" viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="im-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#im-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg> Français</button>
+            <button type="button" data-lang="mfe" onclick="setLang('mfe')"><svg aria-hidden="true" viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="im-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#im-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg> Kreol Morisien</button>
           </div>
         </div>
         <!-- Notifications Bell Icon -->
         <button class="icon-btn" aria-label="Notifications" onclick="openNotifications()">
           <span class="cnt-badge cnt-badge--coral" id="notifBadge">3</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
         </button>
         <!-- Messages Icon (Direct Customer ↔ Shop / Business Owner Inbox) -->
         <button class="icon-btn" aria-label="Messages" onclick="openMessages()"><span class="dot" id="msgUnreadDot"></span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
         </button>
         <!-- Cart & Delivery Icon -->
         <button class="icon-btn" aria-label="Cart and Delivery" onclick="openDeliveryDrawer()">
           <span class="cnt-badge" id="cartBadge">2</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         </button>
         <!-- Profile Icon with Account Dropdown -->
         <div class="pop-wrap">
-          <button type="button" class="profile-btn" aria-label="Account menu" onclick="togglePop('profileMenu')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          <button type="button" class="profile-btn" aria-label="Account menu" aria-expanded="false" onclick="togglePop('profileMenu', this)">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
           </button>
-          <div class="pop-menu" id="profileMenu" role="menu">
+          <div class="pop-menu" id="profileMenu">
             <a href="auth.html">My Profile</a>
-            <a href="#">Saved Items</a>
-            <a href="#">My Orders &amp; Cart</a>
-            <a href="#">My Resell Listings</a>
+            <button type="button" onclick="filterSavedProducts()">Saved Items</button>
+            <button type="button" onclick="document.getElementById('profileMenu').classList.remove('open'); openDeliveryDrawer();">My Orders &amp; Cart</button>
+            <a href="resell.html?view=escrow">My Resell Listings</a>
             <div class="pop-sep"></div>
             <a href="auth.html">Sign in / Switch Account</a>
           </div>
@@ -888,23 +886,26 @@
 
       <!-- Category Pills for Instant 1-Tap Switching -->
       <div class="shop-cat-tabs" id="shopCatTabs" role="tablist" aria-label="Filter businesses by category">
-        <button type="button" role="tab" class="shop-cat-pill on" data-cat="all" onclick="selectShopCategory('all', false)">All Featured <i>43</i></button>
-        <button type="button" role="tab" class="shop-cat-pill" data-cat="food" onclick="selectShopCategory('food', false)">Food &amp; Cafés <i>7</i></button>
-        <button type="button" role="tab" class="shop-cat-pill" data-cat="phones" onclick="selectShopCategory('phones', false)">Phones &amp; Tech <i>6</i></button>
-        <button type="button" role="tab" class="shop-cat-pill" data-cat="fashion" onclick="selectShopCategory('fashion', false)">Fashion <i>6</i></button>
-        <button type="button" role="tab" class="shop-cat-pill" data-cat="salons" onclick="selectShopCategory('salons', false)">Salons &amp; Spa <i>6</i></button>
-        <button type="button" role="tab" class="shop-cat-pill" data-cat="home" onclick="selectShopCategory('home', false)">Home &amp; Living <i>6</i></button>
-        <button type="button" role="tab" class="shop-cat-pill" data-cat="vehicles" onclick="selectShopCategory('vehicles', false)">Vehicles <i>6</i></button>
-        <button type="button" role="tab" class="shop-cat-pill" data-cat="kids" onclick="selectShopCategory('kids', false)">Kids &amp; Family <i>6</i></button>
+        <button type="button" role="tab" aria-selected="true" class="shop-cat-pill on" data-cat="all" onclick="selectShopCategory('all', false)">All Featured <i>43</i></button>
+        <button type="button" role="tab" aria-selected="false" class="shop-cat-pill" data-cat="food" onclick="selectShopCategory('food', false)">Food &amp; Cafés <i>7</i></button>
+        <button type="button" role="tab" aria-selected="false" class="shop-cat-pill" data-cat="phones" onclick="selectShopCategory('phones', false)">Phones &amp; Tech <i>6</i></button>
+        <button type="button" role="tab" aria-selected="false" class="shop-cat-pill" data-cat="fashion" onclick="selectShopCategory('fashion', false)">Fashion <i>6</i></button>
+        <button type="button" role="tab" aria-selected="false" class="shop-cat-pill" data-cat="salons" onclick="selectShopCategory('salons', false)">Salons &amp; Spa <i>6</i></button>
+        <button type="button" role="tab" aria-selected="false" class="shop-cat-pill" data-cat="home" onclick="selectShopCategory('home', false)">Home &amp; Living <i>6</i></button>
+        <button type="button" role="tab" aria-selected="false" class="shop-cat-pill" data-cat="vehicles" onclick="selectShopCategory('vehicles', false)">Vehicles <i>6</i></button>
+        <button type="button" role="tab" aria-selected="false" class="shop-cat-pill" data-cat="kids" onclick="selectShopCategory('kids', false)">Kids &amp; Family <i>6</i></button>
       </div>
 
       <div class="shops-grid" id="shopsDirectoryGrid"></div>
     </section>
 
     <!-- 5. PRODUCTS (With Ratings & 1-Tap Add to Delivery) -->
-    <section>
+    <section id="pickedProducts">
       <div class="row-head">
-        <h2 class="t-h2" data-text="products.title">Picked for you</h2>
+        <div>
+          <h2 class="t-h2" id="productsHeading" data-text="products.title">Picked for you</h2>
+          <p class="t-caption" id="savedFilterSub" style="display:none;color:var(--lime-ink);font-weight:600;margin-top:2px;">Showing your saved items · <button type="button" style="text-decoration:underline;font-weight:700;" onclick="clearSavedFilter()">Show all</button></p>
+        </div>
         <button type="button" class="more" onclick="openDeliveryDrawer()" data-text="products.more">Delivery options ↗</button>
       </div>
       <div class="grid">
@@ -1045,8 +1046,8 @@
     <div class="deliv-body">
       <!-- Opt for Delivery vs Store Pickup -->
       <div class="deliv-switch" role="tablist" aria-label="Fulfillment method">
-        <button type="button" id="optDelivBtn" class="on" onclick="setFulfillment('delivery')">Opt for Delivery</button>
-        <button type="button" id="optPickupBtn" onclick="setFulfillment('pickup')">Store Pickup (Free)</button>
+        <button type="button" role="tab" aria-selected="true" id="optDelivBtn" class="on" onclick="setFulfillment('delivery')">Opt for Delivery</button>
+        <button type="button" role="tab" aria-selected="false" id="optPickupBtn" onclick="setFulfillment('pickup')">Store Pickup (Free)</button>
       </div>
 
       <!-- Free Delivery Progress Bar -->
@@ -1285,9 +1286,10 @@
       </div>
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);">Popular from this shop</div>
       <div id="sfItems" style="display:flex;flex-direction:column;gap:8px;"></div>
-      <div style="display:flex;gap:8px;margin-top:4px;">
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
         <button type="button" class="btn btn-lime" style="flex:1;min-height:42px;font-size:13px;" id="sfMsgBtn">Message Shop</button>
-        <a href="map.html" class="btn btn-black" style="flex:0 0 auto;min-height:42px;padding:0 16px;font-size:13px;">Map ↗</a>
+        <a href="/s/chelseas" class="btn btn-black" style="flex:1;min-height:42px;padding:0 14px;font-size:13px;" id="sfPageLink">Shop Page ↗</a>
+        <a href="map.html" class="btn btn-black" style="flex:0 0 auto;min-height:42px;padding:0 14px;font-size:13px;" id="sfMapLink">Map ↗</a>
       </div>
     </div>
   </dialog>
@@ -1300,6 +1302,7 @@
     <a href="#" onclick="openDeliveryDrawer(); return false;"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><span data-text="tab.orders">Orders</span></a>
   </nav>
 
+  <script src="shops-data.js"></script>
   <script>
     // Intro persistence
     function hideIntro() {
@@ -1308,10 +1311,13 @@
     }
     try { if (localStorage.getItem("bazar-intro-closed")) document.getElementById("intro").classList.add("hidden"); } catch (e) {}
 
-    // Quick filter chips & save heart
+    // Quick filter chips & persisted saved items
     var activeShopCat = "all";
     var activeQuickFilter = "all";
     var showAllInAllMode = false;
+    var savedOnlyMode = false;
+    var savedProducts = {};
+    try { savedProducts = JSON.parse(localStorage.getItem("bazar-saved") || "{}") || {}; } catch (e) {}
 
     function setChip(btn) {
       btn.parentNode.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("on"); });
@@ -1322,78 +1328,48 @@
       activeQuickFilter = f;
       renderShopsDirectory();
     }
-    function toggleSave(btn) { btn.classList.toggle("saved"); }
+    function syncSavedHearts() {
+      document.querySelectorAll("#pickedProducts .prod").forEach(function (card) {
+        var nm = card.querySelector(".name");
+        var btn = card.querySelector(".save");
+        if (!nm || !btn) return;
+        var key = nm.textContent.trim();
+        var isSaved = !!savedProducts[key];
+        btn.classList.toggle("saved", isSaved);
+        btn.setAttribute("aria-pressed", String(isSaved));
+        card.style.display = (!savedOnlyMode || isSaved) ? "" : "none";
+      });
+      var sub = document.getElementById("savedFilterSub");
+      if (sub) sub.style.display = savedOnlyMode ? "block" : "none";
+    }
+    function toggleSave(btn) {
+      var card = btn.closest(".prod");
+      var nm = card && card.querySelector(".name");
+      var key = nm ? nm.textContent.trim() : "";
+      var next = !btn.classList.contains("saved");
+      btn.classList.toggle("saved", next);
+      btn.setAttribute("aria-pressed", String(next));
+      if (key) {
+        if (next) savedProducts[key] = 1;
+        else delete savedProducts[key];
+        try { localStorage.setItem("bazar-saved", JSON.stringify(savedProducts)); } catch (e) {}
+      }
+      if (savedOnlyMode) syncSavedHearts();
+    }
+    function filterSavedProducts() {
+      document.querySelectorAll(".pop-menu").forEach(function (m) { m.classList.remove("open"); });
+      savedOnlyMode = true;
+      syncSavedHearts();
+      var sec = document.getElementById("pickedProducts");
+      if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    function clearSavedFilter() {
+      savedOnlyMode = false;
+      syncSavedHearts();
+    }
 
-    /* ───── 43 REAL MAURITIAN SHOPS ACROSS ALL 7 CATEGORIES (6–7 Shops Each, Unique Verified Photos) ───── */
-    var SHOP_CAT_LABELS = {
-      all: "Businesses near you",
-      food: "Food, Bakeries & Cafés",
-      phones: "Phones, Laptops & Tech",
-      fashion: "Fashion & Island Boutiques",
-      salons: "Salons, Barbers & Wellness Spas",
-      home: "Home, Furniture & Living",
-      vehicles: "Vehicles & Island Car Rentals",
-      kids: "Kids, Baby & Toy Boutiques"
-    };
-
-    var ALL_SHOPS = [
-      // 1. FOOD & CAFÉS (7 shops)
-      { id: "chelseas", cat: "food", featured: true, name: "Chelsea's Cup N Cake", meta: "Artisan Patisserie · Curepipe", badge: "Delivers today", dist: 1.1, rating: "5.0", revs: 186, img: "photos/shop-chelseas.jpg", items: [["Signature Chocolate Fudge Cake", 950], ["Red Velvet Cupcakes (Box of 6)", 480]] },
-      { id: "dodo", cat: "food", featured: true, name: "Dodo Café Boutique", meta: "Specialty Roastery · Pereybere", badge: "Local Roastery", dist: 0.8, rating: "4.9", revs: 218, img: "photos/shop-dodo-cafe.jpg", items: [["Single-Origin Roasted Beans 250g", 420], ["Iced Vanilla Oat Latte", 190]] },
-      { id: "fournil", cat: "food", featured: true, name: "Le Fournil Bakery", meta: "French Bakery · Grand Baie", badge: "Fresh daily", dist: 1.4, rating: "4.8", revs: 164, img: "photos/shop-le-fournil.jpg", items: [["Artisan Butter Croissants (4)", 280], ["Warm Baguette Tradition", 65]] },
-      { id: "laflore", cat: "food", featured: false, name: "La Flore Boodhoo", meta: "Mauritian Café & Snacks · Port Louis", badge: "Delivers today", dist: 0.6, rating: "5.0", revs: 245, img: "photos/shop-food-1.jpg", items: [["Mauritian Samoussas (Box of 12)", 180], ["Gato Pima & Chai Box", 150]] },
-      { id: "levain", cat: "food", featured: false, name: "Artisan Levain Moka", meta: "Sourdough & Brioche · Moka", badge: "Wood-fired", dist: 2.3, rating: "4.9", revs: 98, img: "photos/shop-food-2.jpg", items: [["Country Seeded Sourdough Loaf", 240], ["Cinnamon Brioche Knot", 135]] },
-      { id: "atelierbistro", cat: "food", featured: false, name: "L'Atelier Bistro Caudan", meta: "Brasserie & Lunch · Port Louis", badge: "Open now", dist: 0.7, rating: "4.8", revs: 132, img: "photos/shop-food-3.jpg", items: [["Grilled Catch of the Day Platter", 690], ["Palm Heart Salad Bowl", 380]] },
-      { id: "barachois", cat: "food", featured: false, name: "Terrasse du Barachois", meta: "Coastal Café & Brunch · Tamarin", badge: "Delivers today", dist: 3.8, rating: "4.9", revs: 154, img: "photos/shop-food-4.jpg", items: [["Tropical Passionfruit Cheesecake", 320], ["Cold-Pressed Pineapple Mint", 160]] },
-
-      // 2. PHONES & TECH (6 shops)
-      { id: "sjtech", cat: "phones", featured: true, name: "St Jean Tech Hub", meta: "Smartphones & Repairs · Quatre Bornes", badge: "1-Yr Warranty", dist: 1.6, rating: "4.9", revs: 174, img: "photos/shop-tech-hub.jpg", items: [["iPhone 13 Pro 256GB Certified", 24500], ["20W Fast USB-C Power Adapter", 890]] },
-      { id: "istorebag", cat: "phones", featured: false, name: "iStore Concept Bagatelle", meta: "Apple & Audio Gear · Moka", badge: "Delivers today", dist: 2.1, rating: "4.9", revs: 210, img: "photos/shop-phones-3.jpg", items: [["AirPods Pro (USB-C) Sealed", 11900], ["MagSafe Clear Case", 1450]] },
-      { id: "ebenemac", cat: "phones", featured: false, name: "Ebene Cyber Mac", meta: "Laptops & Workstations · Ebene", badge: "Pro Partner", dist: 2.4, rating: "5.0", revs: 89, img: "photos/shop-phones-2.jpg", items: [["MacBook Air M2 16GB / 512GB", 56500], ["Aluminium Laptop Stand", 1650]] },
-      { id: "plmobile", cat: "phones", featured: false, name: "Port Louis Mobile Lab", meta: "Unlocked Phones · Port Louis", badge: "Delivers today", dist: 0.9, rating: "4.8", revs: 143, img: "photos/shop-phones-1.jpg", items: [["Samsung Galaxy S23 256GB", 27900], ["Tempered Privacy Glass", 450]] },
-      { id: "gbgadget", cat: "phones", featured: false, name: "Grand Baie Gadget Co.", meta: "Smart Tech & Creators · Grand Baie", badge: "Open now", dist: 3.2, rating: "4.8", revs: 77, img: "photos/shop-phones-4.jpg", items: [["Portable SSD 1TB Rugged", 4800], ["Wireless Travel Powerbank", 1850]] },
-      { id: "rhphone", cat: "phones", featured: false, name: "Rose Hill Phone Care", meta: "Certified Pre-Owned · Rose Hill", badge: "Escrow Ready", dist: 1.9, rating: "4.7", revs: 116, img: "photos/shop-phones-5.jpg", items: [["iPhone 12 128GB Mint", 16900], ["Braided Lightning Cable", 390]] },
-
-      // 3. FASHION & BOUTIQUES (6 shops)
-      { id: "goyco", cat: "fashion", featured: true, name: "Goyco Boutique", meta: "Island Fashion & Jewellery · Pereybere", badge: "Delivers today", dist: 1.2, rating: "4.9", revs: 158, img: "photos/shop-goyco.jpg", items: [["Island Gold Drop Earrings", 650], ["Linen Wrap Resort Dress", 1850]] },
-      { id: "tropique", cat: "fashion", featured: false, name: "Maison Tropique", meta: "Linen & Resort Wear · Grand Baie", badge: "Made in MU", dist: 2.8, rating: "4.9", revs: 129, img: "photos/shop-fashion-1.jpg", items: [["Pure Linen Breeze Shirt", 1650], ["Tailored Chino Shorts", 1290]] },
-      { id: "filcoton", cat: "fashion", featured: false, name: "Atelier Fil & Coton", meta: "Womenswear Boutique · Curepipe", badge: "Delivers today", dist: 1.7, rating: "4.8", revs: 94, img: "photos/shop-fashion-2.jpg", items: [["Printed Midi Sundress", 1490], ["Handwoven Raffia Belt", 580]] },
-      { id: "rueroyale", cat: "fashion", featured: false, name: "Rue Royale Studio", meta: "Contemporary Apparel · Port Louis", badge: "New Drop", dist: 0.6, rating: "4.8", revs: 112, img: "photos/shop-fashion-3.jpg", items: [["Structured Cotton Overshirt", 1750], ["Everyday Canvas Tote", 790]] },
-      { id: "sablesoie", cat: "fashion", featured: false, name: "Sable & Soie", meta: "Knitwear & Minimalist · Flic en Flac", badge: "Made in MU", dist: 3.6, rating: "4.9", revs: 83, img: "photos/shop-fashion-4.jpg", items: [["Soft Cotton Ribbed Cardigan", 1590], ["Silk Hair Scarf", 490]] },
-      { id: "phoenixloft", cat: "fashion", featured: false, name: "Phoenix Menswear Loft", meta: "Shirts & Smart Basics · Phoenix", badge: "Delivers today", dist: 2.2, rating: "4.7", revs: 71, img: "photos/shop-fashion-5.jpg", items: [["Pima Cotton Crew Tee (3-Pack)", 1350], ["Oxford Button-Down Shirt", 1450]] },
-
-      // 4. SALONS & SPA (6 shops)
-      { id: "lagon", cat: "salons", featured: true, name: "Lagon Beauty & Hair", meta: "Hair Styling & Nails · Grand Baie", badge: "Slots today", dist: 1.5, rating: "4.9", revs: 192, img: "photos/shop-salons-6.jpg", bookable: true, items: [["Hair Styling & Blowout", 650], ["Gel Manicure & Nail Art", 900]] },
-      { id: "ateliercut", cat: "salons", featured: false, name: "Atelier Cut Studio", meta: "Barber & Grooming · Port Louis", badge: "Slots today", dist: 0.7, rating: "4.8", revs: 168, img: "photos/shop-salons-3.jpg", bookable: true, items: [["Skin Fade & Beard Sculpt", 350], ["Hot Towel Shave Ritual", 450]] },
-      { id: "zenspa", cat: "salons", featured: false, name: "Zen Wellness Spa", meta: "Massage & Facials · Curepipe", badge: "Top Rated", dist: 1.8, rating: "5.0", revs: 224, img: "photos/shop-salons-4.jpg", bookable: true, items: [["60-Min Aromatherapy Massage", 1400], ["Hydra-Glow Botanical Facial", 1650]] },
-      { id: "studiomiroir", cat: "salons", featured: false, name: "Studio Miroir Moka", meta: "Colour & Balayage · Moka", badge: "Slots today", dist: 2.1, rating: "4.9", revs: 109, img: "photos/shop-salons-1.jpg", bookable: true, items: [["Gloss & Cut Package", 1200], ["Botanical Hair Spa Mask", 750]] },
-      { id: "rosevelours", cat: "salons", featured: false, name: "Rose & Velours Salon", meta: "Bridal & Beauty Bar · Quatre Bornes", badge: "Verified", dist: 1.6, rating: "4.8", revs: 87, img: "photos/shop-salons-2.jpg", bookable: true, items: [["Silk Press & Styling", 850], ["Brow Lamination & Tint", 600]] },
-      { id: "bellemarehair", cat: "salons", featured: false, name: "Belle Mare Hair Care", meta: "Keratin & Treatments · Flacq", badge: "Slots today", dist: 4.1, rating: "4.9", revs: 95, img: "photos/shop-salons-5.jpg", bookable: true, items: [["Keratin Smoothing Ritual", 2200], ["Scalp Detox & Blowdry", 780]] },
-
-      // 5. HOME & LIVING (6 shops)
-      { id: "bookcourt", cat: "home", featured: true, name: "Bookcourt Caudan", meta: "Books, Stationery & Gifts · Port Louis", badge: "Caudan · Open", dist: 0.5, rating: "4.9", revs: 142, img: "photos/shop-bookcourt.jpg", items: [["Mauritius Coffee-Table Atlas", 1350], ["Linen Hardcover Journal", 480]] },
-      { id: "vaneron", cat: "home", featured: false, name: "Vaneron Garden & Living", meta: "Indoor Plants & Ceramics · Moka", badge: "Delivers today", dist: 1.9, rating: "4.9", revs: 136, img: "photos/shop-home-5.jpg", items: [["Potted Tropical Succulent", 390], ["Matte Ceramic Planter", 550]] },
-      { id: "maisonteck", cat: "home", featured: false, name: "Maison Teck & Rotin", meta: "Crafted Sofas & Wood · Curepipe", badge: "Made in MU", dist: 2.3, rating: "4.9", revs: 88, img: "photos/shop-home-1.jpg", items: [["Velvet Accent Cushion Pair", 1150], ["Solid Teak Side Table", 4900]] },
-      { id: "nordik", cat: "home", featured: false, name: "Nordik Studio Bagatelle", meta: "Modern Lounge & Lighting · Moka", badge: "Delivers today", dist: 2.0, rating: "4.8", revs: 104, img: "photos/shop-home-2.jpg", items: [["Minimalist Brass Floor Lamp", 3450], ["Framed Abstract Wall Print", 1600]] },
-      { id: "villaveranda", cat: "home", featured: false, name: "Villa Véranda Interiors", meta: "Coastal Living & Rugs · Grand Baie", badge: "Showroom", dist: 3.4, rating: "5.0", revs: 79, img: "photos/shop-home-3.jpg", items: [["Handwoven Jute Area Rug", 3900], ["Scented Vanilla Cane Candle", 590]] },
-      { id: "qbhomeloft", cat: "home", featured: false, name: "Quatre Bornes Home Loft", meta: "Storage & Décor · Quatre Bornes", badge: "Delivers today", dist: 1.5, rating: "4.8", revs: 67, img: "photos/shop-home-4.jpg", items: [["Woven Seagrass Basket Set", 980], ["Matte Desk Reading Lamp", 1250]] },
-
-      // 6. VEHICLES & RENTALS (6 shops)
-      { id: "lagonauto", cat: "vehicles", featured: true, name: "Lagon Auto Rentals", meta: "Coastal Hatchbacks · Grand Baie", badge: "Instant Book", dist: 1.8, rating: "4.9", revs: 162, img: "photos/cat-car-rental.jpg", items: [["Compact Automatic (Per Day)", 1450], ["Airport Delivery Add-On", 600]] },
-      { id: "plcitycars", cat: "vehicles", featured: false, name: "Port Louis City Cars", meta: "Compact & Hybrid Fleet · Port Louis", badge: "No Deposit", dist: 0.9, rating: "4.8", revs: 118, img: "photos/shop-vehicles-1.jpg", items: [["City Hatchback Rental (Day)", 1250], ["3-Day Island Explorer Pass", 3400]] },
-      { id: "mokaprestige", cat: "vehicles", featured: false, name: "Moka Prestige Motors", meta: "Certified Pre-Owned · Moka", badge: "Escrow Ready", dist: 2.2, rating: "4.9", revs: 91, img: "photos/shop-vehicles-2.jpg", items: [["Full Vehicle Inspection & Diag", 1800], ["Weekend Sport Coupe Hire", 4500]] },
-      { id: "island4x4", cat: "vehicles", featured: false, name: "Island 4x4 & SUV Hire", meta: "7-Seater & Family SUVs · Tamarin", badge: "Free Child Seat", dist: 3.5, rating: "4.9", revs: 134, img: "photos/shop-vehicles-3.jpg", items: [["7-Seater Family SUV (Per Day)", 2600], ["Roof Rack & Cooler Kit", 450]] },
-      { id: "plaisancedrive", cat: "vehicles", featured: false, name: "Plaisance Executive Drive", meta: "SSR Airport Transfers · Mahébourg", badge: "24/7 Pickup", dist: 4.2, rating: "4.8", revs: 205, img: "photos/shop-vehicles-4.jpg", items: [["Private SSR Airport Transfer", 1600], ["Executive Sedan Full Day", 3200]] },
-      { id: "phoenixauto", cat: "vehicles", featured: false, name: "Phoenix Performance Auto", meta: "Detailing & Dealership · Phoenix", badge: "Verified Dealer", dist: 2.5, rating: "4.9", revs: 84, img: "photos/shop-vehicles-5.jpg", items: [["Ceramic Coat & Interior Detail", 2900], ["Pre-Purchase Mechanical Check", 1200]] },
-
-      // 7. KIDS & FAMILY (6 shops)
-      { id: "petitdodo", cat: "kids", featured: true, name: "Petit Dodo Kids", meta: "Baby & Toddler Boutique · Bagatelle", badge: "Delivers today", dist: 1.7, rating: "4.9", revs: 149, img: "photos/shop-kids-1.jpg", items: [["Plush Safari Montessori Set", 890], ["Illustrated Kreol & EN Picture Book", 380]] },
-      { id: "boisjeux", cat: "kids", featured: false, name: "Atelier Bois & Jeux", meta: "Wooden Educational Toys · Curepipe", badge: "Eco Safe", dist: 2.0, rating: "5.0", revs: 112, img: "photos/shop-kids-2.jpg", items: [["Wooden Train & Station Set", 1450], ["Rainbow Stacking Blocks", 690]] },
-      { id: "playbox", cat: "kids", featured: false, name: "PlayBox Caudan", meta: "Figures, Puzzles & Games · Port Louis", badge: "Delivers today", dist: 0.6, rating: "4.8", revs: 127, img: "photos/shop-kids-3.jpg", items: [["Collector Adventure Figures Pack", 1150], ["Family Board Game Classic", 950]] },
-      { id: "cocondoux", cat: "kids", featured: false, name: "Cocon Doux Layette", meta: "Organic Cotton Babywear · Quatre Bornes", badge: "Made in MU", dist: 1.5, rating: "4.9", revs: 93, img: "photos/shop-kids-4.jpg", items: [["Cozy Knit Bear Romper", 980], ["Organic Muslin Swaddle (2-Pack)", 720]] },
-      { id: "lagonkids", cat: "kids", featured: false, name: "Lagon Kids Swim & Sun", meta: "UV Swimwear & Pool Floats · Grand Baie", badge: "Beach Ready", dist: 3.1, rating: "4.8", revs: 76, img: "photos/shop-kids-5.jpg", items: [["UPF 50+ Kids Swim Set & Ring", 850], ["Polarized Kids Sunnies", 420]] },
-      { id: "explorateurs", cat: "kids", featured: false, name: "Les Petits Explorateurs", meta: "Kids Fashion & School Gear · Rose Hill", badge: "Delivers today", dist: 1.8, rating: "4.9", revs: 108, img: "photos/cat-kids.jpg", items: [["Cotton Everyday Play Outfit", 790], ["Junior ergonomic Backpack", 1100]] }
-    ];
+    var SHOP_CAT_LABELS = window.BAZAR_SHOP_CAT_LABELS || { all: "Businesses near you" };
+    var ALL_SHOPS = window.BAZAR_SHOPS || [];
 
     function selectShopCategory(cat, scrollIntoViewNow) {
       activeShopCat = cat;
@@ -1514,6 +1490,10 @@
         document.getElementById("shopViewDialog").close();
         openMessages(s.name, s.img, s.meta);
       };
+      var mapLink = document.getElementById("sfMapLink");
+      if (mapLink) mapLink.href = "map.html?shop=" + encodeURIComponent(s.id);
+      var pageLink = document.getElementById("sfPageLink");
+      if (pageLink) pageLink.href = "/s/" + encodeURIComponent(s.id);
       var itemsWrap = document.getElementById("sfItems");
       itemsWrap.innerHTML = "";
       (s.items || []).forEach(function (it) {
@@ -1557,13 +1537,19 @@
       "flic en flac": [-20.2742, 57.3631, "Flic en Flac, Mauritius"]
     };
 
+    function miniMapStyleUrl() {
+      return document.documentElement.getAttribute("data-theme") === "dark"
+        ? "https://tiles.openfreemap.org/styles/dark"
+        : "https://tiles.openfreemap.org/styles/positron";
+    }
+
     function openLoc() {
       document.getElementById("locDialog").showModal();
       setTimeout(function () {
         if (!miniMap && typeof maplibregl !== "undefined") {
           miniMap = new maplibregl.Map({
             container: "miniLocMap",
-            style: "https://tiles.openfreemap.org/styles/positron",
+            style: miniMapStyleUrl(),
             center: pendingLngLat, zoom: 12.5, minZoom: 8,
             maxBounds: [[56.9, -20.75], [58.1, -19.6]],
             attributionControl: { compact: true }
@@ -1588,6 +1574,9 @@
         }
       }, 60);
     }
+    window.addEventListener("bazar-theme-change", function () {
+      if (miniMap) miniMap.setStyle(miniMapStyleUrl());
+    });
 
     function pickCity(btn, city, lat, lng) {
       document.querySelectorAll("#cityGrid .loc-chip").forEach(function (b) { b.classList.remove("on"); });
@@ -1652,11 +1641,19 @@
       if (b) b.style.display = "none";
     }
 
-    // Side Option to Opt for Delivery + Cart Logic
-    var cart = [
+    // Side Option to Opt for Delivery + Persisted Cart Logic
+    var DEFAULT_CART = [
       { title: "Signature chocolate fudge cake", price: 950, qty: 1, img: "photos/prod-cake.jpg" },
       { title: "Single-origin roasted beans", price: 420, qty: 1, img: "photos/prod-coffee.jpg" }
     ];
+    var cart = DEFAULT_CART.slice();
+    try {
+      var storedCart = JSON.parse(localStorage.getItem("bazar-cart") || "null");
+      if (Array.isArray(storedCart)) cart = storedCart;
+    } catch (e) {}
+    function saveCart() {
+      try { localStorage.setItem("bazar-cart", JSON.stringify(cart)); } catch (e) {}
+    }
     var fulfillment = "delivery";
     var delivFee = 95;
     var delivTierName = "Grabbit Express";
@@ -1704,6 +1701,7 @@
     function stepQty(idx, d) {
       cart[idx].qty += d;
       if (cart[idx].qty <= 0) cart.splice(idx, 1);
+      saveCart();
       renderCart();
     }
 
@@ -1711,6 +1709,7 @@
       var existing = cart.find(function (x) { return x.title === title; });
       if (existing) existing.qty += 1;
       else cart.push({ title: title, price: price, qty: 1, img: img });
+      saveCart();
       renderCart();
       var badge = document.getElementById("cartBadge");
       if (badge) { badge.classList.remove("pop-anim"); void badge.offsetWidth; badge.classList.add("pop-anim"); }
@@ -1726,7 +1725,9 @@
       fulfillment = mode;
       var isDeliv = mode === "delivery";
       document.getElementById("optDelivBtn").classList.toggle("on", isDeliv);
+      document.getElementById("optDelivBtn").setAttribute("aria-selected", String(isDeliv));
       document.getElementById("optPickupBtn").classList.toggle("on", !isDeliv);
+      document.getElementById("optPickupBtn").setAttribute("aria-selected", String(!isDeliv));
       document.getElementById("delivTiersWrap").style.display = isDeliv ? "block" : "none";
       document.getElementById("freeDelivBox").style.display = isDeliv ? "block" : "none";
       document.getElementById("sideDelivTitle").textContent = isDeliv ? "Delivery · On" : "Pickup · On";
@@ -2012,15 +2013,24 @@
     }
 
     // Dropdown menus (Profile Account & Language Flag Switcher)
-    function togglePop(id) {
+    function togglePop(id, triggerBtn) {
       document.querySelectorAll(".pop-menu").forEach(function (m) {
-        if (m.id !== id) m.classList.remove("open");
+        if (m.id !== id) {
+          m.classList.remove("open");
+          var otherBtn = m.parentElement && m.parentElement.querySelector("button[aria-expanded]");
+          if (otherBtn) otherBtn.setAttribute("aria-expanded", "false");
+        }
       });
-      document.getElementById(id).classList.toggle("open");
+      var open = document.getElementById(id).classList.toggle("open");
+      if (triggerBtn) triggerBtn.setAttribute("aria-expanded", String(open));
     }
     document.addEventListener("click", function (e) {
       if (!e.target.closest(".pop-wrap")) {
-        document.querySelectorAll(".pop-menu").forEach(function (m) { m.classList.remove("open"); });
+        document.querySelectorAll(".pop-menu").forEach(function (m) {
+          m.classList.remove("open");
+          var b = m.parentElement && m.parentElement.querySelector("button[aria-expanded]");
+          if (b) b.setAttribute("aria-expanded", "false");
+        });
       }
     });
     var flags = {
@@ -2062,18 +2072,21 @@
       box.classList.add("show");
     }
 
-    // Fallback for browsers without <dialog closedby="any"> support (e.g. Safari)
-    if (!("closedBy" in HTMLDialogElement.prototype)) {
-      document.querySelectorAll("dialog[closedby='any']").forEach(function (dialog) {
-        dialog.addEventListener("click", function (event) {
-          if (event.target !== dialog) return;
-          var rect = dialog.getBoundingClientRect();
-          var inside = rect.top <= event.clientY && event.clientY <= rect.top + rect.height &&
-                       rect.left <= event.clientX && event.clientX <= rect.left + rect.width;
-          if (!inside) dialog.close();
-        });
-      });
-    }
+    syncSavedHearts();
+
+    // Support cross-screen deep links (?drawer=orders|messages|notifications, ?filter=saved, ?cat=...)
+    (function handleHomeQueryParams() {
+      try {
+        var qp = new URLSearchParams(window.location.search);
+        var cat = qp.get("cat");
+        if (cat && SHOP_CAT_LABELS[cat]) selectShopCategory(cat, true);
+        if (qp.get("filter") === "saved") filterSavedProducts();
+        var drawer = qp.get("drawer");
+        if (drawer === "orders") setTimeout(openDeliveryDrawer, 80);
+        else if (drawer === "messages") setTimeout(function () { openMessages(qp.get("shop") || ""); }, 80);
+        else if (drawer === "notifications") setTimeout(openNotifications, 80);
+      } catch (e) {}
+    })();
   </script>
   <script src="i18n.js"></script>
   <script src="edit-text.js"></script>

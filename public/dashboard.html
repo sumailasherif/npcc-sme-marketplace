@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="text-scale" content="scale">
   <meta name="color-scheme" content="light dark">
   <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#f4f0e6">
@@ -35,6 +36,28 @@
     .profile-meta { display: none; text-align: left; line-height: 1.2; }
     .profile-meta b { display: block; font-size: 12px; font-weight: 700; }
     .profile-meta span { font-size: 11px; color: var(--muted); }
+    .pop-wrap { position: relative; }
+    .lang-btn {
+      width: 36px; height: 36px; border-radius: 999px;
+      background: var(--lime); border: 2px solid var(--black);
+      display: grid; place-items: center; padding: 0;
+    }
+    .lang-btn svg { width: 22px; height: 22px; border-radius: 999px; display: block; }
+    .pop-menu {
+      position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+      min-width: 204px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 6px; box-shadow: 0 14px 32px rgba(14, 14, 12, 0.18);
+      display: none; flex-direction: column; gap: 2px;
+    }
+    .pop-menu.open { display: flex; }
+    .pop-menu a, .pop-menu button {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--black); text-align: left; width: 100%;
+    }
+    .pop-menu a:hover, .pop-menu button:hover { background: var(--cream); }
+    .pop-menu button.on { background: var(--black); color: var(--lime); }
+    .pop-menu svg { width: 18px; height: 18px; flex: none; }
+    .pop-sep { height: 1px; background: var(--line); margin: 4px 6px; }
 
     /* Page Title Header */
     .dash-head {
@@ -70,7 +93,7 @@
       width: 30px; height: 30px; border-radius: 999px; border: 1px solid var(--line);
       background: var(--cream); color: var(--black); display: grid; place-items: center; flex: none;
     }
-    .kpi-num { font-size: clamp(26px, 3vw, 36px); font-weight: 700; letter-spacing: -0.04em; line-height: 1.05; margin: 10px 0 8px; }
+    .kpi-num { font-size: clamp(1.625rem, 1.2rem + 1.8vw, 2.25rem); font-weight: 700; letter-spacing: -0.04em; line-height: 1.05; margin: 10px 0 8px; }
     .kpi-foot { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
     .trend-chip {
       display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px; border-radius: 6px;
@@ -356,22 +379,41 @@
       </nav>
 
       <label class="bar-search">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="search" placeholder="Search orders, invoices..." aria-label="Search dashboard">
-        <kbd>⌘F</kbd>
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="dashSearchInput" oninput="filterDashboard(this.value)" placeholder="Search orders, invoices..." aria-label="Search dashboard">
+        <kbd>Ctrl K</kbd>
       </label>
 
       <div class="right">
+        <!-- Language Flag Switcher -->
+        <div class="pop-wrap">
+          <button type="button" class="lang-btn" id="langBtn" aria-label="Change language" aria-expanded="false" onclick="togglePop('langMenu', this)">
+            <svg aria-hidden="true" viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="d-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#d-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+          </button>
+          <div class="pop-menu" id="langMenu">
+            <button type="button" class="on" data-lang="en" onclick="setLang('en')"><svg aria-hidden="true" viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="dm-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#dm-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg> English</button>
+            <button type="button" data-lang="fr" onclick="setLang('fr')"><svg aria-hidden="true" viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="dm-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#dm-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg> Français</button>
+            <button type="button" data-lang="mfe" onclick="setLang('mfe')"><svg aria-hidden="true" viewBox="0 0 60 60" style="border-radius:999px"><clipPath id="dm-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#dm-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg> Kreol Morisien</button>
+          </div>
+        </div>
         <button class="icon-btn" aria-label="Bazar Assist Business AI" onclick="openBizAI()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></svg>
         </button>
-        <button class="icon-btn" aria-label="Notifications"><span class="dot"></span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <button class="icon-btn" aria-label="Notifications" onclick="openDashNotifs()"><span class="dot" id="dashNotifDot"></span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
         </button>
-        <button type="button" class="profile-chip" id="profileChip" aria-label="Merchant profile — sign out" onclick="signOut()">
-          <span class="profile-av" id="profileAv">CC</span>
-          <span class="profile-meta"><b id="profileName">Chelsea's Cake</b><span id="profilePlace">Curepipe · Verified</span></span>
-        </button>
+        <div class="pop-wrap">
+          <button type="button" class="profile-chip" id="profileChip" aria-label="Merchant account menu" aria-expanded="false" onclick="togglePop('merchantMenu', this)">
+            <span class="profile-av" id="profileAv">CC</span>
+            <span class="profile-meta"><b id="profileName">Chelsea's Cake</b><span id="profilePlace">Curepipe · Verified</span></span>
+          </button>
+          <div class="pop-menu" id="merchantMenu">
+            <a href="/s/chelseas" id="viewPublicShopLink">View Public Shop ↗</a>
+            <a href="index.html">Switch to Buyer View</a>
+            <div class="pop-sep"></div>
+            <button type="button" style="color:#b83232;" onclick="signOut()">Sign out</button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -806,6 +848,8 @@
       document.getElementById("profileName").textContent = s.name;
       document.getElementById("profilePlace").textContent = place + " · " + (STATUS_NAMES[s.verification_status] || "");
       document.getElementById("profileAv").textContent = s.name.split(/\s+/).map(function (w) { return w.charAt(0); }).join("").slice(0, 2).toUpperCase();
+      var pubLink = document.getElementById("viewPublicShopLink");
+      if (pubLink && s.slug) pubLink.href = "/s/" + encodeURIComponent(s.slug);
     }).catch(demoNotice);
     function demoNotice() {
       var n = document.createElement("div");
@@ -1145,17 +1189,78 @@
       inp.value = "";
     }
 
-    if (!("closedBy" in HTMLDialogElement.prototype)) {
-      document.querySelectorAll("dialog[closedby='any']").forEach(function (d) {
-        d.addEventListener("click", function (ev) {
-          if (ev.target !== d) return;
-          var r = d.getBoundingClientRect();
-          if (!(r.top <= ev.clientY && ev.clientY <= r.top + r.height && r.left <= ev.clientX && ev.clientX <= r.left + r.width)) d.close();
-        });
+    /* ═════════ Live Dashboard Search, Notifications & Language Menu ═════════ */
+    function filterDashboard(query) {
+      var q = (query || "").trim().toLowerCase();
+      document.querySelectorAll(".order-row, .inv-row").forEach(function (row) {
+        var match = !q || row.textContent.toLowerCase().indexOf(q) > -1;
+        row.style.display = match ? "" : "none";
       });
     }
+    document.addEventListener("keydown", function (e) {
+      if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+        var s = document.getElementById("dashSearchInput");
+        if (s && s.offsetParent !== null) { e.preventDefault(); s.focus(); }
+      }
+    });
+
+    function openDashNotifs() {
+      var dlg = document.getElementById("dashNotifDialog");
+      if (!dlg) {
+        dlg = document.createElement("dialog");
+        dlg.id = "dashNotifDialog";
+        dlg.setAttribute("closedby", "any");
+        dlg.innerHTML =
+          '<div class="dlg-head"><b>Merchant Alerts</b><button type="button" aria-label="Close" onclick="document.getElementById(\'dashNotifDialog\').close()">✕</button></div>' +
+          '<div class="dlg-body">' +
+            '<div class="scan-found"><b>New Enquiry · Sarah M.</b><br>Asked about custom birthday cake for Friday — AI reply draft ready.</div>' +
+            '<div class="scan-found warn"><b>2 Overdue Invoices (Rs 6,800)</b><br>Hotel Le Palm (#BZ-1042) &amp; Café Nord (#BZ-1045) are ready for follow-up.</div>' +
+            '<div class="dlg-actions"><button type="button" class="pill-btn pill-btn--primary" onclick="document.getElementById(\'dashNotifDialog\').close(); openBizAI(\'Overdue invoices\');">Draft Reminders in AI</button></div>' +
+          '</div>';
+        document.body.appendChild(dlg);
+      }
+      var dot = document.getElementById("dashNotifDot");
+      if (dot) dot.style.display = "none";
+      dlg.showModal();
+    }
+
+    function togglePop(id, triggerBtn) {
+      document.querySelectorAll(".pop-menu").forEach(function (m) {
+        if (m.id !== id) {
+          m.classList.remove("open");
+          var b = m.parentElement && m.parentElement.querySelector("button[aria-expanded]");
+          if (b) b.setAttribute("aria-expanded", "false");
+        }
+      });
+      var open = document.getElementById(id).classList.toggle("open");
+      if (triggerBtn) triggerBtn.setAttribute("aria-expanded", String(open));
+    }
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".pop-wrap")) {
+        document.querySelectorAll(".pop-menu").forEach(function (m) {
+          m.classList.remove("open");
+          var b = m.parentElement && m.parentElement.querySelector("button[aria-expanded]");
+          if (b) b.setAttribute("aria-expanded", "false");
+        });
+      }
+    });
+    var flags = {
+      en: '<clipPath id="d-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#d-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g>',
+      fr: '<clipPath id="d-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#d-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g>',
+      mfe: '<clipPath id="d-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#d-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g>'
+    };
+    function setLang(code) {
+      if (!flags[code]) return;
+      document.getElementById("langFlagSvg").innerHTML = flags[code];
+      document.querySelectorAll("#langMenu button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-lang") === code); });
+      document.getElementById("langMenu").classList.remove("open");
+      document.getElementById("langBtn").setAttribute("aria-expanded", "false");
+      try { localStorage.setItem("bazar-lang", code); } catch (e) {}
+    }
+    try { var sl = localStorage.getItem("bazar-lang"); if (sl && flags[sl]) setLang(sl); } catch (e) {}
   </script>
   <script src="doc-tools.js"></script>
+  <script src="i18n.js"></script>
   <script src="edit-text.js"></script>
 </body>
 </html>

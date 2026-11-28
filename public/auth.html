@@ -3,32 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="text-scale" content="scale">
   <meta name="color-scheme" content="light dark">
   <script>try{var _t=localStorage.getItem("bazar-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);document.querySelector('meta[name="color-scheme"]').content=_t;}}catch(e){}</script>
   <meta name="theme-color" content="#f4f0e6">
   <title>Bazar — Sign in or Sign up</title>
   <link rel="stylesheet" href="brand.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            limebz: '#d4f53c',
-            ink: '#0e0e0c',
-            ink2: '#1c1c19',
-            cream: '#f4f0e6',
-            card: '#fbf8f1',
-            muted: '#8d8779'
-          },
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
-        }
-      }
-    };
-  </script>
   <style>
-    body { background: var(--cream); color: var(--black); min-height: 100svh; position: relative; overflow-x: hidden; }
-    :focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+    body {
+      background: var(--cream);
+      color: var(--black);
+      min-height: 100svh;
+      position: relative;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
     /* ───── FULL-PAGE ACTIVE SWIPING & ZOOMING GRADIENT-FOLD BACKGROUND ───── */
     .auth-bg {
@@ -92,15 +82,10 @@
       background: linear-gradient(120deg, rgba(212, 245, 60, 0.54) 0%, rgba(73, 97, 0, 0.22) 38%, transparent 68%);
       will-change: transform;
     }
-    /* Toned atmospheric lime glow in Dark Mode so rotating white text has ≥ 11:1 contrast */
     :root[data-theme="dark"] .b-lime-1,
     :root[data-theme="dark"] .b-lime-2,
-    :root[data-theme="dark"] .b-lime-3 {
-      opacity: 0.24;
-    }
-    :root[data-theme="dark"] .bg-fold {
-      opacity: 0.28;
-    }
+    :root[data-theme="dark"] .b-lime-3 { opacity: 0.24; }
+    :root[data-theme="dark"] .bg-fold { opacity: 0.28; }
 
     @keyframes swipeRight {
       0%   { transform: translate3d(-28%, -18%, 0) scale(0.9); }
@@ -120,55 +105,68 @@
     }
 
     header, main { position: relative; z-index: 2; }
+    [hidden], .hidden { display: none !important; }
 
-    /* Adaptive colors for Auth Top Bar, 3D Cube Text Rotator, and Footer */
-    .auth-kicker { color: var(--lime-ink); }
-    .auth-heading { color: var(--black); }
-    .auth-sub { color: var(--muted); }
-    .auth-back { color: var(--muted); }
+    /* Shell layout (replaces Tailwind Play CDN) */
+    .auth-header {
+      width: 100%; max-width: 500px; margin: 0 auto;
+      padding: 16px 16px 8px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .auth-top-right { display: flex; align-items: center; gap: 8px; }
+    .auth-logo {
+      background: var(--lime); color: #0e0e0c; font-weight: 700; font-size: 1.125rem;
+      letter-spacing: -0.04em; padding: 4px 10px; border-radius: 8px; line-height: 1.1;
+    }
+    .auth-back { font-size: 0.8125rem; font-weight: 600; color: var(--muted); padding: 6px 4px; }
     .auth-back:hover { color: var(--black); }
-    .cube-dot { background: color-mix(in oklab, var(--black) 26%, transparent); }
-    .cube-dot.on { background: var(--black); width: 20px; }
-    :root[data-theme="dark"] .cube-dot.on { background: var(--lime); }
 
-    /* Dark Curved Auth Card — stays rich obsidian in both Light & Dark modes */
-    .auth-card-dark {
-      background: #0e0e0c;
-      color: #fbf8f1;
-      border: 1px solid rgba(251, 248, 241, 0.12);
-      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.34);
-      animation: cardSpringIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    .lang-wrap { position: relative; }
+    .lang-btn {
+      width: 38px; height: 38px; border-radius: 999px;
+      background: var(--lime); border: 2px solid var(--black);
+      display: grid; place-items: center; padding: 0;
+      box-shadow: 0 2px 8px rgba(14, 14, 12, 0.14);
     }
-    :root[data-theme="dark"] .auth-card-dark {
-      background: #171a13;
-      border-color: rgba(212, 245, 60, 0.25);
-      box-shadow: 0 28px 64px rgba(0, 0, 0, 0.65);
+    .lang-btn svg { width: 20px; height: 20px; border-radius: 999px; display: block; }
+    .lang-menu {
+      position: absolute; right: 0; top: calc(100% + 8px); z-index: 50;
+      min-width: 176px; border-radius: 16px; padding: 6px;
+      background: var(--card); border: 1px solid var(--line); color: var(--black);
+      box-shadow: 0 16px 36px rgba(14, 14, 12, 0.22);
+      display: none; flex-direction: column; gap: 2px;
     }
-    @keyframes cardSpringIn {
-      from { opacity: 0; transform: translateY(18px) scale(0.985); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+    .lang-menu.open { display: flex; }
+    .lang-opt {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+      border-radius: 11px; font-size: 0.75rem; font-weight: 600; width: 100%; text-align: left;
+    }
+    .lang-opt:hover { background: var(--cream); }
+    .lang-opt.on { background: var(--black); color: var(--lime); }
+    .lang-opt svg { width: 20px; height: 20px; border-radius: 999px; flex: none; }
+
+    .auth-main {
+      flex: 1; width: 100%; max-width: 500px; margin: 0 auto;
+      padding: 0 16px 32px;
+      display: flex; flex-direction: column; justify-content: center; gap: 16px;
     }
 
-    /* ───── 3D CUBE SWIPE TEXT ROTATOR ───── */
+    /* 3D Cube Text Rotator */
     .cube-scene {
-      position: relative; width: 100%; height: 126px;
+      position: relative; width: 100%; min-height: 136px;
       perspective: 1100px; overflow: hidden; background: transparent;
       touch-action: pan-y; user-select: none;
     }
-    @media (min-width: 768px) { .cube-scene { height: 136px; } }
     .cube {
-      width: 100%; height: 100%; position: relative;
+      width: 100%; min-height: 136px; position: relative;
       transform-style: preserve-3d;
       transition: transform 0.85s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .cube, .auth-card-dark { transition: none; animation: none; }
     }
     .cube-face {
       position: absolute; inset: 0; width: 100%; height: 100%;
       backface-visibility: hidden; background: transparent;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 4px 12px 24px;
+      text-align: center; padding: 4px 12px 30px;
       opacity: 0; transition: opacity 0.65s ease;
     }
     .cube-face.active { opacity: 1; }
@@ -180,17 +178,173 @@
     .cube-face.active > :nth-child(2) { transition-delay: 0.08s; }
     .cube-face.active > :nth-child(3) { transition-delay: 0.16s; }
 
-    /* Underline inputs inside the dark curved card */
+    .auth-kicker { color: var(--lime-ink); font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 4px; }
+    .auth-heading { color: var(--black); font-size: clamp(1.25rem, 1rem + 1vw, 1.5rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; }
+    .auth-sub { color: var(--muted); font-size: 0.8125rem; margin-top: 4px; max-width: 360px; }
+
+    .cube-dots {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: center; gap: 2px;
+    }
+    .cube-dot {
+      min-width: 28px; min-height: 28px; display: inline-grid; place-items: center;
+    }
+    .cube-dot i {
+      display: block; width: 6px; height: 6px; border-radius: 999px;
+      background: color-mix(in oklab, var(--black) 26%, transparent);
+      transition: width 0.22s ease, background-color 0.22s ease;
+    }
+    .cube-dot.on i { width: 20px; background: var(--black); }
+    :root[data-theme="dark"] .cube-dot.on i { background: var(--lime); }
+
+    /* Dark Curved Auth Card */
+    .auth-card-dark {
+      background: #0e0e0c;
+      color: #fbf8f1;
+      border: 1px solid rgba(251, 248, 241, 0.12);
+      border-radius: 34px;
+      padding: 28px 24px;
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.34);
+      animation: cardSpringIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @media (min-width: 48em) {
+      .auth-card-dark { padding: 32px; }
+    }
+    :root[data-theme="dark"] .auth-card-dark {
+      background: #171a13;
+      border-color: rgba(212, 245, 60, 0.25);
+      box-shadow: 0 28px 64px rgba(0, 0, 0, 0.65);
+    }
+    @keyframes cardSpringIn {
+      from { opacity: 0; transform: translateY(18px) scale(0.985); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cube, .auth-card-dark { transition: none; animation: none; }
+    }
+
+    .seg-tabs {
+      display: grid; grid-template-columns: 1fr 1fr; padding: 4px;
+      border-radius: 999px; background: rgba(255, 255, 255, 0.14); margin-bottom: 18px;
+    }
+    .seg-tab {
+      min-block-size: 40px; border-radius: 999px; font-size: 0.875rem; font-weight: 600;
+      color: rgba(251, 248, 241, 0.78);
+    }
+    .seg-tab:hover { color: #fbf8f1; }
+    .seg-tab.on { background: #fbf8f1; color: #0e0e0c !important; }
+
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+    .role-btn {
+      min-block-size: 38px; padding: 0 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+      background: rgba(255, 255, 255, 0.1); color: rgba(251, 248, 241, 0.82);
+    }
+    .role-btn:hover { background: rgba(255, 255, 255, 0.16); }
+    .role-btn.on { background: var(--lime); color: #0e0e0c !important; }
+
+    .method-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      font-size: 0.75rem; margin-bottom: 14px;
+    }
+    .method-hint { color: rgba(251, 248, 241, 0.68); font-weight: 500; }
+    .link-lime { font-weight: 700; color: var(--lime); font-size: 0.75rem; }
+    .link-lime:hover { text-decoration: underline; }
+
+    .auth-form { display: flex; flex-direction: column; gap: 16px; }
+    .field-label { display: block; font-size: 0.75rem; font-weight: 600; color: rgba(251, 248, 241, 0.86); margin-bottom: 4px; }
+    .pw-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .pw-wrap { position: relative; }
+
     .u-input {
       width: 100%; background: transparent; border: 0;
-      border-bottom: 1px solid rgba(251, 248, 241, 0.24);
-      padding: 10px 0; font-size: 15px; color: #fbf8f1;
+      border-bottom: 1px solid rgba(251, 248, 241, 0.26);
+      padding: 10px 0; font: inherit; font-size: 0.9375rem; color: #fbf8f1;
       transition: border-color 0.2s ease;
     }
+    .u-input--pw { padding-right: 40px; }
     .u-input::placeholder { color: rgba(251, 248, 241, 0.45); }
     .u-input:focus { outline: 0; border-bottom-color: #d4f53c; }
 
-    /* Remember me pill switch */
+    .pw-eye {
+      position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+      width: 40px; height: 40px; display: grid; place-items: center;
+      color: rgba(251, 248, 241, 0.68); border-radius: 999px;
+    }
+    .pw-eye:hover { color: var(--lime); }
+
+    .submit-btn {
+      margin-top: 6px; width: 100%; min-block-size: 48px; border-radius: 16px;
+      background: var(--lime); color: #0e0e0c !important; font-weight: 700; font-size: 0.875rem;
+    }
+    .submit-btn:hover { filter: brightness(1.05); }
+
+    .msg-banner {
+      border-radius: 14px; background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(212, 245, 60, 0.42); padding: 11px 14px; font-size: 0.75rem; color: #fbf8f1;
+    }
+    .msg-banner p { font-weight: 600; color: var(--lime); }
+    .demo-btn {
+      margin-top: 8px; display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 12px; border-radius: 10px; background: var(--lime); color: #0e0e0c !important;
+      font-weight: 700; font-size: 0.75rem;
+    }
+
+    .or-div { display: flex; align-items: center; gap: 12px; font-size: 0.75rem; color: rgba(251, 248, 241, 0.52); }
+    .or-div span:first-child, .or-div span:last-child { flex: 1; height: 1px; background: rgba(255, 255, 255, 0.15); }
+
+    /* Bazar-branded Google button: lime fill, black ink. Google's own "G" stays
+       in full colour on a cream chip, as Google's sign-in brand rules require. */
+    .google-btn {
+      width: 100%; min-block-size: 48px; border-radius: 16px;
+      background: var(--lime); border: 1px solid var(--lime);
+      color: #0e0e0c; font-weight: 700; font-size: 0.875rem; letter-spacing: 0.01em;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: transform 180ms var(--ease-out-expo), background-color 180ms ease;
+    }
+    .google-btn:hover { background: #c9ea2e; transform: translateY(-1px); }
+    .google-btn:active { transform: translateY(0) scale(0.99); }
+    .google-btn:focus-visible { outline: 3px solid #0e0e0c; outline-offset: 3px; }
+    .google-btn .g-chip {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border-radius: 8px; background: #fbf8f1;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .google-btn, .google-btn:hover, .google-btn:active { transition: none; transform: none; }
+    }
+
+    /* 6-Digit Verification & New Password Boxes */
+    .otp-box {
+      margin-top: 18px; padding: 16px; border-radius: 18px;
+      background: rgba(212, 245, 60, 0.14); border: 1px solid rgba(212, 245, 60, 0.45); color: #fbf8f1;
+    }
+    .otp-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .otp-top b { font-size: 0.75rem; font-weight: 700; color: var(--lime); }
+    .otp-pill {
+      font-size: 0.625rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 3px 8px; border-radius: 999px; background: var(--lime); color: #0e0e0c !important;
+    }
+    .otp-sub { font-size: 0.75rem; color: rgba(251, 248, 241, 0.86); margin-top: 6px; }
+    .otp-row { display: flex; gap: 8px; margin-top: 12px; }
+    .otp-input {
+      flex: 1; min-width: 0; height: 44px; text-align: center; font: inherit; font-weight: 700;
+      letter-spacing: 0.22em; border-radius: 12px; background: #0e0e0c; border: 1px solid var(--lime); color: var(--lime);
+    }
+    .pw-new-input {
+      flex: 1; min-width: 0; height: 44px; padding: 0 12px; font: inherit;
+      border-radius: 12px; background: #0e0e0c; border: 1px solid var(--lime); color: #fbf8f1;
+    }
+    .otp-verify-btn {
+      padding: 0 16px; min-height: 44px; border-radius: 12px;
+      background: var(--lime); color: #0e0e0c !important; font-weight: 700; font-size: 0.75rem;
+    }
+    .otp-err { font-size: 0.75rem; font-weight: 600; color: var(--lime); margin-top: 8px; }
+    .otp-resend { margin-top: 10px; font-size: 0.75rem; font-weight: 600; color: rgba(251, 248, 241, 0.78); text-decoration: underline; }
+    .otp-resend:hover { color: var(--lime); }
+
+    /* Remember me footer switch */
+    .rem-row { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 4px 8px 0; }
+    .rem-label { font-size: 0.75rem; font-weight: 700; color: var(--black); cursor: pointer; }
+    .sw-wrap { display: inline-flex; align-items: center; cursor: pointer; min-height: 32px; }
     .sw-track {
       width: 44px; height: 24px; border-radius: 999px;
       background: #cfc9bc; position: relative; transition: background 0.2s;
@@ -203,15 +357,11 @@
     }
     :root[data-theme="dark"] .sw-track::after { background: #b9b3a3; }
     input:checked + .sw-track { background: #0e0e0c; }
-    :root[data-theme="dark"] input:checked + .sw-track { background: #262d1a; border: 1px solid rgba(212,245,60,0.45); }
+    :root[data-theme="dark"] input:checked + .sw-track { background: #262d1a; border: 1px solid rgba(212, 245, 60, 0.45); }
     input:checked + .sw-track::after { transform: translateX(20px); background: #d4f53c; }
-
-    /* Circular Flag Language Switcher */
-    .lang-menu { display: none; background: var(--card); border: 1px solid var(--line); color: var(--black); }
-    .lang-menu.open { display: flex; }
   </style>
 </head>
-<body class="flex flex-col">
+<body>
 
   <!-- FULL-SCREEN ZOOMING GRADIENT-FOLD BACKGROUND -->
   <div class="auth-bg" aria-hidden="true">
@@ -233,196 +383,171 @@
   </div>
 
   <!-- TOP BAR -->
-  <header class="w-full max-w-[460px] md:max-w-[500px] mx-auto px-4 pt-4 pb-2 flex items-center justify-between">
-    <a href="business.html" class="inline-flex items-center gap-2">
-      <span class="logo bg-limebz text-ink font-bold text-lg tracking-tight px-2.5 py-1 rounded-lg leading-none" data-text="bar.logo">bazar</span>
-    </a>
+  <header class="auth-header">
+    <a href="index.html" class="auth-logo" data-text="bar.logo">bazar</a>
 
-    <div class="flex items-center gap-3">
-      <!-- Circular Flag Language Switcher -->
-      <div class="relative" id="langWrap">
-        <button type="button" id="langBtn" aria-label="Change language" aria-expanded="false" onclick="toggleLangMenu()"
-          class="w-9 h-9 rounded-full bg-limebz border-2 border-ink grid place-items-center shadow-sm hover:scale-105 transition">
-          <svg viewBox="0 0 60 60" id="langFlagSvg" class="w-5 h-5 rounded-full"><clipPath id="a-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#a-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+    <div class="auth-top-right" id="authTopRight">
+      <div class="lang-wrap" id="langWrap">
+        <button type="button" id="langBtn" class="lang-btn" aria-label="Change language" aria-expanded="false" onclick="toggleLangMenu()">
+          <svg aria-hidden="true" viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="a-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#a-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
         </button>
-        <div id="langMenu" role="menu"
-          class="lang-menu absolute right-0 top-11 z-50 min-w-[164px] rounded-2xl p-1.5 shadow-xl flex-col gap-0.5">
-          <button type="button" data-lang="en" onclick="setLang('en')" class="lang-opt on flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold bg-ink text-limebz">
-            <svg viewBox="0 0 60 60" class="w-5 h-5 rounded-full shrink-0"><clipPath id="am-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+        <div id="langMenu" class="lang-menu">
+          <button type="button" data-lang="en" onclick="setLang('en')" class="lang-opt on">
+            <svg aria-hidden="true" viewBox="0 0 60 60"><clipPath id="am-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
             English
           </button>
-          <button type="button" data-lang="fr" onclick="setLang('fr')" class="lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold">
-            <svg viewBox="0 0 60 60" class="w-5 h-5 rounded-full shrink-0"><clipPath id="am-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg>
+          <button type="button" data-lang="fr" onclick="setLang('fr')" class="lang-opt">
+            <svg aria-hidden="true" viewBox="0 0 60 60"><clipPath id="am-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg>
             Français
           </button>
-          <button type="button" data-lang="mfe" onclick="setLang('mfe')" class="lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold">
-            <svg viewBox="0 0 60 60" class="w-5 h-5 rounded-full shrink-0"><clipPath id="am-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg>
+          <button type="button" data-lang="mfe" onclick="setLang('mfe')" class="lang-opt">
+            <svg aria-hidden="true" viewBox="0 0 60 60"><clipPath id="am-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#am-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg>
             Kreol Morisien
           </button>
         </div>
       </div>
-      <a href="business.html" class="auth-back text-xs font-semibold transition" data-text="bar.back">← Back</a>
+      <a href="index.html" class="auth-back" data-text="bar.back">← Back</a>
     </div>
   </header>
 
   <!-- MAIN AUTH SHELL -->
-  <main class="flex-1 w-full max-w-[460px] md:max-w-[500px] mx-auto px-4 pb-8 flex flex-col justify-center gap-4">
+  <main class="auth-main">
 
     <!-- 1. TOP 3D CUBE SWIPE TEXT ROTATOR -->
-    <section aria-label="What Bazar offers" class="relative">
+    <section aria-label="What Bazar offers">
       <div class="cube-scene" id="cubeScene">
         <div class="cube" id="cube">
           <div class="cube-face" data-face="0">
-            <span class="auth-kicker text-[11px] font-bold uppercase tracking-[0.14em] mb-1">For Customers</span>
-            <h2 class="auth-heading text-xl md:text-2xl font-bold tracking-tight leading-tight">Discover businesses around you</h2>
-            <p class="auth-sub text-xs md:text-sm mt-1 max-w-[360px]">Explore verified local shops, food, and services nearby across Mauritius.</p>
+            <span class="auth-kicker">For Customers</span>
+            <h1 class="auth-heading">Discover businesses around you</h1>
+            <p class="auth-sub">Explore verified local shops, food, and services nearby across Mauritius.</p>
           </div>
           <div class="cube-face" data-face="1">
-            <span class="auth-kicker text-[11px] font-bold uppercase tracking-[0.14em] mb-1">For Customers</span>
-            <h2 class="auth-heading text-xl md:text-2xl font-bold tracking-tight leading-tight">Get quality secondhand finds</h2>
-            <p class="auth-sub text-xs md:text-sm mt-1 max-w-[360px]">Buy and resell pre-loved items safely with Bazar Escrow protection.</p>
+            <span class="auth-kicker">For Customers</span>
+            <h2 class="auth-heading">Get quality secondhand finds</h2>
+            <p class="auth-sub">Buy and resell pre-loved items safely with Bazar Escrow protection.</p>
           </div>
           <div class="cube-face" data-face="2">
-            <span class="auth-kicker text-[11px] font-bold uppercase tracking-[0.14em] mb-1">For Business Owners</span>
-            <h2 class="auth-heading text-xl md:text-2xl font-bold tracking-tight leading-tight">One dashboard to control your business</h2>
-            <p class="auth-sub text-xs md:text-sm mt-1 max-w-[360px]">Manage orders, boost visibility among nearby customers, and grow sales.</p>
+            <span class="auth-kicker">For Business Owners</span>
+            <h2 class="auth-heading">One dashboard to control your business</h2>
+            <p class="auth-sub">Manage orders, boost visibility among nearby customers, and grow sales.</p>
           </div>
           <div class="cube-face" data-face="3">
-            <span class="auth-kicker text-[11px] font-bold uppercase tracking-[0.14em] mb-1">For Business Owners</span>
-            <h2 class="auth-heading text-xl md:text-2xl font-bold tracking-tight leading-tight">Smart invoicing, scan &amp; analytics</h2>
-            <p class="auth-sub text-xs md:text-sm mt-1 max-w-[360px]">Auto-generate MRA invoices, scan receipts with your camera, and track live profit.</p>
+            <span class="auth-kicker">For Business Owners</span>
+            <h2 class="auth-heading">Smart invoicing, scan &amp; analytics</h2>
+            <p class="auth-sub">Auto-generate MRA invoices, scan receipts with your camera, and track live profit.</p>
           </div>
         </div>
 
-        <!-- Cube Indicator Dots + Pause Toggle -->
-        <div class="absolute bottom-1 left-0 right-0 z-10 flex items-center justify-center gap-1.5" id="cubeDots">
-          <button type="button" aria-label="Slide 1" onclick="goSlide(0)" class="cube-dot on w-5 h-1.5 rounded-full transition-all"></button>
-          <button type="button" aria-label="Slide 2" onclick="goSlide(1)" class="cube-dot w-1.5 h-1.5 rounded-full transition-all"></button>
-          <button type="button" aria-label="Slide 3" onclick="goSlide(2)" class="cube-dot w-1.5 h-1.5 rounded-full transition-all"></button>
-          <button type="button" aria-label="Slide 4" onclick="goSlide(3)" class="cube-dot w-1.5 h-1.5 rounded-full transition-all"></button>
+        <!-- Accessible Touch-Friendly Cube Indicator Dots -->
+        <div class="cube-dots" id="cubeDots">
+          <button type="button" aria-label="Slide 1" onclick="goSlide(0)" class="cube-dot on"><i></i></button>
+          <button type="button" aria-label="Slide 2" onclick="goSlide(1)" class="cube-dot"><i></i></button>
+          <button type="button" aria-label="Slide 3" onclick="goSlide(2)" class="cube-dot"><i></i></button>
+          <button type="button" aria-label="Slide 4" onclick="goSlide(3)" class="cube-dot"><i></i></button>
         </div>
       </div>
     </section>
 
-    <!-- 2. DARK CURVED AUTH CARD (Email + Password, Resend 6-digit OTP, & Google OAuth) -->
-    <section class="auth-card-dark rounded-[34px] px-6 py-7 md:px-8 md:py-8">
+    <!-- 2. DARK CURVED AUTH CARD -->
+    <section class="auth-card-dark">
 
       <!-- Segmented Pill Toggle: Login / Sign up -->
-      <div class="grid grid-cols-2 p-1 rounded-full bg-white/15 mb-5" role="tablist">
-        <button type="button" role="tab" id="t-login" aria-selected="true" onclick="setAuthTab('login')"
-          class="py-2.5 rounded-full text-sm font-semibold bg-[#fbf8f1] text-[#0e0e0c] transition">Login</button>
-        <button type="button" role="tab" id="t-signup" aria-selected="false" onclick="setAuthTab('signup')"
-          class="py-2.5 rounded-full text-sm font-semibold text-[#fbf8f1]/75 hover:text-[#fbf8f1] transition">Sign up</button>
+      <div class="seg-tabs" role="tablist">
+        <button type="button" role="tab" id="t-login" aria-selected="true" onclick="setAuthTab('login')" class="seg-tab on">Login</button>
+        <button type="button" role="tab" id="t-signup" aria-selected="false" onclick="setAuthTab('signup')" class="seg-tab">Sign up</button>
       </div>
 
       <!-- Role Switcher (Customer vs Business / SME) -->
-      <div class="grid grid-cols-2 gap-2 mb-5">
-        <button type="button" onclick="pickRole(this, 'customer')"
-          class="role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-limebz text-[#0e0e0c] transition">Customer</button>
-        <button type="button" onclick="pickRole(this, 'business')"
-          class="role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 text-[#fbf8f1]/80 hover:bg-white/15 transition">Business / SME</button>
+      <div class="role-grid" role="group" aria-label="Account role">
+        <button type="button" onclick="pickRole(this, 'customer')" class="role-btn on">Customer</button>
+        <button type="button" onclick="pickRole(this, 'business')" class="role-btn">Business / SME</button>
       </div>
 
-      <!-- Method Switcher: Password vs Resend 6-Digit Email Code -->
-      <div class="flex items-center justify-between text-[11px] mb-4 px-0.5">
-        <span class="text-[#fbf8f1]/65 font-medium" id="methodHint">Sign in with password or 6-digit code</span>
-        <button type="button" id="methodToggleBtn" onclick="toggleAuthMethod()"
-          class="font-bold text-limebz hover:underline">Use 6-digit code →</button>
+      <!-- Method Switcher: Password vs 6-Digit Email Code -->
+      <div class="method-row">
+        <span class="method-hint" id="methodHint">Sign in with email &amp; password</span>
+        <button type="button" id="methodToggleBtn" onclick="toggleAuthMethod()" class="link-lime">Use 6-digit code →</button>
       </div>
 
       <!-- Form -->
-      <form id="authForm" onsubmit="handleAuthSubmit(event)" class="flex flex-col gap-4">
-        <!-- Sign-up only: Name -->
+      <form id="authForm" onsubmit="handleAuthSubmit(event)" class="auth-form">
         <div id="f-name" class="hidden">
-          <label for="fullName" class="block text-xs font-semibold text-[#fbf8f1]/85 mb-1">Full name or Business name</label>
+          <label for="fullName" class="field-label">Full name or Business name</label>
           <input type="text" id="fullName" autocomplete="name" placeholder="e.g. Chelsea's Cup N Cake" class="u-input">
         </div>
 
         <div>
-          <label for="email" class="block text-xs font-semibold text-[#fbf8f1]/85 mb-1">Email</label>
+          <label for="email" class="field-label">Email</label>
           <input type="email" id="email" required autocomplete="email" placeholder="you@business.mu" class="u-input">
         </div>
 
-        <!-- Password Field (Active by default; hides when switching to passwordless Resend OTP mode) -->
         <div id="f-password">
-          <div class="flex items-center justify-between mb-1">
-            <label for="password" class="block text-xs font-semibold text-[#fbf8f1]/85">Password</label>
-            <button type="button" id="forgotLink" onclick="sendForgotCode()" class="text-[11px] font-semibold text-limebz hover:underline">Forgot? Send code</button>
+          <div class="pw-head">
+            <label for="password" class="field-label" style="margin-bottom:0">Password</label>
+            <button type="button" id="forgotLink" onclick="sendForgotCode()" class="link-lime">Forgot? Send code</button>
           </div>
-          <div class="relative">
-            <input type="password" id="password" minlength="6" autocomplete="current-password" placeholder="••••••••" class="u-input pr-10">
-            <button type="button" aria-label="Toggle password visibility" onclick="togglePw()"
-              class="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center text-[#fbf8f1]/65 hover:text-limebz">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <div class="pw-wrap">
+            <input type="password" id="password" minlength="6" autocomplete="current-password" placeholder="••••••••" class="u-input u-input--pw">
+            <button type="button" aria-label="Toggle password visibility" onclick="togglePw()" class="pw-eye">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
         </div>
 
-        <!-- Primary Submit Button -->
-        <button type="submit" id="submitBtn"
-          class="mt-2 w-full min-h-[48px] rounded-2xl bg-limebz text-[#0e0e0c] font-bold text-sm hover:brightness-105 transition">
-          Login
-        </button>
+        <button type="submit" id="submitBtn" class="submit-btn">Login</button>
 
-        <div id="authMsgWrap" class="hidden rounded-xl bg-white/10 border border-limebz/40 px-3.5 py-2.5 text-xs text-[#fbf8f1]" role="alert">
-          <p id="authMsg" class="font-semibold text-limebz"></p>
-          <button type="button" id="demoContinueBtn" onclick="continueDemoFlow()"
-            class="hidden mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-limebz text-[#0e0e0c] font-bold text-[11px]">
-            Continue to Preview Flow →
-          </button>
+        <div id="authMsgWrap" class="msg-banner hidden" role="alert">
+          <p id="authMsg"></p>
+          <button type="button" id="demoContinueBtn" onclick="continueDemoFlow()" class="demo-btn hidden">Continue to Preview Flow →</button>
         </div>
 
-        <!-- Divider -->
-        <div class="flex items-center gap-3 text-[11px] text-[#fbf8f1]/50">
-          <span class="flex-1 h-px bg-white/15"></span>
+        <div class="or-div">
+          <span></span>
           <span>or continue with</span>
-          <span class="flex-1 h-px bg-white/15"></span>
+          <span></span>
         </div>
 
-        <!-- Continue with Google (Wired to /api/auth/google + Supabase OAuth) -->
-        <button type="button" id="googleBtn" onclick="handleGoogleAuth()"
-          class="w-full min-h-[46px] rounded-2xl bg-white/10 border border-white/20 text-[#fbf8f1] font-semibold text-sm flex items-center justify-center gap-2.5 hover:bg-white/15 hover:border-limebz/50 transition">
-          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.7 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.6c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.6-5.2 3.6-8.8Z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.1C3.3 21.3 7.3 24 12 24Z"/><path fill="#FBBC05" d="M5.3 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3V6.6H1.3C.5 8.2 0 10.1 0 12s.5 3.8 1.3 5.4l4-3.1Z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.4.6 4.6 1.8l3.5-3.5C18 1.1 15.2 0 12 0 7.3 0 3.3 2.7 1.3 6.6l4 3.1c.9-2.9 3.6-4.9 6.7-4.9Z"/></svg>
+        <button type="button" id="googleBtn" onclick="handleGoogleAuth()" class="google-btn">
+          <span class="g-chip"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.7 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.6c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.6-5.2 3.6-8.8Z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.9-3c-1.1.7-2.5 1.2-4.1 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.1C3.3 21.3 7.3 24 12 24Z"/><path fill="#FBBC05" d="M5.3 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3V6.6H1.3C.5 8.2 0 10.1 0 12s.5 3.8 1.3 5.4l4-3.1Z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.4.6 4.6 1.8l3.5-3.5C18 1.1 15.2 0 12 0 7.3 0 3.3 2.7 1.3 6.6l4 3.1c.9-2.9 3.6-4.9 6.7-4.9Z"/></svg></span>
           Continue with Google
         </button>
       </form>
 
-      <!-- Resend 6-Digit Verification Box -->
-      <div id="otpBox" class="hidden mt-5 p-4 rounded-2xl bg-limebz/15 border border-limebz/45 text-[#fbf8f1]" aria-live="polite">
-        <div class="flex items-center justify-between gap-2">
-          <b id="otpMsg" class="text-xs font-bold text-limebz">Check your email · Sent via Resend</b>
-          <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-limebz text-[#0e0e0c]">6-Digit OTP</span>
+      <!-- 6-Digit Email Verification Box -->
+      <div id="otpBox" class="otp-box hidden" aria-live="polite">
+        <div class="otp-top">
+          <b id="otpMsg">Check your email · 6-digit code sent</b>
+          <span class="otp-pill">6-Digit Code</span>
         </div>
-        <p class="text-xs text-[#fbf8f1]/85 mt-1">Enter the 6-digit verification code sent to <span id="otpEmail" class="font-semibold text-limebz"></span>.</p>
-        <div class="flex gap-2 mt-3">
+        <p class="otp-sub">Enter the 6-digit verification code sent to <span id="otpEmail" style="font-weight:700;color:var(--lime);"></span>.</p>
+        <div class="otp-row">
           <input type="text" id="otpCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" aria-label="6-digit code"
-            onkeydown="if (event.key === 'Enter') finishAuth()"
-            class="flex-1 min-w-0 h-11 text-center font-bold tracking-[0.22em] rounded-xl bg-[#0e0e0c] border border-limebz text-limebz">
-          <button type="button" id="verifyBtn" onclick="finishAuth()" class="px-4 rounded-xl bg-limebz text-[#0e0e0c] font-bold text-xs">Verify →</button>
+            onkeydown="if (event.key === 'Enter') finishAuth()" class="otp-input">
+          <button type="button" id="verifyBtn" onclick="finishAuth()" class="otp-verify-btn">Verify →</button>
         </div>
-        <p id="otpErr" class="hidden text-xs font-semibold text-limebz mt-2" role="alert"></p>
-        <button type="button" onclick="resendCode()" class="mt-3 text-[11px] font-semibold text-[#fbf8f1]/75 hover:text-limebz underline">Resend 6-digit code</button>
+        <p id="otpErr" class="otp-err hidden" role="alert"></p>
+        <button type="button" onclick="resendCode()" class="otp-resend">Send a new 6-digit code</button>
+      </div>
+
+      <!-- NEW PASSWORD (after a Forgot? code is checked) -->
+      <div id="newPwBox" class="otp-box hidden" aria-live="polite">
+        <div class="otp-top"><b>Set a new password</b></div>
+        <p class="otp-sub">At least 6 characters.</p>
+        <div class="otp-row">
+          <input type="password" id="newPw" minlength="6" autocomplete="new-password" placeholder="New password" aria-label="New password"
+            onkeydown="if (event.key === 'Enter') setNewPassword()" class="pw-new-input">
+          <button type="button" id="setPwBtn" onclick="setNewPassword()" class="otp-verify-btn">Save →</button>
+        </div>
+        <p id="newPwErr" class="otp-err hidden" role="alert"></p>
       </div>
     </section>
 
-    <!-- NEW PASSWORD (after a Forgot? code is checked) -->
-    <div id="newPwBox" class="hidden mt-5 p-4 rounded-2xl bg-limebz/15 border border-limebz/45 text-[#fbf8f1]" aria-live="polite">
-      <b class="text-xs font-bold text-limebz">Set a new password</b>
-      <p class="text-xs text-[#fbf8f1]/85 mt-1">At least 6 characters.</p>
-      <div class="flex gap-2 mt-3">
-        <input type="password" id="newPw" minlength="6" autocomplete="new-password" placeholder="New password" aria-label="New password"
-          onkeydown="if (event.key === 'Enter') setNewPassword()"
-          class="flex-1 min-w-0 h-11 px-3 rounded-xl bg-[#0e0e0c] border border-limebz text-[#fbf8f1]">
-        <button type="button" id="setPwBtn" onclick="setNewPassword()" class="px-4 rounded-xl bg-limebz text-[#0e0e0c] font-bold text-xs">Save →</button>
-      </div>
-      <p id="newPwErr" class="hidden text-xs font-semibold text-limebz mt-2" role="alert"></p>
-    </div>
-
     <!-- 3. REMEMBER ME FOOTER SWITCH -->
-    <div class="flex items-center justify-end gap-3 px-2 pt-1">
-      <label for="rememberMe" class="auth-heading text-xs font-bold cursor-pointer">Remember me</label>
-      <label class="inline-flex items-center cursor-pointer">
-        <input type="checkbox" id="rememberMe" checked class="sr-only">
+    <div class="rem-row">
+      <label for="rememberMe" class="rem-label">Remember me</label>
+      <label class="sw-wrap">
+        <input type="checkbox" id="rememberMe" checked class="visually-hidden">
         <span class="sw-track"></span>
       </label>
     </div>
@@ -452,11 +577,7 @@
       cube.style.transform = "translateZ(-" + radius + "px) rotateY(" + (-slideIndex * 90) + "deg)";
       var active = ((slideIndex % 4) + 4) % 4;
       faces.forEach(function (f, i) { f.classList.toggle("active", i === active); });
-      dots.forEach(function (d, i) {
-        d.classList.toggle("on", i === active);
-        d.classList.toggle("w-5", i === active);
-        d.classList.toggle("w-1.5", i !== active);
-      });
+      dots.forEach(function (d, i) { d.classList.toggle("on", i === active); });
     }
 
     function goSlide(idx) {
@@ -471,7 +592,7 @@
       timer = setInterval(function () {
         slideIndex += 1;
         applyCubeTransform();
-      }, 3800);
+      }, 4200);
     }
 
     var startX = null;
@@ -495,12 +616,12 @@
     layoutCube();
     resetAutoSwipe();
 
-    /* ───── AUTHENTICATION ENGINE: Email+Password, Resend 6-digit OTP, & Google OAuth ───── */
-    var authMode = "login";      // "login" | "signup"
-    var authMethod = "password"; // "password" | "otp"
-    var userRole = "customer";   // "customer" | "business"
+    /* ───── AUTHENTICATION ENGINE: Email+Password, 6-digit OTP, & Google OAuth ───── */
+    var authMode = "login";
+    var authMethod = "password";
+    var userRole = "customer";
     var pendingEmail = "";
-    var pendingPurpose = "auth";   // "auth" = sign-in code, "reset" = Forgot? code
+    var pendingPurpose = "auth";
 
     var AUTH_ERRORS = {
       emailFormat: "Please enter a valid email address.",
@@ -511,7 +632,7 @@
       codeFormat: "Please enter all 6 digits of your code.",
       codeWrong: "That code is invalid or expired. Request a new code below.",
       tooManyRequests: "Too many attempts. Please wait a minute and try again.",
-      googleNotEnabled: "Enable Google in Supabase Auth → Providers → Google (or continue in preview mode below).",
+      googleNotEnabled: "Google sign-in isn't enabled yet — use your email above or continue in preview mode below.",
       oauthFailed: "Google sign-in could not be completed. Please try again.",
       notConfigured: "Backend keys (.env.local) are not connected yet — you can test the full preview flow right now!",
       badOrigin: "Session check failed. Please reload the page.",
@@ -526,8 +647,8 @@
       document.getElementById("password").required = !isOtp;
       document.getElementById("methodToggleBtn").textContent = isOtp ? "Use password instead →" : "Use 6-digit code →";
       document.getElementById("methodHint").textContent = isOtp
-        ? "Passwordless 6-digit code via Resend"
-        : (isSignup ? "Create account + Resend verification" : "Sign in with email & password");
+        ? "Passwordless 6-digit email code"
+        : (isSignup ? "Create account + email verification" : "Sign in with email & password");
       document.getElementById("submitBtn").textContent = isOtp
         ? "Send 6-digit code"
         : (isSignup ? "Create Account & Verify" : "Login");
@@ -544,10 +665,10 @@
       var isSignup = mode === "signup";
       var tLogin = document.getElementById("t-login");
       var tSignup = document.getElementById("t-signup");
-      tLogin.className = "py-2.5 rounded-full text-sm font-semibold transition " + (!isSignup ? "bg-[#fbf8f1] text-[#0e0e0c]" : "text-[#fbf8f1]/75 hover:text-[#fbf8f1]");
-      tSignup.className = "py-2.5 rounded-full text-sm font-semibold transition " + (isSignup ? "bg-[#fbf8f1] text-[#0e0e0c]" : "text-[#fbf8f1]/75 hover:text-[#fbf8f1]");
-      tLogin.setAttribute("aria-selected", !isSignup);
-      tSignup.setAttribute("aria-selected", isSignup);
+      tLogin.classList.toggle("on", !isSignup);
+      tSignup.classList.toggle("on", isSignup);
+      tLogin.setAttribute("aria-selected", String(!isSignup));
+      tSignup.setAttribute("aria-selected", String(isSignup));
 
       document.getElementById("f-name").classList.toggle("hidden", !isSignup);
       document.getElementById("forgotLink").classList.toggle("hidden", isSignup);
@@ -559,10 +680,8 @@
 
     function pickRole(btn, role) {
       userRole = role;
-      document.querySelectorAll(".role-btn").forEach(function (b) {
-        b.className = "role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 text-[#fbf8f1]/80 hover:bg-white/15 transition";
-      });
-      btn.className = "role-btn py-2 px-3 rounded-xl text-xs font-semibold bg-limebz text-[#0e0e0c] transition";
+      document.querySelectorAll(".role-btn").forEach(function (b) { b.classList.remove("on"); });
+      btn.classList.add("on");
     }
 
     function togglePw() {
@@ -643,7 +762,7 @@
       var email = document.getElementById("email").value.trim();
       if (!email) {
         document.getElementById("email").focus();
-        showBanner("Enter your email above first and we'll send a 6-digit recovery code via Resend.", false);
+        showBanner("Enter your email above first and we'll send a 6-digit recovery code.", false);
         return;
       }
       authMethod = "otp";
@@ -654,7 +773,7 @@
     async function sendOtpForEmail(email, purpose) {
       pendingPurpose = purpose || "auth";
       var btn = document.getElementById("submitBtn");
-      busy(btn, true, "Sending via Resend…");
+      busy(btn, true, "Sending 6-digit code…");
       showBanner("", false);
       var res = await api("/api/auth/send-code", { email: email, lang: currentLang() });
       busy(btn, false);
@@ -665,15 +784,13 @@
         showBanner(AUTH_ERRORS[res.error] || AUTH_ERRORS.generic, allowDemo);
         return;
       }
-      openOtpVerification(res.email, res.provider);
+      openOtpVerification(res.email);
     }
 
-    function openOtpVerification(email, provider) {
+    function openOtpVerification(email) {
       pendingEmail = email;
       document.getElementById("otpEmail").textContent = email;
-      document.getElementById("otpMsg").textContent = provider === "resend"
-        ? "Check your email · Sent via Resend"
-        : "Check your email · 6-digit code sent";
+      document.getElementById("otpMsg").textContent = "Check your email · 6-digit code sent";
       document.getElementById("otpBox").classList.remove("hidden");
       showOtpErr("");
       document.getElementById("otpCode").value = "";
@@ -720,7 +837,7 @@
       }
 
       if (res.needsVerification) {
-        openOtpVerification(res.email || email, res.provider);
+        openOtpVerification(res.email || email);
         return;
       }
 
@@ -765,7 +882,6 @@
       document.getElementById("newPw").focus();
     }
 
-    /* Saves the new password for the account the reset code signed in */
     async function setNewPassword() {
       var pw = document.getElementById("newPw").value;
       var err = document.getElementById("newPwErr");
@@ -791,25 +907,26 @@
     function toggleLangMenu() {
       var m = document.getElementById("langMenu");
       var open = m.classList.toggle("open");
-      document.getElementById("langBtn").setAttribute("aria-expanded", open);
+      document.getElementById("langBtn").setAttribute("aria-expanded", String(open));
     }
     function setLang(code) {
       if (!flags[code]) return;
       document.getElementById("langFlagSvg").innerHTML = flags[code];
       document.querySelectorAll(".lang-opt").forEach(function (b) {
-        var on = b.getAttribute("data-lang") === code;
-        b.classList.toggle("on", on);
-        b.className = "lang-opt flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold " + (on ? "on bg-ink text-limebz" : "");
+        b.classList.toggle("on", b.getAttribute("data-lang") === code);
       });
       document.getElementById("langMenu").classList.remove("open");
+      document.getElementById("langBtn").setAttribute("aria-expanded", "false");
       try { localStorage.setItem("bazar-lang", code); } catch (e) {}
     }
     document.addEventListener("click", function (e) {
-      if (!e.target.closest("#langWrap")) document.getElementById("langMenu").classList.remove("open");
+      if (!e.target.closest("#langWrap")) {
+        document.getElementById("langMenu").classList.remove("open");
+        document.getElementById("langBtn").setAttribute("aria-expanded", "false");
+      }
     });
     try { var sl = localStorage.getItem("bazar-lang"); if (sl && flags[sl]) setLang(sl); } catch (e) {}
 
-    // Pre-select mode, role & OAuth errors from URL query params
     (function syncQueryParams() {
       try {
         var params = new URLSearchParams(window.location.search);

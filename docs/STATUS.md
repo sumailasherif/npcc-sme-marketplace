@@ -39,8 +39,13 @@ Shared: `brand.css`, `app.css`, `i18n.js` (EN / FR / Kreol), `doc-tools.js`
 ### Known gaps
 - Real businesses and their photos shown as if they're on Bazar — replace or
   mark "Not on Bazar yet".
-- `auth.html` uses the Tailwind CDN; dashboard has no language button yet.
 - Kreol / French need a native-speaker check.
+
+### Frontend polish (29 Nov)
+- Docked the light/dark theme toggle inside every header bar (removing overlaps on Map and Dashboard) and gated the draft `Edit text` tool behind `?edit=1`.
+- Restyled `auth.html` with `brand.css` (removed the Tailwind Play CDN and user-facing "Resend" vendor text).
+- Added `/s/[slug]` public shop storefront pages (`src/app/s/[slug]/page.tsx`) for both real Supabase shops and the 43 showcase shops, with OpenGraph previews, WhatsApp order links, and cart sync.
+- Connected all 43 showcase shops onto `map.html` (`shops-data.js`), switched dark-mode maps to OpenFreeMap's native dark vector style, wired `/api/me` auth state and `localStorage` cart/saved items across screens, and added EN/FR/Kreol translations to `dashboard.html` and Home.
 
 ### Backend (reconnected 28 Nov)
 - Screens moved from `site/` to `public/`; Next.js serves them at
