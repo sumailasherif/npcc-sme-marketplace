@@ -745,48 +745,87 @@
         <button type="button" class="more" onclick="openLoc()" data-text="shops.more">Change area</button>
       </div>
       <div class="scroller shops-row">
-        <a href="#" class="shop">
+        <article class="shop reveal-up">
           <div class="cover"><img src="photos/shop-bookcourt.jpg" alt="Bookcourt Caudan Waterfront"><span class="badge" data-text="shops.1-badge">Caudan · Open</span><span class="dist">0.5 km</span></div>
           <div class="info"><span class="mono">B</span><div><div class="name" data-text="shops.1-name">Bookcourt Caudan</div><div class="meta" data-text="shops.1-meta">Books &amp; Gifts · Port Louis</div></div></div>
-        </a>
-        <a href="#" class="shop">
+          <div class="shop-foot">
+            <button type="button" class="rate-pill" onclick="openRatings('Bookcourt Caudan', '4.9', 142)"><span class="star">★</span> 4.9 (142)</button>
+            <button type="button" class="shop-msg-btn" onclick="openMessages('Bookcourt Caudan')">Message</button>
+          </div>
+        </article>
+        <article class="shop reveal-up">
           <div class="cover"><img src="photos/shop-dodo-cafe.jpg" alt="Dodo Café Boutique"><span class="badge" data-text="shops.2-badge">Local Roastery</span><span class="dist">0.8 km</span></div>
           <div class="info"><span class="mono">D</span><div><div class="name" data-text="shops.2-name">Dodo Café Boutique</div><div class="meta" data-text="shops.2-meta">Coffee &amp; Lifestyle · Pereybere</div></div></div>
-        </a>
-        <a href="#" class="shop">
+          <div class="shop-foot">
+            <button type="button" class="rate-pill" onclick="openRatings('Dodo Café Boutique', '4.9', 218)"><span class="star">★</span> 4.9 (218)</button>
+            <button type="button" class="shop-msg-btn" onclick="openMessages('Dodo Café Boutique')">Message</button>
+          </div>
+        </article>
+        <article class="shop reveal-up">
           <div class="cover"><img src="photos/shop-chelseas.jpg" alt="Chelsea's Cup N Cake"><span class="badge" data-text="shops.3-badge">Delivers today</span><span class="dist">1.1 km</span></div>
           <div class="info"><span class="mono">C</span><div><div class="name" data-text="shops.3-name">Chelsea's Cup N Cake</div><div class="meta" data-text="shops.3-meta">Patisserie · Curepipe</div></div></div>
-        </a>
-        <a href="#" class="shop">
+          <div class="shop-foot">
+            <button type="button" class="rate-pill" onclick="openRatings('Chelsea\'s Cup N Cake', '5.0', 186)"><span class="star">★</span> 5.0 (186)</button>
+            <button type="button" class="shop-msg-btn" onclick="openMessages('Chelsea\'s Cup N Cake')">Message</button>
+          </div>
+        </article>
+        <article class="shop reveal-up">
           <div class="cover"><img src="photos/shop-le-fournil.jpg" alt="Le Fournil Bakery"><span class="badge" data-text="shops.4-badge">Fresh daily</span><span class="dist">1.4 km</span></div>
           <div class="info"><span class="mono">L</span><div><div class="name" data-text="shops.4-name">Le Fournil Bakery</div><div class="meta" data-text="shops.4-meta">Bakery · Grand Baie</div></div></div>
-        </a>
+          <div class="shop-foot">
+            <button type="button" class="rate-pill" onclick="openRatings('Le Fournil Bakery', '4.8', 164)"><span class="star">★</span> 4.8 (164)</button>
+            <button type="button" class="shop-msg-btn" onclick="openMessages('Le Fournil Bakery')">Message</button>
+          </div>
+        </article>
       </div>
     </section>
 
-    <!-- 5. PRODUCTS -->
+    <!-- 5. PRODUCTS (With Ratings & 1-Tap Add to Delivery) -->
     <section>
       <div class="row-head">
         <h2 class="t-h2" data-text="products.title">Picked for you</h2>
-        <a href="#" class="more" data-text="products.more">See all</a>
+        <button type="button" class="more" onclick="openDeliveryDrawer()" data-text="products.more">Delivery options ↗</button>
       </div>
       <div class="grid">
-        <div class="prod"><div class="ph"><img src="photos/prod-cake.jpg" alt="Signature Chocolate Fudge Cake"><span class="tag">Same-day</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
-          <div class="name" data-text="p.1-name">Signature chocolate fudge cake</div><div class="shopname" data-text="p.1-shop">Chelsea's Cup N Cake · Curepipe</div><div class="price-row"><span class="price" data-text="p.1-price">Rs 950</span><span class="deal">Popular</span></div></div>
-        <div class="prod"><div class="ph"><img src="photos/prod-coffee.jpg" alt="Single-Origin Mauritian Roast"><span class="tag">Made in MU</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
-          <div class="name" data-text="p.2-name">Single-origin roasted beans, 250g</div><div class="shopname" data-text="p.2-shop">Dodo Café Boutique · Pereybere</div><div class="price-row"><span class="price" data-text="p.2-price">Rs 420</span></div></div>
-        <div class="prod"><div class="ph"><img src="photos/prod-croissant.jpg" alt="Artisan Butter Croissants Box"><span class="tag">Fresh</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
-          <div class="name" data-text="p.3-name">Artisan butter croissants (box of 4)</div><div class="shopname" data-text="p.3-shop">Le Fournil · Grand Baie</div><div class="price-row"><span class="price" data-text="p.3-price">Rs 280</span></div></div>
-        <div class="prod"><div class="ph"><img src="photos/prod-iphone.jpg" alt="Refurbished Smartphone 128GB"><span class="tag">Warranty</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
-          <div class="name" data-text="p.4-name">iPhone 13, 128GB (Certified)</div><div class="shopname" data-text="p.4-shop">St Jean Tech Hub · Quatre Bornes</div><div class="price-row"><span class="price" data-text="p.4-price">Rs 18,500</span></div></div>
-        <div class="prod"><div class="ph"><img src="photos/prod-bag.jpg" alt="Handwoven Raffia Tote Bag"><span class="tag">Made in MU</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
-          <div class="name" data-text="p.5-name">Handwoven raffia beach tote</div><div class="shopname" data-text="p.5-shop">Caudan Craft Market · Port Louis</div><div class="price-row"><span class="price" data-text="p.5-price">Rs 1,200</span></div></div>
-        <div class="prod"><div class="ph"><img src="photos/prod-earrings.jpg" alt="Island Gold Drop Earrings"><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
-          <div class="name" data-text="p.6-name">Island gold drop earrings</div><div class="shopname" data-text="p.6-shop">Goyco Boutique · Pereybere</div><div class="price-row"><span class="price" data-text="p.6-price">Rs 650</span></div></div>
-        <div class="prod"><div class="ph"><img src="photos/prod-samosa.jpg" alt="Fresh Mauritian Samoussas"><span class="tag">Fresh</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
-          <div class="name" data-text="p.7-name">Mauritian samoussas (box of 12)</div><div class="shopname" data-text="p.7-shop">La Flore Boodhoo · Port Louis</div><div class="price-row"><span class="price" data-text="p.7-price">Rs 180</span><span class="deal">Under Rs 200</span></div></div>
-        <div class="prod"><div class="ph"><img src="photos/prod-soap.jpg" alt="Natural Artisan Soap Bar"><span class="tag">Made in MU</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
-          <div class="name" data-text="p.8-name">Botanical handmade soap bar</div><div class="shopname" data-text="p.8-shop">Caudan Craft Market · Port Louis</div><div class="price-row"><span class="price" data-text="p.8-price">Rs 165</span></div></div>
+        <div class="prod reveal-up"><div class="ph"><img src="photos/prod-cake.jpg" alt="Signature Chocolate Fudge Cake"><span class="tag">Same-day</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.1-name">Signature chocolate fudge cake</div><div class="shopname" data-text="p.1-shop">Chelsea's Cup N Cake · Curepipe</div>
+          <button type="button" class="prod-rating" onclick="openRatings('Signature chocolate fudge cake', '5.0', 94)"><i>★</i> 5.0 (94)</button>
+          <div class="price-row"><span class="price" data-text="p.1-price">Rs 950</span><button type="button" class="add-deliv-btn" onclick="addToDelivery(this, 'Signature chocolate fudge cake', 950, 'photos/prod-cake.jpg')">+ Add</button></div></div>
+
+        <div class="prod reveal-up"><div class="ph"><img src="photos/prod-coffee.jpg" alt="Single-Origin Mauritian Roast"><span class="tag">Made in MU</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.2-name">Single-origin roasted beans, 250g</div><div class="shopname" data-text="p.2-shop">Dodo Café Boutique · Pereybere</div>
+          <button type="button" class="prod-rating" onclick="openRatings('Single-origin roasted beans', '4.9', 76)"><i>★</i> 4.9 (76)</button>
+          <div class="price-row"><span class="price" data-text="p.2-price">Rs 420</span><button type="button" class="add-deliv-btn" onclick="addToDelivery(this, 'Single-origin roasted beans', 420, 'photos/prod-coffee.jpg')">+ Add</button></div></div>
+
+        <div class="prod reveal-up"><div class="ph"><img src="photos/prod-croissant.jpg" alt="Artisan Butter Croissants Box"><span class="tag">Fresh</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.3-name">Artisan butter croissants (box of 4)</div><div class="shopname" data-text="p.3-shop">Le Fournil · Grand Baie</div>
+          <button type="button" class="prod-rating" onclick="openRatings('Artisan butter croissants', '4.9', 112)"><i>★</i> 4.9 (112)</button>
+          <div class="price-row"><span class="price" data-text="p.3-price">Rs 280</span><button type="button" class="add-deliv-btn" onclick="addToDelivery(this, 'Artisan butter croissants', 280, 'photos/prod-croissant.jpg')">+ Add</button></div></div>
+
+        <div class="prod reveal-up"><div class="ph"><img src="photos/resell-iphone.jpg" alt="Refurbished Smartphone 128GB" style="background:#fff;object-fit:contain;padding:12px;"><span class="tag">Warranty</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.4-name">iPhone 13 Pro, 256GB (Certified)</div><div class="shopname" data-text="p.4-shop">St Jean Tech Hub · Quatre Bornes</div>
+          <button type="button" class="prod-rating" onclick="openRatings('iPhone 13 Pro Certified', '4.8', 41)"><i>★</i> 4.8 (41)</button>
+          <div class="price-row"><span class="price" data-text="p.4-price">Rs 24,500</span><button type="button" class="add-deliv-btn" onclick="addToDelivery(this, 'iPhone 13 Pro Certified', 24500, 'photos/resell-iphone.jpg')">+ Add</button></div></div>
+
+        <div class="prod reveal-up"><div class="ph"><img src="photos/prod-bag.jpg" alt="Handwoven Raffia Tote Bag"><span class="tag">Made in MU</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.5-name">Handwoven raffia beach tote</div><div class="shopname" data-text="p.5-shop">Caudan Craft Market · Port Louis</div>
+          <button type="button" class="prod-rating" onclick="openRatings('Handwoven raffia beach tote', '4.9', 53)"><i>★</i> 4.9 (53)</button>
+          <div class="price-row"><span class="price" data-text="p.5-price">Rs 1,200</span><button type="button" class="add-deliv-btn" onclick="addToDelivery(this, 'Handwoven raffia beach tote', 1200, 'photos/prod-bag.jpg')">+ Add</button></div></div>
+
+        <div class="prod reveal-up"><div class="ph"><img src="photos/prod-earrings.jpg" alt="Island Gold Drop Earrings"><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.6-name">Island gold drop earrings</div><div class="shopname" data-text="p.6-shop">Goyco Boutique · Pereybere</div>
+          <button type="button" class="prod-rating" onclick="openRatings('Island gold drop earrings', '4.8', 38)"><i>★</i> 4.8 (38)</button>
+          <div class="price-row"><span class="price" data-text="p.6-price">Rs 650</span><button type="button" class="add-deliv-btn" onclick="addToDelivery(this, 'Island gold drop earrings', 650, 'photos/prod-earrings.jpg')">+ Add</button></div></div>
+
+        <div class="prod reveal-up"><div class="ph"><img src="photos/prod-samosa.jpg" alt="Fresh Mauritian Samoussas"><span class="tag">Fresh</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.7-name">Mauritian samoussas (box of 12)</div><div class="shopname" data-text="p.7-shop">La Flore Boodhoo · Port Louis</div>
+          <button type="button" class="prod-rating" onclick="openRatings('Mauritian samoussas (box of 12)', '5.0', 204)"><i>★</i> 5.0 (204)</button>
+          <div class="price-row"><span class="price" data-text="p.7-price">Rs 180</span><span class="deal">Under Rs 200</span><button type="button" class="add-deliv-btn" onclick="addToDelivery(this, 'Mauritian samoussas (box of 12)', 180, 'photos/prod-samosa.jpg')">+ Add</button></div></div>
+
+        <div class="prod reveal-up"><div class="ph"><img src="photos/prod-soap.jpg" alt="Natural Artisan Soap Bar"><span class="tag">Made in MU</span><button type="button" class="save" aria-label="Save item" onclick="toggleSave(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9Z"/></svg></button></div>
+          <div class="name" data-text="p.8-name">Botanical handmade soap bar</div><div class="shopname" data-text="p.8-shop">Caudan Craft Market · Port Louis</div>
+          <button type="button" class="prod-rating" onclick="openRatings('Botanical handmade soap bar', '4.7', 29)"><i>★</i> 4.7 (29)</button>
+          <div class="price-row"><span class="price" data-text="p.8-price">Rs 165</span><button type="button" class="add-deliv-btn" onclick="addToDelivery(this, 'Botanical handmade soap bar', 165, 'photos/prod-soap.jpg')">+ Add</button></div></div>
       </div>
     </section>
 

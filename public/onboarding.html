@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e6">
+  <title>Bazar — Create your shop</title>
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    :focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+    [hidden] { display: none !important; }
+    body { min-height: 100svh; display: flex; flex-direction: column; }
+
+    /* Top bar */
+    .ob-bar { height: var(--top-bar); }
+    .ob-bar .wrap { height: 100%; display: flex; align-items: center; gap: 12px; }
+    .logo { background: var(--lime); padding: 4px 10px; border-radius: 8px; font-size: 18px; font-weight: 700; letter-spacing: -0.04em; }
+    .ob-bar .right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+    /* Language switcher (same as Home) */
+    .pop-wrap { position: relative; }
+    .lang-btn { width: 36px; height: 36px; border-radius: 999px; background: var(--lime); border: 2px solid var(--black); display: grid; place-items: center; padding: 0; }
+    .lang-btn svg { width: 22px; height: 22px; border-radius: 999px; display: block; }
+    .pop-menu { position: absolute; top: calc(100% + 8px); right: 0; z-index: 60; min-width: 196px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 6px; box-shadow: 0 14px 32px rgba(14, 14, 12, 0.18); display: none; flex-direction: column; gap: 2px; }
+    .pop-menu.open { display: flex; }
+    .pop-menu button { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; font-size: 13px; font-weight: 600; text-align: left; width: 100%; }
+    .pop-menu button:hover { background: var(--cream); }
+    .pop-menu button.on { background: var(--black); color: var(--lime); }
+    .pop-menu svg { width: 18px; height: 18px; flex: none; }
+
+    /* Card */
+    main { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 8px var(--gutter) 40px; }
+    .ob { width: 100%; max-width: 540px; }
+    .ob-head h1 { font-size: var(--h1); line-height: var(--h1-lh); font-weight: 600; letter-spacing: -0.03em; }
+    .ob-head p { margin-top: 6px; color: var(--muted); font-size: var(--body); }
+    .steps { display: flex; gap: 6px; margin: 18px 0 14px; }
+    .steps i { flex: 1; height: 6px; border-radius: 999px; background: var(--line); }
+    .steps i.on { background: var(--black); }
+    .steps i.done { background: var(--lime); box-shadow: inset 0 0 0 1px var(--black); }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lime-ink); }
+    .card h2 { font-size: var(--h3); font-weight: 600; letter-spacing: -0.02em; margin-top: 2px; }
+
+    label { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--black-2); }
+    input, select, textarea {
+      font: inherit; font-size: 15px; color: var(--black); width: 100%;
+      border: 1px solid var(--line); background: var(--cream); border-radius: 14px; padding: 0 14px; height: 48px;
+    }
+    textarea { height: auto; min-height: 90px; padding: 12px 14px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: 0; border-color: var(--black); background: var(--card); }
+    .hint { font-size: 11.5px; font-weight: 500; color: var(--muted); }
+    .err { font-size: 12px; font-weight: 600; color: #b83232; }
+    .ok-tag { font-size: 12px; font-weight: 700; color: var(--lime-ink); }
+
+    .link-box { display: flex; align-items: center; border: 1px solid var(--line); background: var(--cream); border-radius: 14px; overflow: hidden; }
+    .link-box:focus-within { border-color: var(--black); background: var(--card); }
+    .link-box span { padding: 0 2px 0 14px; color: var(--muted); font-size: 14px; white-space: nowrap; }
+    .link-box input { border: 0; background: transparent; padding-left: 2px; }
+
+    .cats { display: flex; flex-wrap: wrap; gap: 8px; }
+    .cat { padding: 9px 14px; border-radius: 999px; background: var(--cream); border: 1px solid var(--line); font-size: 13px; font-weight: 600; }
+    .cat:hover { border-color: var(--black); }
+    .cat.on { background: var(--black); color: var(--lime); border-color: var(--black); }
+
+    .phone-box { display: flex; align-items: center; border: 1px solid var(--line); background: var(--cream); border-radius: 14px; }
+    .phone-box:focus-within { border-color: var(--black); background: var(--card); }
+    .phone-box span { padding: 0 4px 0 14px; font-weight: 700; font-size: 15px; }
+    .phone-box input { border: 0; background: transparent; }
+
+    .logo-pick { display: flex; align-items: center; gap: 14px; }
+    .logo-prev { width: 72px; height: 72px; border-radius: 18px; background: var(--black); color: var(--lime); display: grid; place-items: center; font-size: 24px; font-weight: 700; overflow: hidden; flex: none; }
+    .logo-prev img { width: 100%; height: 100%; object-fit: cover; }
+
+    .actions { display: flex; gap: 8px; margin-top: 4px; }
+    .actions .btn { flex: 1; }
+    .btn { border: 0; }
+    .btn-ghost { background: var(--cream); border: 1px solid var(--line); color: var(--black); }
+    .btn[disabled] { opacity: .55; cursor: default; }
+    .notice { background: #fdf1d6; border: 1px solid #f6b93b; border-radius: 14px; padding: 10px 14px; font-size: 12.5px; font-weight: 600; margin-bottom: 12px; }
+
+    /* Done */
+    .done { text-align: center; align-items: center; }
+    .done .big { width: 64px; height: 64px; border-radius: 999px; background: var(--lime); display: grid; place-items: center; font-size: 30px; box-shadow: inset 0 0 0 2px var(--black); }
+    .share { display: flex; align-items: center; gap: 8px; width: 100%; background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: 8px 8px 8px 14px; }
+    .share code { flex: 1; text-align: left; font: 600 13px/1.3 var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+  <header class="ob-bar">
+    <div class="wrap">
+      <a href="/" class="logo" data-text="bar.logo">bazar</a>
+      <div class="right">
+        <div class="pop-wrap">
+          <button type="button" class="lang-btn" id="langBtn" aria-label="Change language" onclick="togglePop('langMenu')">
+            <svg viewBox="0 0 60 60" id="langFlagSvg"><clipPath id="o-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#o-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg>
+          </button>
+          <div class="pop-menu" id="langMenu" role="menu">
+            <button type="button" class="on" data-lang="en" onclick="setLang('en')"><svg viewBox="0 0 60 60"><clipPath id="om-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#om-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g></svg> English</button>
+            <button type="button" data-lang="fr" onclick="setLang('fr')"><svg viewBox="0 0 60 60"><clipPath id="om-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#om-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g></svg> Français</button>
+            <button type="button" data-lang="mfe" onclick="setLang('mfe')"><svg viewBox="0 0 60 60"><clipPath id="om-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#om-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g></svg> Kreol Morisien</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="ob">
+      <div id="setupNotice" class="notice" hidden>Sign-in isn't set up yet — add your Supabase keys to .env. You can look through the steps, but the shop won't be saved.</div>
+
+      <div class="ob-head">
+        <h1 data-text="ob.title">Create your shop</h1>
+        <p data-text="ob.sub">Three quick steps. You get your own shop link to share anywhere.</p>
+      </div>
+      <div class="steps" aria-hidden="true"><i id="st1" class="on"></i><i id="st2"></i><i id="st3"></i></div>
+
+      <!-- STEP 1: name + link -->
+      <section class="card" id="step1">
+        <div><span class="kicker" data-text="ob.k1">Step 1 of 3</span><h2 data-text="ob.h1">Your shop name</h2></div>
+        <label>Shop name
+          <input id="name" maxlength="60" autocomplete="organization" placeholder="e.g. Rosie's Cakes" oninput="nameChanged()">
+          <span class="err" id="e-name" hidden></span>
+        </label>
+        <label>Your shop link
+          <span class="link-box"><span>bazar.mu/s/</span><input id="slug" maxlength="40" autocapitalize="off" spellcheck="false" placeholder="rosies-cakes" oninput="slugTyped()"></span>
+          <span class="hint" id="slugStatus">Letters, numbers and dashes. You can change it.</span>
+        </label>
+        <div class="actions"><button type="button" class="btn btn-black" onclick="goStep(2)">Next</button></div>
+      </section>
+
+      <!-- STEP 2: category + district -->
+      <section class="card" id="step2" hidden>
+        <div><span class="kicker" data-text="ob.k2">Step 2 of 3</span><h2 data-text="ob.h2">What you sell, and where</h2></div>
+        <div>
+          <div style="font-size:12.5px;font-weight:600;color:var(--black-2);margin-bottom:8px;">Category</div>
+          <div class="cats" id="cats" role="radiogroup" aria-label="Category"><span class="hint">Loading…</span></div>
+          <span class="err" id="e-categoryId" hidden></span>
+        </div>
+        <label>District
+          <select id="district">
+            <option value="">Choose your district</option>
+            <option value="port_louis">Port Louis</option>
+            <option value="pamplemousses">Pamplemousses</option>
+            <option value="riviere_du_rempart">Rivière du Rempart</option>
+            <option value="flacq">Flacq</option>
+            <option value="grand_port">Grand Port</option>
+            <option value="savanne">Savanne</option>
+            <option value="black_river">Black River</option>
+            <option value="plaines_wilhems">Plaines Wilhems</option>
+            <option value="moka">Moka</option>
+            <option value="rodrigues">Rodrigues</option>
+          </select>
+          <span class="err" id="e-district" hidden></span>
+        </label>
+        <div class="actions">
+          <button type="button" class="btn btn-ghost" onclick="goStep(1)">Back</button>
+          <button type="button" class="btn btn-black" onclick="goStep(3)">Next</button>
+        </div>
+      </section>
+
+      <!-- STEP 3: WhatsApp + logo + description -->
+      <section class="card" id="step3" hidden>
+        <div><span class="kicker" data-text="ob.k3">Step 3 of 3</span><h2 data-text="ob.h3">How customers reach you</h2></div>
+        <label>WhatsApp number
+          <span class="phone-box"><span>+230</span><input id="phone" inputmode="tel" autocomplete="tel-national" placeholder="5123 4567"></span>
+          <span class="hint">Customers can message you here about orders.</span>
+          <span class="err" id="e-whatsappPhone" hidden></span>
+        </label>
+        <div>
+          <div style="font-size:12.5px;font-weight:600;color:var(--black-2);margin-bottom:8px;">Logo (optional)</div>
+          <div class="logo-pick">
+            <span class="logo-prev" id="logoPrev">B</span>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <button type="button" class="btn btn-ghost" style="min-height:40px;font-size:13px;" onclick="pickLogo()">Upload logo</button>
+              <span class="hint">JPG, PNG or WebP, up to 2 MB</span>
+            </div>
+          </div>
+          <span class="err" id="e-logoUrl" hidden></span>
+        </div>
+        <label>Short description (optional)
+          <textarea id="desc" maxlength="500" placeholder="e.g. Homemade cakes for birthdays and weddings, delivered in Curepipe." oninput="document.getElementById('descCount').textContent = this.value.length + ' / 500'"></textarea>
+          <span class="hint" id="descCount">0 / 500</span>
+        </label>
+        <p class="err" id="formErr" hidden></p>
+        <div class="actions">
+          <button type="button" class="btn btn-ghost" onclick="goStep(2)">Back</button>
+          <button type="button" class="btn btn-lime" id="createBtn" onclick="createShop()">Create my shop</button>
+        </div>
+      </section>
+
+      <!-- DONE -->
+      <section class="card done" id="stepDone" hidden>
+        <span class="big">✓</span>
+        <h2 style="font-size:var(--h2)">Your shop is live!</h2>
+        <p class="hint" style="font-size:13px">Share your link on WhatsApp, Facebook or Instagram. We'll check your shop and add the verified badge soon.</p>
+        <div class="share"><code id="shopLink"></code><button type="button" class="btn btn-black" style="min-height:40px;font-size:13px;padding:0 16px" onclick="copyLink(this)">Copy</button></div>
+        <a class="btn btn-lime" href="/dashboard" style="width:100%">Go to my dashboard</a>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    var ERRORS = {
+      nameTooShort: "Please use at least 2 letters.", tooLong: "That's too long.", required: "Please choose one.",
+      slugFormat: "Use 3–40 letters, numbers or dashes (no dash at the start or end).", slugReserved: "That link is reserved. Try another.",
+      slugTaken: "That link is already taken. Try another.", phoneFormat: "Enter a Mauritius mobile number, e.g. 5123 4567.",
+      uploadFailed: "The logo didn't upload. Try again.", imageType: "Please use a JPG, PNG or WebP image.", imageTooBig: "The logo must be 2 MB or less.",
+      alreadyHasShop: "You already have a shop.", notConfigured: "Sign-in isn't set up yet (Supabase keys missing).",
+      generic: "Something went wrong. Please try again.", network: "No connection. Check your internet and try again."
+    };
+    var state = { categoryId: "", logoUrl: "", slugEdited: false, slugOk: false, configured: true };
+
+    /* Who is signed in? */
+    fetch("/api/me").then(function (r) { return r.json(); }).then(function (me) {
+      if (me.error === "notConfigured") { state.configured = false; document.getElementById("setupNotice").hidden = false; loadCategories(); return; }
+      if (!me.signedIn) { location.replace("/auth?next=/onboarding&role=business"); return; }
+      if (me.shop) { location.replace("/dashboard"); return; }
+      loadCategories();
+    }).catch(function () { loadCategories(); });
+
+    /* Step 1: name → link (same rules as the server) */
+    function slugify(s) {
+      return s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, "").toLowerCase().replace(/&/g, " and ")
+        .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40).replace(/-+$/g, "");
+    }
+    function initials(s) { return (s.trim().split(/\s+/).map(function (w) { return w.charAt(0); }).join("").slice(0, 2) || "B").toUpperCase(); }
+    function nameChanged() {
+      var n = document.getElementById("name").value;
+      if (!state.logoUrl) document.getElementById("logoPrev").textContent = initials(n);
+      if (!state.slugEdited) { document.getElementById("slug").value = slugify(n); checkSlug(); }
+    }
+    function slugTyped() {
+      state.slugEdited = true;
+      var el = document.getElementById("slug");
+      el.value = el.value.toLowerCase().replace(/[^a-z0-9-]/g, "");
+      checkSlug();
+    }
+    var slugTimer = null;
+    function checkSlug() {
+      clearTimeout(slugTimer);
+      var s = document.getElementById("slug").value, out = document.getElementById("slugStatus");
+      state.slugOk = false;
+      if (!s) { out.className = "hint"; out.textContent = "Letters, numbers and dashes. You can change it."; return; }
+      out.className = "hint"; out.textContent = "Checking…";
+      slugTimer = setTimeout(function () {
+        if (!state.configured) { out.className = "hint"; out.textContent = "bazar.mu/s/" + s; state.slugOk = /^[a-z0-9]([a-z0-9-]{1,38})[a-z0-9]$/.test(s); return; }
+        fetch("/api/shops/slug-check?slug=" + encodeURIComponent(s)).then(function (r) { return r.json(); }).then(function (res) {
+          if (document.getElementById("slug").value !== s) return;
+          if (!res.ok) { out.className = "err"; out.textContent = ERRORS[res.error] || ERRORS.slugFormat; return; }
+          state.slugOk = res.available;
+          out.className = res.available ? "ok-tag" : "err";
+          out.textContent = res.available ? "✓ bazar.mu/s/" + res.slug + " is free" : ERRORS.slugTaken;
+        }).catch(function () { out.className = "err"; out.textContent = ERRORS.network; });
+      }, 350);
+    }
+
+    /* Step 2: categories from Supabase, names in the chosen language */
+    function lang() { try { return localStorage.getItem("bazar-lang") || "en"; } catch (e) { return "en"; } }
+    function loadCategories() {
+      fetch("/api/categories").then(function (r) { return r.json(); }).then(function (res) {
+        var wrap = document.getElementById("cats");
+        if (!res.ok) { wrap.innerHTML = '<span class="hint">Categories will appear once Supabase is connected.</span>'; return; }
+        wrap.innerHTML = "";
+        res.categories.filter(function (c) { return !c.parent_id; }).forEach(function (c) {
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "cat"; b.setAttribute("role", "radio");
+          b.setAttribute("data-no-i18n", "");
+          b.textContent = c["name_" + lang()] || c.name_en;
+          b.onclick = function () {
+            state.categoryId = c.id;
+            wrap.querySelectorAll(".cat").forEach(function (x) { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); });
+            showErr("categoryId", "");
+          };
+          wrap.appendChild(b);
+        });
+      }).catch(function () {});
+    }
+
+    /* Moving between steps, with a quick check of each step */
+    function showErr(field, key) {
+      var el = document.getElementById("e-" + field);
+      if (!el) return;
+      el.textContent = key ? (ERRORS[key] || ERRORS.generic) : "";
+      el.hidden = !key;
+    }
+    function goStep(n) {
+      if (n === 2 && !validStep1()) return;
+      if (n === 3 && !validStep2()) return;
+      [1, 2, 3].forEach(function (i) {
+        document.getElementById("step" + i).hidden = i !== n;
+        document.getElementById("st" + i).className = i < n ? "done" : i === n ? "on" : "";
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    function validStep1() {
+      var n = document.getElementById("name").value.trim();
+      showErr("name", n.length < 2 ? "nameTooShort" : "");
+      if (n.length < 2) return false;
+      if (!state.slugOk) { checkSlug(); document.getElementById("slug").focus(); return false; }
+      return true;
+    }
+    function validStep2() {
+      var d = document.getElementById("district").value;
+      showErr("categoryId", state.categoryId || !state.configured ? "" : "required");
+      showErr("district", d ? "" : "required");
+      return (state.categoryId || !state.configured) && !!d;
+    }
+
+    /* Step 3: logo upload to Supabase storage */
+    function pickLogo() {
+      var inp = document.createElement("input");
+      inp.type = "file"; inp.accept = "image/jpeg,image/png,image/webp";
+      inp.onchange = function () {
+        var f = inp.files && inp.files[0];
+        if (!f) return;
+        if (f.size > 2 * 1024 * 1024) { showErr("logoUrl", "imageTooBig"); return; }
+        var prev = document.getElementById("logoPrev");
+        prev.innerHTML = '<img alt="">';
+        prev.querySelector("img").src = URL.createObjectURL(f);
+        showErr("logoUrl", "");
+        if (!state.configured) return;
+        var fd = new FormData(); fd.append("file", f);
+        fetch("/api/shops/logo", { method: "POST", body: fd }).then(function (r) { return r.json(); }).then(function (res) {
+          if (res.ok) state.logoUrl = res.url; else showErr("logoUrl", res.error);
+        }).catch(function () { showErr("logoUrl", "uploadFailed"); });
+      };
+      inp.click();
+    }
+
+    /* Create the shop (POST /api/shops) */
+    function createShop() {
+      var btn = document.getElementById("createBtn"), err = document.getElementById("formErr");
+      err.hidden = true;
+      var body = {
+        name: document.getElementById("name").value.trim(), slug: document.getElementById("slug").value,
+        categoryId: state.categoryId, district: document.getElementById("district").value,
+        whatsappPhone: document.getElementById("phone").value, description: document.getElementById("desc").value.trim(),
+        logoUrl: state.logoUrl
+      };
+      if (!state.configured) { err.textContent = ERRORS.notConfigured; err.hidden = false; return; }
+      btn.disabled = true; btn.textContent = "Creating…";
+      fetch("/api/shops", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          btn.disabled = false; btn.textContent = "Create my shop";
+          if (res.ok) { done(res.shop); return; }
+          if (res.error === "notSignedIn") { location.replace("/auth?next=/onboarding&role=business"); return; }
+          if (res.error === "alreadyHasShop") { location.replace("/dashboard"); return; }
+          if (res.error === "validation") {
+            Object.keys(res.errors).forEach(function (f) { showErr(f, res.errors[f]); });
+            if (res.errors.name || res.errors.slug) { goStep(1); if (res.errors.slug) { var s = document.getElementById("slugStatus"); s.className = "err"; s.textContent = ERRORS[res.errors.slug]; } }
+            else if (res.errors.categoryId || res.errors.district) goStep(2);
+            return;
+          }
+          err.textContent = ERRORS[res.error] || ERRORS.generic; err.hidden = false;
+        })
+        .catch(function () { btn.disabled = false; btn.textContent = "Create my shop"; err.textContent = ERRORS.network; err.hidden = false; });
+    }
+    function done(shop) {
+      ["step1", "step2", "step3"].forEach(function (id) { document.getElementById(id).hidden = true; });
+      ["st1", "st2", "st3"].forEach(function (id) { document.getElementById(id).className = "done"; });
+      document.getElementById("shopLink").textContent = shop.url;
+      document.getElementById("stepDone").hidden = false;
+    }
+    function copyLink(btn) {
+      var t = document.getElementById("shopLink").textContent;
+      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { btn.textContent = "Copied ✓"; }).catch(function () {});
+    }
+
+    /* Language flag menu (same as Home); i18n.js does the translating */
+    function togglePop(id) { document.getElementById(id).classList.toggle("open"); }
+    document.addEventListener("click", function (e) { if (!e.target.closest(".pop-wrap")) document.getElementById("langMenu").classList.remove("open"); });
+    var flags = {
+      en: '<clipPath id="o-en"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#o-en)"><rect width="60" height="60" fill="#012169"/><path d="M0 0L60 60M60 0L0 60" stroke="#fff" stroke-width="10"/><path d="M0 0L60 60M60 0L0 60" stroke="#C8102E" stroke-width="5"/><path d="M30 0V60M0 30H60" stroke="#fff" stroke-width="14"/><path d="M30 0V60M0 30H60" stroke="#C8102E" stroke-width="8"/></g>',
+      fr: '<clipPath id="o-fr"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#o-fr)"><rect width="20" height="60" fill="#002395"/><rect x="20" width="20" height="60" fill="#fff"/><rect x="40" width="20" height="60" fill="#ED2939"/></g>',
+      mfe: '<clipPath id="o-mu"><circle cx="30" cy="30" r="30"/></clipPath><g clip-path="url(#o-mu)"><rect width="60" height="15" fill="#EA2839"/><rect y="15" width="60" height="15" fill="#1A206D"/><rect y="30" width="60" height="15" fill="#FFD500"/><rect y="45" width="60" height="15" fill="#00A551"/></g>'
+    };
+    function setLang(code) {
+      if (!flags[code]) return;
+      document.getElementById("langFlagSvg").innerHTML = flags[code];
+      document.querySelectorAll("#langMenu button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-lang") === code); });
+      document.getElementById("langMenu").classList.remove("open");
+      try { localStorage.setItem("bazar-lang", code); } catch (e) {}
+      loadCategories();   // category names come from Supabase in each language
+    }
+    try { var sl = localStorage.getItem("bazar-lang"); if (sl && flags[sl]) setLang(sl); } catch (e) {}
+  </script>
+  <script src="i18n.js"></script>
+  <script src="edit-text.js"></script>
+</body>
+</html>

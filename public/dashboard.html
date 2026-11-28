@@ -330,10 +330,10 @@
         <button class="icon-btn" aria-label="Notifications"><span class="dot"></span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
         </button>
-        <a href="auth.html" class="profile-chip" aria-label="Merchant profile">
-          <span class="profile-av">CC</span>
-          <span class="profile-meta"><b>Chelsea's Cake</b><span>Curepipe · Verified</span></span>
-        </a>
+        <button type="button" class="profile-chip" id="profileChip" aria-label="Merchant profile — sign out" onclick="signOut()">
+          <span class="profile-av" id="profileAv">CC</span>
+          <span class="profile-meta"><b id="profileName">Chelsea's Cake</b><span id="profilePlace">Curepipe · Verified</span></span>
+        </button>
       </div>
     </div>
   </header>
@@ -750,6 +750,36 @@
 
     /* ═════════ Business records (sample data for the prototype; the real app reads the database) ═════════ */
     var BUSINESS = { name: "Chelsea's Cake", place: "Curepipe, Mauritius", brn: "C12345678", vatNo: "VAT27012345" };
+
+    /* ═════════ Who is signed in? (Supabase via /api/me) ═════════
+       Signed out → sign-in screen. Signed in without a shop → create a shop.
+       Before the Supabase keys are set, the dashboard stays in demo mode. */
+    var DISTRICT_NAMES = { port_louis: "Port Louis", pamplemousses: "Pamplemousses", riviere_du_rempart: "Rivière du Rempart",
+      flacq: "Flacq", grand_port: "Grand Port", savanne: "Savanne", black_river: "Black River",
+      plaines_wilhems: "Plaines Wilhems", moka: "Moka", rodrigues: "Rodrigues" };
+    var STATUS_NAMES = { verified: "Verified", pending: "Awaiting check", rejected: "Not approved" };
+    fetch("/api/me").then(function (r) { return r.json(); }).then(function (me) {
+      if (me.error === "notConfigured") { demoNotice(); return; }
+      if (!me.signedIn) { location.replace("/auth?next=/dashboard&role=business"); return; }
+      if (!me.shop) { location.replace("/onboarding"); return; }
+      var s = me.shop, place = DISTRICT_NAMES[s.district] || "";
+      BUSINESS.name = s.name;
+      BUSINESS.place = place ? place + ", Mauritius" : "Mauritius";
+      document.getElementById("profileName").textContent = s.name;
+      document.getElementById("profilePlace").textContent = place + " · " + (STATUS_NAMES[s.verification_status] || "");
+      document.getElementById("profileAv").textContent = s.name.split(/\s+/).map(function (w) { return w.charAt(0); }).join("").slice(0, 2).toUpperCase();
+    }).catch(demoNotice);
+    function demoNotice() {
+      var n = document.createElement("div");
+      n.textContent = "Demo mode — sample data. Add your Supabase keys to .env to sign in for real.";
+      n.style.cssText = "background:#fdf1d6;border:1px solid #f6b93b;color:#0e0e0c;font-size:12px;font-weight:600;padding:8px 14px;border-radius:12px;margin:10px 0 0;";
+      var main = document.querySelector("main");
+      main.insertBefore(n, main.firstChild);
+    }
+    function signOut() {
+      if (!confirm("Sign out of Bazar?")) return;
+      fetch("/api/auth/sign-out", { method: "POST" }).finally(function () { location.href = "/auth"; });
+    }
     var PRODUCTS = [
       { name: "Signature fudge cake", cat: "Cakes", price: 950 },
       { name: "Cupcakes (box of 6)", cat: "Cupcakes", price: 480 },

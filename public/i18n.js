@@ -701,6 +701,71 @@
   T("Camera is blocked. Allow it in your browser's site settings, or use the button below.", "La caméra est bloquée. Autorisez-la dans les réglages du site, ou utilisez le bouton ci-dessous.", "Kamera bloke. Permet li dan reglaz sit-la, ouswa servi bouton anba-la.");
   T("No camera found. Use the button below to choose a photo.", "Aucune caméra trouvée. Utilisez le bouton ci-dessous pour choisir une photo.", "Pena kamera. Servi bouton anba-la pou swazir enn foto.");
 
+  /* ───────────── Real sign-in (auth.html) ───────────── */
+  T("Send code", "Recevoir un code", "Avoy mwa enn kod");
+  T("Sending…", "Envoi…", "Pe avoye…");
+  T("Check your email", "Vérifiez vos e-mails", "Get ou email");
+  T("Send a new code", "Renvoyer un code", "Avoy enn nouvo kod");
+  T("New code sent.", "Nouveau code envoyé.", "Nouvo kod finn avoye.");
+  T("Please enter a valid email address.", "Entrez une adresse e-mail valide.", "Met enn adres email ki bon.");
+  T("The code is 6 numbers.", "Le code contient 6 chiffres.", "Kod-la ena 6 sif.");
+  T("That code is wrong or has expired. Try again or send a new code.", "Ce code est faux ou a expiré. Réessayez ou demandez un nouveau code.", "Sa kod-la pa bon ouswa li finn expire. Reesey ouswa demann enn nouvo kod.");
+  T("Too many tries. Please wait a minute and try again.", "Trop d'essais. Patientez une minute puis réessayez.", "Tro boukou esey. Atann enn minit ek reesey.");
+  T("Sign-in isn't set up yet (Supabase keys missing).", "La connexion n'est pas encore configurée (clés Supabase manquantes).", "Konekte pankor pare (manke bann kle Supabase).");
+  T("Something went wrong. Please reload the page.", "Un problème est survenu. Rechargez la page.", "Ena enn problem. Rafresi paz-la.");
+  T("Something went wrong. Please try again.", "Un problème est survenu. Réessayez.", "Ena enn problem. Reesey.");
+  T("No connection. Check your internet and try again.", "Pas de connexion. Vérifiez internet et réessayez.", "Pena koneksion. Get ou internet ek reesey.");
+  T("Google sign-in is coming soon. Please use your email for now.", "La connexion Google arrive bientôt. Utilisez votre e-mail pour l'instant.", "Konekte ar Google pe vini byento. Servi ou email pou aster.");
+  T("Demo mode — sample data. Add your Supabase keys to .env to sign in for real.", "Mode démo — données d'exemple. Ajoutez vos clés Supabase dans .env pour vous connecter.", "Mod demo — done egzanp. Met ou kle Supabase dan .env pou konekte pou vre.");
+  T("Sign out of Bazar?", "Se déconnecter de Bazar ?", "Dekonekte dan Bazar?");
+
+  /* ───────────── Create your shop (onboarding.html) ───────────── */
+  T("Bazar — Create your shop", "Bazar — Créez votre boutique", "Bazar — Kre ou laboutik");
+  T("Create your shop", "Créez votre boutique", "Kre ou laboutik");
+  T("Three quick steps. You get your own shop link to share anywhere.", "Trois étapes rapides. Vous obtenez votre propre lien de boutique à partager partout.", "Trwa ti etap. Ou gagn ou prop lien laboutik pou partaz partou.");
+  T("Step 1 of 3", "Étape 1 sur 3", "Etap 1 lor 3");
+  T("Step 2 of 3", "Étape 2 sur 3", "Etap 2 lor 3");
+  T("Step 3 of 3", "Étape 3 sur 3", "Etap 3 lor 3");
+  T("Your shop name", "Le nom de votre boutique", "Nom ou laboutik");
+  T("Shop name", "Nom de la boutique", "Nom laboutik");
+  T("e.g. Rosie's Cakes", "ex. Rosie's Cakes", "par egzanp Rosie's Cakes");
+  T("Your shop link", "Le lien de votre boutique", "Lien ou laboutik");
+  T("Letters, numbers and dashes. You can change it.", "Lettres, chiffres et tirets. Vous pouvez le modifier.", "Let, sif ek tire. Ou kapav sanz li.");
+  T("Checking…", "Vérification…", "Pe verifie…");
+  T("Next", "Suivant", "Swivan");
+  T("Back", "Retour", "Retour");
+  T("What you sell, and where", "Ce que vous vendez, et où", "Ki ou vande, ek kot");
+  T("Loading…", "Chargement…", "Pe sarze…");
+  T("District", "District", "Distrik");
+  T("Choose your district", "Choisissez votre district", "Swazir ou distrik");
+  T("How customers reach you", "Comment les clients vous contactent", "Kouma kliyan kontak ou");
+  T("WhatsApp number", "Numéro WhatsApp", "Nimero WhatsApp");
+  T("Customers can message you here about orders.", "Les clients peuvent vous écrire ici pour leurs commandes.", "Kliyan kapav ekrir ou isi pou zot komand.");
+  T("Logo (optional)", "Logo (facultatif)", "Logo (si ou anvi)");
+  T("Upload logo", "Importer un logo", "Telesarz logo");
+  T("JPG, PNG or WebP, up to 2 MB", "JPG, PNG ou WebP, 2 Mo maximum", "JPG, PNG ouswa WebP, ziska 2 MB");
+  T("Short description (optional)", "Courte description (facultatif)", "Ti deskripsion (si ou anvi)");
+  T("e.g. Homemade cakes for birthdays and weddings, delivered in Curepipe.", "ex. Gâteaux faits maison pour anniversaires et mariages, livrés à Curepipe.", "par egzanp Gato fer lakaz pou anniverser ek maryaz, livre Curepipe.");
+  T("Create my shop", "Créer ma boutique", "Kre mo laboutik");
+  T("Creating…", "Création…", "Pe kre…");
+  T("Your shop is live!", "Votre boutique est en ligne !", "Ou laboutik an ligne!");
+  T("Share your link on WhatsApp, Facebook or Instagram. We'll check your shop and add the verified badge soon.", "Partagez votre lien sur WhatsApp, Facebook ou Instagram. Nous vérifierons votre boutique et ajouterons le badge vérifié bientôt.", "Partaz ou lien lor WhatsApp, Facebook ouswa Instagram. Nou pou verifie ou laboutik ek met badz verifie byento.");
+  T("Copy", "Copier", "Kopie");
+  T("Copied ✓", "Copié ✓", "Kopie ✓");
+  T("Go to my dashboard", "Aller à mon tableau de bord", "Al lor mo tablo");
+  T("Please use at least 2 letters.", "Utilisez au moins 2 lettres.", "Servi omwin 2 let.");
+  T("That's too long.", "C'est trop long.", "Sa tro long.");
+  T("Please choose one.", "Choisissez une option.", "Swazir enn.");
+  T("Use 3–40 letters, numbers or dashes (no dash at the start or end).", "Utilisez 3 à 40 lettres, chiffres ou tirets (pas de tiret au début ni à la fin).", "Servi 3–40 let, sif ouswa tire (pa met tire o koumansman ni lafin).");
+  T("That link is reserved. Try another.", "Ce lien est réservé. Essayez-en un autre.", "Sa lien-la rezerve. Esey enn lot.");
+  T("That link is already taken. Try another.", "Ce lien est déjà pris. Essayez-en un autre.", "Sa lien-la finn pran deza. Esey enn lot.");
+  T("Enter a Mauritius mobile number, e.g. 5123 4567.", "Entrez un numéro mobile mauricien, ex. 5123 4567.", "Met enn nimero portab Moris, par egzanp 5123 4567.");
+  T("The logo didn't upload. Try again.", "Le logo n'a pas pu être importé. Réessayez.", "Logo-la pa finn telesarze. Reesey.");
+  T("Please use a JPG, PNG or WebP image.", "Utilisez une image JPG, PNG ou WebP.", "Servi enn imaz JPG, PNG ouswa WebP.");
+  T("The logo must be 2 MB or less.", "Le logo doit faire 2 Mo maximum.", "Logo-la bizin 2 MB ouswa mwins.");
+  T("Categories will appear once Supabase is connected.", "Les catégories apparaîtront une fois Supabase connecté.", "Bann kategori pou paret kan Supabase konekte.");
+  T("Sign-in isn't set up yet — add your Supabase keys to .env. You can look through the steps, but the shop won't be saved.", "La connexion n'est pas encore configurée — ajoutez vos clés Supabase dans .env. Vous pouvez parcourir les étapes, mais la boutique ne sera pas enregistrée.", "Konekte pankor pare — met ou kle Supabase dan .env. Ou kapav get bann etap, me laboutik pa pou sove.");
+
   /* ═════════════ Engine (no need to edit below) ═════════════ */
   var ATTRS = ["placeholder", "aria-label", "alt", "title"];
   var SKIP = "script,style,svg,textarea,[data-no-i18n],#edit-bar";
