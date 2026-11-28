@@ -1,8 +1,23 @@
-/* Bazar brand. Colours + font. Every page links this file. */
+/* Bazar brand. Colours, font, screen sizes and text sizes.
+   Every screen links this file. */
 
 /* Inter with its optical-size axis: big text automatically uses the
    "Display" cut (tighter, sharper), small text uses the normal cut. */
 @import url("https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap");
+
+/* ───────────────────────── SCREEN SIZES ─────────────────────────
+   We design every screen at three sizes.
+
+   Device   Range (width)     Design at     Preview frame
+   Phone    0   – 767px       390px         390 × 844   (iPhone 14/15)
+   Tablet   768 – 1279px      820px         820 × 1180  (iPad Air)
+   Laptop   1280px and up     1440px        1440 × 900
+
+   In CSS, use exactly these two media queries:
+     @media (min-width: 768px)  { tablet and up }
+     @media (min-width: 1280px) { laptop }
+   (Phone styles are the default, written first.)
+   ───────────────────────────────────────────────────────────────── */
 
 :root {
   /* Colour */
@@ -17,17 +32,90 @@
 
   /* Font */
   --font: "Inter", system-ui, sans-serif;
+
+  /* Layout — phone values */
+  --gutter: 16px;        /* space at the left/right edge of the screen */
+  --max: 100%;           /* widest the content gets */
+  --top-bar: 56px;       /* app bar height */
+  --tab-bar: 64px;       /* bottom tab bar height (phone + tablet) */
+  --tap: 44px;           /* smallest tap target */
+
+  /* Text sizes — phone values (size / line height) */
+  --hero: 40px;    --hero-lh: 1.04;
+  --h1: 28px;      --h1-lh: 1.15;
+  --h2: 22px;      --h2-lh: 1.2;
+  --h3: 18px;      --h3-lh: 1.3;
+  --body-l: 16px;  --body-l-lh: 1.5;
+  --body: 14px;    --body-lh: 1.45;
+  --label: 13px;
+  --caption: 12px;
+}
+
+@media (min-width: 768px) {          /* TABLET */
+  :root {
+    --gutter: 32px;
+    --max: 720px;
+    --top-bar: 64px;
+    --hero: 60px;
+    --h1: 34px;
+    --h2: 26px;
+    --h3: 20px;
+    --body-l: 18px;
+    --body: 15px;
+  }
+}
+
+@media (min-width: 1280px) {         /* LAPTOP */
+  :root {
+    --gutter: 48px;
+    --max: 1200px;
+    --top-bar: 72px;
+    --tab-bar: 0px;      /* no bottom bar on laptop; menu moves to the top */
+    --hero: 84px;
+    --h1: 44px;
+    --h2: 30px;
+    --h3: 22px;
+    --body-l: 20px;
+    --body: 15px;
+  }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
   background: var(--cream);
   color: var(--black);
   font-family: var(--font);
+  font-size: var(--body);
+  line-height: var(--body-lh);
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 h1, h2, h3, p { margin: 0; }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+/* Shared text styles */
+.t-hero { font-size: var(--hero); line-height: var(--hero-lh); font-weight: 600; letter-spacing: -0.045em; }
+.t-h1   { font-size: var(--h1); line-height: var(--h1-lh); font-weight: 600; letter-spacing: -0.03em; }
+.t-h2   { font-size: var(--h2); line-height: var(--h2-lh); font-weight: 600; letter-spacing: -0.02em; }
+.t-h3   { font-size: var(--h3); line-height: var(--h3-lh); font-weight: 600; letter-spacing: -0.01em; }
+.t-body-l { font-size: var(--body-l); line-height: var(--body-l-lh); }
+.t-body { font-size: var(--body); line-height: var(--body-lh); }
+.t-label { font-size: var(--label); line-height: 1.25; font-weight: 600; }
+.t-caption { font-size: var(--caption); line-height: 1.3; font-weight: 500; }
+
+/* Shared container */
+.wrap { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* Shared buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 24px; border-radius: 999px;
+  font-size: 15px; font-weight: 600; white-space: nowrap;
+}
+.btn-lime  { background: var(--lime); color: var(--black); }
+.btn-black { background: var(--black); color: var(--card); }

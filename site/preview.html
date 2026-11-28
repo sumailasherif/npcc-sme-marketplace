@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bazar — Preview on all screens</title>
+  <link rel="stylesheet" href="brand.css">
+  <style>
+    body { background: #1a1a17; color: var(--card); padding: 24px; }
+    header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 24px; }
+    header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+    header .hint { color: #a8a294; font-size: 13px; }
+    header select, header a { margin-left: auto; background: var(--black-2); color: var(--card); border: 1px solid #3f3d36;
+                     border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 13px; }
+    header a { margin-left: 0; }
+    .row { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+    .device { flex: none; }
+    .device .name { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+    .device .name span { color: #a8a294; font-weight: 400; margin-left: 6px; }
+    .screen { overflow: hidden; background: var(--cream); border: 8px solid #000; box-shadow: 0 12px 40px rgb(0 0 0 / .5); }
+    .phone  .screen { border-radius: 44px; }
+    .tablet .screen { border-radius: 28px; }
+    .laptop .screen { border-radius: 12px 12px 0 0; }
+    .laptop .base { height: 14px; background: #2b2b27; border-radius: 0 0 14px 14px; margin: 0 -40px; }
+    iframe { border: 0; display: block; transform-origin: 0 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Preview on all screens</h1>
+    <span class="hint">Each frame shows the real page at that device's size.</span>
+    <select id="page" aria-label="Page">
+      <option value="index.html">Home</option>
+    </select>
+    <a href="index.html" target="_blank">Open full page ↗</a>
+  </header>
+
+  <div class="row" id="row"></div>
+
+  <script>
+    // Sizes come from the table at the top of brand.css.
+    var devices = [
+      { cls: "phone",  name: "Phone",  w: 390,  h: 844,  scale: 0.75 },
+      { cls: "tablet", name: "Tablet", w: 820,  h: 1180, scale: 0.5  },
+      { cls: "laptop", name: "Laptop", w: 1440, h: 900,  scale: 0.5  }
+    ];
+    var row = document.getElementById("row");
+    var select = document.getElementById("page");
+
+    function render() {
+      row.innerHTML = "";
+      devices.forEach(function (d) {
+        var box = document.createElement("div");
+        box.className = "device " + d.cls;
+        box.innerHTML =
+          '<div class="name">' + d.name + '<span>' + d.w + ' × ' + d.h + '</span></div>' +
+          '<div class="screen" style="width:' + (d.w * d.scale + 16) + 'px;height:' + (d.h * d.scale + 16) + 'px">' +
+          '<iframe src="' + select.value + '" width="' + d.w + '" height="' + d.h + '" style="transform:scale(' + d.scale + ')" title="' + d.name + '"></iframe>' +
+          '</div>' + (d.cls === "laptop" ? '<div class="base"></div>' : "");
+        row.appendChild(box);
+      });
+    }
+    select.addEventListener("change", render);
+    render();
+  </script>
+</body>
+</html>

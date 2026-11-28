@@ -2,51 +2,120 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bazar — Landing</title>
+  <!-- viewport-fit=cover lets the app use the full phone screen (notch / home bar) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e6">
+  <title>Bazar — Home</title>
   <link rel="stylesheet" href="brand.css">
   <style>
-    /* HERO */
+    /* ───── APP BAR (top) ───── */
+    .app-bar {
+      position: sticky; top: 0; z-index: 10;
+      height: calc(var(--top-bar) + env(safe-area-inset-top));
+      padding-top: env(safe-area-inset-top);
+      background: var(--cream);
+    }
+    .app-bar .wrap { height: 100%; display: flex; align-items: center; gap: 12px; }
+    .logo { background: var(--lime); padding: 4px 10px; border-radius: 8px;
+            font-size: 18px; font-weight: 700; letter-spacing: -0.04em; }
+    .top-nav { display: none; }                       /* laptop only */
+    .app-bar .right { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+    .icon-btn { width: var(--tap); height: var(--tap); display: grid; place-items: center; border-radius: 999px; }
+    .icon-btn:hover { background: var(--line); }
+    .app-bar .btn { display: none; }                  /* laptop only */
+
+    /* ───── HERO ───── */
     .hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center;
-      padding: 64px 16px;
+      min-height: calc(100svh - var(--top-bar) - var(--tab-bar) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      display: flex; flex-direction: column; justify-content: center;
+      padding-top: 32px; padding-bottom: 48px;
     }
-    .hero h1 {
-      font-weight: 600;
-      font-size: clamp(40px, 6.2vw, 88px);
-      line-height: 1.02;
-      letter-spacing: -0.045em;
-      max-width: 1200px;
+    .hero .sub { margin-top: 16px; color: var(--black-2); max-width: 560px; }
+    .hero .actions { margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
+    .hero .actions .btn { width: 100%; }
+
+    /* ───── BOTTOM TAB BAR (phone + tablet) ───── */
+    .tab-bar {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+      height: calc(var(--tab-bar) + env(safe-area-inset-bottom));
+      padding-bottom: env(safe-area-inset-bottom);
+      background: var(--card); border-top: 1px solid var(--line);
+      display: flex;
     }
-    .hero .sub {
-      margin-top: 20px;
-      font-size: clamp(16px, 1.6vw, 22px);
-      line-height: 1.4;
-      color: var(--black-2);
-      max-width: 640px;
+    .tab-bar a {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+      color: var(--muted);
     }
-    .hero .actions { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-    .btn {
-      display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px;
-      border-radius: 999px; font-size: 15px; font-weight: 600;
+    .tab-bar a .pill { width: 52px; height: 30px; display: grid; place-items: center; border-radius: 999px; }
+    .tab-bar a.on { color: var(--black); }
+    .tab-bar a.on .pill { background: var(--lime); }
+    .tab-bar svg, .icon-btn svg { width: 22px; height: 22px; }
+
+    /* ───── TABLET ───── */
+    @media (min-width: 768px) {
+      .hero { text-align: center; align-items: center; }
+      .hero .sub { margin-left: auto; margin-right: auto; }
+      .hero .actions { flex-direction: row; justify-content: center; }
+      .hero .actions .btn { width: auto; min-width: 200px; }
+      .tab-bar { justify-content: center; }
+      .tab-bar a { flex: 0 0 120px; }
     }
-    .btn-lime  { background: var(--lime); color: var(--black); }
-    .btn-black { background: var(--black); color: var(--card); }
+
+    /* ───── LAPTOP ───── */
+    @media (min-width: 1280px) {
+      .top-nav { display: flex; gap: 32px; margin-left: 40px; }
+      .top-nav a { font-size: 15px; font-weight: 500; color: var(--black-2); }
+      .top-nav a:hover, .top-nav a.on { color: var(--black); }
+      .app-bar .btn { display: inline-flex; margin-left: 8px; min-height: 44px; }
+      .tab-bar { display: none; }
+      .hero .sub { max-width: 680px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- HERO -->
-  <section class="hero">
-    <h1 data-text="hero.title">One place for every Mauritian business</h1>
-    <p class="sub" data-text="hero.subtitle">Shop local brands, sell what you don't need, and grow your business — all on Bazar.</p>
-    <div class="actions">
-      <a href="#" class="btn btn-lime" data-text="hero.button-1">Start shopping</a>
-      <a href="#" class="btn btn-black" data-text="hero.button-2">Open your shop</a>
+  <!-- APP BAR -->
+  <header class="app-bar">
+    <div class="wrap">
+      <a href="index.html" class="logo" data-text="bar.logo">bazar</a>
+      <nav class="top-nav">
+        <a href="#" class="on" data-text="nav.home">Home</a>
+        <a href="#" data-text="nav.search">Search</a>
+        <a href="#" data-text="nav.sell">Sell</a>
+        <a href="#" data-text="nav.orders">Orders</a>
+      </nav>
+      <div class="right">
+        <button class="icon-btn" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="Cart">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </button>
+        <a href="#" class="btn btn-black" data-text="bar.signin">Sign in</a>
+      </div>
     </div>
-  </section>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero wrap">
+      <h1 class="t-hero" data-text="hero.title">One place for every Mauritian business</h1>
+      <p class="sub t-body-l" data-text="hero.subtitle">Shop local brands, sell what you don't need, and grow your business — all on Bazar.</p>
+      <div class="actions">
+        <a href="#" class="btn btn-lime" data-text="hero.button-1">Start shopping</a>
+        <a href="#" class="btn btn-black" data-text="hero.button-2">Open your shop</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- BOTTOM TAB BAR -->
+  <nav class="tab-bar t-caption" aria-label="Main">
+    <a href="#" class="on"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z"/></svg></span><span data-text="tab.home">Home</span></a>
+    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><span data-text="tab.search">Search</span></a>
+    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg></span><span data-text="tab.sell">Sell</span></a>
+    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span><span data-text="tab.orders">Orders</span></a>
+    <a href="#"><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span data-text="tab.account">Account</span></a>
+  </nav>
 
   <script src="edit-text.js"></script>
 </body>
